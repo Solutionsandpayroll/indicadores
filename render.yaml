@@ -23,7 +23,10 @@ services:
     rootDir: backend
     buildCommand: npm ci && npm run build
     startCommand: npm run start:prod
-    healthCheckPath: /api/estatus
+    # Ruta pública que no toca Supabase. NO usar /api/estatus: es un CRUD
+    # protegido con JWT que responde 401, y Render espera un 2xx — el deploy
+    # se queda esperando para siempre.
+    healthCheckPath: /api/salud
     envVars:
       # Secretos — se capturan al desplegar, no se versionan
       - key: SUPABASE_URL

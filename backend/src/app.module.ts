@@ -15,8 +15,10 @@ import { EntregableTiposModule } from './modules/entregable-tipos/entregable-tip
 import { RcaModule } from './modules/rca/rca.module';
 import { SalarioVariableModule } from './modules/salario-variable/salario-variable.module';
 import { StatsModule } from './modules/stats/stats.module';
+import { HealthController } from './health/health.controller';
 
 @Module({
+  controllers: [HealthController],
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     SupabaseModule,
