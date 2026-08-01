@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fuentes — Plus Jakarta Sans como display/UI */
+  --font-display: var(--font-jakarta);
+  --font-sans:    var(--font-jakarta);
+
+  /* ── Paleta Solutions & Payroll (OKLCH) ──────────────────────
+     Azul marino de marca  →  oklch(≈27% 0.09 252)
+     Azul medio (logo)     →  oklch(≈48% 0.13 240)
+     Rojo coral de marca   →  oklch(≈52% 0.22 15)
+  ─────────────────────────────────────────────────────────────── */
+  --color-ink:           oklch(17% 0.055 252);
+  --color-ink-muted:     oklch(40% 0.04  252);
+  --color-ink-subtle:    oklch(60% 0.025 252);
+
+  --color-bg:            oklch(97% 0.008 252);
+  --color-surface:       oklch(100% 0 0);
+  --color-surface-alt:   oklch(98.5% 0.005 252);
+
+  --color-border:        oklch(89% 0.012 252);
+  --color-border-strong: oklch(78% 0.02  252);
+
+  /* Azul marino principal (marca) */
+  --color-primary:       oklch(27% 0.09 252);
+  --color-primary-mid:   oklch(33% 0.10 252);
+  --color-primary-hover: oklch(32% 0.10 252);
+  --color-primary-muted: oklch(27% 0.09 252 / 10%);
+
+  /* Azul medio del logo */
+  --color-blue-mid:      oklch(48% 0.13 240);
+
+  /* Rojo coral (marca) */
+  --color-accent:        oklch(52% 0.22 15);
+  --color-accent-hover:  oklch(57% 0.22 15);
+  --color-accent-muted:  oklch(52% 0.22 15 / 12%);
+
+  /* Éxito / advertencia */
+  --color-success:       oklch(56% 0.18 145);
+  --color-success-muted: oklch(56% 0.18 145 / 10%);
+  --color-warning:       oklch(70% 0.16 65);
+  --color-warning-muted: oklch(70% 0.16 65 / 12%);
+
+  /* Z-index semántico */
+  --z-dropdown:  100;
+  --z-sticky:    200;
+  --z-modal-bg:  300;
+  --z-modal:     400;
+  --z-toast:     500;
+  --z-tooltip:   600;
+
+  /* Easings custom */
+  --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4 {
+  text-wrap: balance;
+  letter-spacing: -0.05em;
+  font-weight: 700;
+}
+
+p { text-wrap: pretty; max-width: 72ch; }
+
+/* Scrollbar sutil */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-ink-subtle); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

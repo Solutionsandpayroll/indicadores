@@ -1,0 +1,40 @@
+# === Secretos / entorno ===
+.env
+.env.*
+!.env.example
+*.pem
+
+# === Dependencias ===
+node_modules/
+
+# === Builds ===
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# === Logs ===
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+backend-log.txt
+
+# === Coverage / tests ===
+coverage/
+
+# === Prisma generado ===
+/generated/prisma
+backend/generated/prisma
+
+# === Editores / SO ===
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# === Vercel ===
+.vercel

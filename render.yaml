@@ -1,0 +1,62 @@
+# ============================================================
+# Blueprint de Render — Sistema de Indicadores
+#
+# Despliega dos servicios desde este monorepo:
+#   - indicadores-backend  (NestJS)
+#   - indicadores-frontend (Next.js)
+#
+# La base de datos NO se define aquí: vive en Supabase.
+#
+# Las variables marcadas con `sync: false` NO se guardan en este archivo.
+# Render las pide en pantalla al crear el Blueprint, para que los secretos
+# nunca queden versionados en Git.
+# ============================================================
+
+services:
+  # ─────────────────────────────────────────────
+  # Backend — NestJS
+  # ─────────────────────────────────────────────
+  - type: web
+    name: indicadores-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /api/estatus
+    envVars:
+      # Secretos — se capturan al desplegar, no se versionan
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: JWT_SECRET
+        # Render genera un secreto aleatorio y seguro
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      # CORS: main.ts solo acepta peticiones de este origen.
+      # Se captura a mano porque Render no sabe exponer la URL PÚBLICA de otro
+      # servicio: `fromService/host` devuelve el host de la red privada, sin
+      # `https://`, y no sirve para CORS. Ver Paso 5 de la guía.
+      - key: FRONTEND_URL
+        sync: false
+    # NOTA: no declaramos PORT. Render la inyecta y main.ts ya la lee.
+
+  # ─────────────────────────────────────────────
+  # Frontend — Next.js
+  # ─────────────────────────────────────────────
+  - type: web
+    name: indicadores-frontend
+    runtime: node
+    plan: free
+    rootDir: frontend-next
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      # URL PÚBLICA del backend, capturada a mano (misma razón que FRONTEND_URL).
+      # OJO: lib/api.ts hace `NEXT_PUBLIC_API_URL + '/api'`, así que aquí va
+      # la URL PELADA, sin `/api` y sin barra final. Ejemplo:
+      #   https://indicadores-backend.onrender.com
+      - key: NEXT_PUBLIC_API_URL
+        sync: false

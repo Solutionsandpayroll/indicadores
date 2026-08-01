@@ -1,0 +1,77 @@
+Clientes
+cliente
+grupo
+indicadores
+% puntualidad
+% exactitud
+% contratación
+fecha
+mostrar
+
+Grupos
+id
+nombre
+mostrar
+
+Entregables (asignados, en proceso, terminados, aprobados, cerrados) (mirar si hacer tabla de estatus)
+id
+mes
+anio
+cliente
+líder
+estatus
+usuario
+% avance
+comentarios
+id_indicador
+tipo
+(cada indicador tiene una serie de entregables)
+
+RCA
+codigo
+anio
+grupo
+mes
+cliente
+tipo
+errores
+acciones_mejora
+
+Tipo RCA
+id
+descripcion
+
+Indicadores
+id
+nombre
+mostrar
+
+Cargos
+id 
+descripción
+
+Conceptos
+id 
+descripcion
+
+Saldo Variable
+id
+cargo_id
+concepto_id
+% cumplimiento
+% peso
+mostrar
+
+Usuarios
+id
+usuario
+contrasena
+nombre
+cargo_id
+email
+grupo_id
+lider (otro usuario)
+activo
+
+
+
