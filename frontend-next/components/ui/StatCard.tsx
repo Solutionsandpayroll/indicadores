@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { easeOut } from '@/lib/easing'
 import type { LucideIcon } from 'lucide-react'
 
 interface StatCardProps {
@@ -17,7 +18,7 @@ export default function StatCard({ label, value, icon: Icon, accent, delay = 0, 
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28, ease: [0.23, 1, 0.32, 1], delay }}
+      transition={{ duration: 0.28, ease: easeOut, delay }}
       className="rounded-2xl p-6 flex items-start gap-4"
       style={{
         backgroundColor: 'var(--color-surface)',

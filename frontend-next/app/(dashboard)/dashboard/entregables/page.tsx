@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
+import { easeOut } from '@/lib/easing'
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Legend,
@@ -89,7 +90,7 @@ function ChartCard({ title, icon: Icon, children }: { title: string; icon: React
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+      transition={{ duration: 0.45, ease: easeOut }}
       className="rounded-2xl p-5"
       style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
@@ -495,7 +496,7 @@ export default function EntregablesPage() {
 
   return (
     <div className="max-w-7xl space-y-6">
-      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}>
+      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: easeOut }}>
         <div className="flex items-center gap-2 mb-1">
           <Package size={14} style={{ color: 'var(--color-accent)' }} />
           <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--color-accent)', letterSpacing: '0.1em' }}>Entregables</span>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { easeOut } from '@/lib/easing'
 import { Search, Plus, Pencil, Trash2, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
@@ -184,7 +185,7 @@ export default function DataTable<T extends { id: number }>({
                       >
                         <motion.span
                           animate={{ rotate: expanded === row.id ? 90 : 0 }}
-                          transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+                          transition={{ duration: 0.18, ease: easeOut }}
                           className="flex"
                         >
                           <ChevronRight size={14} />
@@ -263,7 +264,7 @@ export default function DataTable<T extends { id: number }>({
                             initial={{ height: 0 }}
                             animate={{ height: 'auto' }}
                             exit={{ height: 0 }}
-                            transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                            transition={{ duration: 0.22, ease: easeOut }}
                             className="overflow-hidden"
                           >
                             <div className="px-4 py-4">{renderExpanded(row)}</div>

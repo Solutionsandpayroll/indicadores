@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { easeOut } from '@/lib/easing'
 import { SlidersHorizontal, X } from 'lucide-react'
 
 export interface FilterOption { value: string; label: string }
@@ -89,7 +90,7 @@ export default function FilterBar({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+            transition={{ duration: 0.22, ease: easeOut }}
             className="overflow-hidden"
           >
             <div

@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { easeOut } from '@/lib/easing'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/cn'
 
@@ -51,7 +52,7 @@ export default function LoginPage() {
       <motion.div
         initial={{ opacity: 0, y: 14, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.32, ease: [0.23, 1, 0.32, 1] }}
+        transition={{ duration: 0.32, ease: easeOut }}
         className="w-full max-w-sm relative"
       >
         {/* Marca */}
@@ -171,7 +172,7 @@ export default function LoginPage() {
             <motion.p
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.18, ease: easeOut }}
               className="text-sm rounded-lg px-3 py-2.5"
               style={{
                 color: 'var(--color-accent)',

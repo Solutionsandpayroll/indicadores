@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { easeOut } from '@/lib/easing'
 import { X } from 'lucide-react'
 
 interface ModalProps {
@@ -41,7 +42,7 @@ export default function Modal({ open, onClose, title, children, size = 'md' }: M
             initial={{ opacity: 0, scale: 0.96, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
-            transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+            transition={{ duration: 0.22, ease: easeOut }}
             className={`fixed inset-x-0 top-1/2 -translate-y-1/2 mx-auto w-[calc(100%-2rem)] ${SIZE[size]}`}
             style={{ zIndex: 'var(--z-modal)', transformOrigin: 'center' }}
           >

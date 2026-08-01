@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
+import { easeOut } from '@/lib/easing'
 import { Plus, Trash2, TrendingUp } from 'lucide-react'
 import { api } from '@/lib/api'
 
@@ -97,7 +98,7 @@ export default function PanelAvances({ entregableId }: { entregableId: number })
               key={a.id}
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.18, ease: easeOut }}
               className="group grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 rounded-lg px-3 py-2"
               style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
             >

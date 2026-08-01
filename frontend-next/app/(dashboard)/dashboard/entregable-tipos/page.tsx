@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
+import { easeOut } from '@/lib/easing'
 import { Tags } from 'lucide-react'
 import { api } from '@/lib/api'
 import DataTable, { type Column } from '@/components/ui/DataTable'
@@ -100,7 +101,7 @@ export default function EntregableTiposPage() {
 
   return (
     <div className="max-w-5xl space-y-6">
-      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}>
+      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: easeOut }}>
         <div className="flex items-center gap-2 mb-1">
           <Tags size={14} style={{ color: 'var(--color-accent)' }} />
           <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--color-accent)', letterSpacing: '0.1em' }}>Catálogo</span>

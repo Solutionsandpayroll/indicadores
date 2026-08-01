@@ -9,6 +9,7 @@ import {
   RadialBarChart, RadialBar, PolarAngleAxis,
 } from 'recharts'
 import { api } from '@/lib/api'
+import { easeOut } from '@/lib/easing'
 import { useAuth } from '@/context/AuthContext'
 
 interface Overview { clientes: number; entregables: number; indicadores: number }
@@ -21,7 +22,7 @@ const sparkIndicadores = [2,3,2,4,3,5,4,6,5,7,6,8]
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
 const cardAnim = {
   hidden: { opacity: 0, y: 20 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.23, 1, 0.32, 1] } },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.45, ease: easeOut } },
 }
 
 function AnimatedNumber({ value, loading }: { value: number; loading: boolean }) {
@@ -32,7 +33,7 @@ function AnimatedNumber({ value, loading }: { value: number; loading: boolean })
       key={value}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      transition={{ duration: 0.4, ease: easeOut }}
       className="text-4xl font-bold tracking-tight"
       style={{ letterSpacing: '-0.06em' }}
     >
@@ -93,7 +94,7 @@ function KpiCard({
         boxShadow: '0 1px 3px oklch(0% 0 0 / 6%)',
       }}
       whileHover={{ y: -2, boxShadow: '0 8px 32px oklch(0% 0 0 / 10%)' }}
-      transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+      transition={{ duration: 0.2, ease: easeOut }}
     >
       {/* Top */}
       <div className="px-5 pt-5 pb-3">
@@ -172,7 +173,7 @@ export default function HomePage() {
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+        transition={{ duration: 0.5, ease: easeOut }}
       >
         <div className="flex items-center gap-2 mb-1">
           <Activity size={14} style={{ color: 'var(--color-accent)' }} />
@@ -207,7 +208,7 @@ export default function HomePage() {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.28, ease: [0.23, 1, 0.32, 1] }}
+        transition={{ duration: 0.5, delay: 0.28, ease: easeOut }}
         className="grid grid-cols-1 lg:grid-cols-3 gap-5"
       >
         {/* Distribución visual */}
@@ -258,7 +259,7 @@ export default function HomePage() {
                 whileTap={{ scale: 0.97 }}
                 className="px-4 py-2 rounded-xl text-sm font-semibold text-white"
                 style={{ backgroundColor: color, boxShadow: `0 2px 8px ${color}40` }}
-                transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
+                transition={{ duration: 0.15, ease: easeOut }}
               >
                 {label}
               </motion.a>

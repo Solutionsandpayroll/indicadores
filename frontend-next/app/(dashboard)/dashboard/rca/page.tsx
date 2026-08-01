@@ -3,10 +3,12 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
+import { easeOut } from '@/lib/easing'
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend,
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from 'recharts'
+import type { PieLabelRenderProps } from 'recharts'
 import { AlertTriangle, PieChart as PieIcon, TrendingUp } from 'lucide-react'
 import { api } from '@/lib/api'
 import DataTable, { type Column } from '@/components/ui/DataTable'
@@ -31,7 +33,7 @@ function ChartCard({ title, icon: Icon, children }: { title: string; icon: React
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+      transition={{ duration: 0.45, ease: easeOut }}
       className="rounded-2xl p-5"
       style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
@@ -46,12 +48,13 @@ function ChartCard({ title, icon: Icon, children }: { title: string; icon: React
   )
 }
 
-const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: { cx: number; cy: number; midAngle: number; innerRadius: number; outerRadius: number; percent: number }) => {
+// Recharts declara estas props como opcionales, de ahí los valores por defecto.
+const CustomLabel = ({ cx = 0, cy = 0, midAngle = 0, innerRadius = 0, outerRadius = 0, percent = 0 }: PieLabelRenderProps) => {
   if (percent < 0.06) return null
   const RADIAN = Math.PI / 180
-  const r = innerRadius + (outerRadius - innerRadius) * 0.5
-  const x = cx + r * Math.cos(-midAngle * RADIAN)
-  const y = cy + r * Math.sin(-midAngle * RADIAN)
+  const r = Number(innerRadius) + (Number(outerRadius) - Number(innerRadius)) * 0.5
+  const x = Number(cx) + r * Math.cos(-midAngle * RADIAN)
+  const y = Number(cy) + r * Math.sin(-midAngle * RADIAN)
   return <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={11} fontWeight={600}>{`${(percent * 100).toFixed(0)}%`}</text>
 }
 
@@ -113,7 +116,7 @@ export default function RcaPage() {
 
   return (
     <div className="max-w-6xl space-y-6">
-      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}>
+      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: easeOut }}>
         <div className="flex items-center gap-2 mb-1">
           <AlertTriangle size={14} style={{ color: 'var(--color-accent)' }} />
           <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--color-accent)', letterSpacing: '0.1em' }}>RCA</span>
