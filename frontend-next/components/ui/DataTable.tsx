@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { easeOut } from '@/lib/easing'
-import { Search, Plus, Pencil, Trash2, ChevronRight } from 'lucide-react'
+import { Search, Plus, Pencil, Trash2, ChevronRight, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
 export interface Column<T> {
@@ -44,6 +44,7 @@ export default function DataTable<T extends { id: number }>({
 }: DataTableProps<T>) {
   const [search, setSearch] = useState('')
   const [expanded, setExpanded] = useState<number | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null)
 
   const filtered = search.trim()
     ? data.filter((row) =>
@@ -223,21 +224,44 @@ export default function DataTable<T extends { id: number }>({
                           </button>
                         )}
                         {onDelete && (
-                          <button
-                            onClick={() => onDelete(row)}
-                            className="p-1.5 rounded-lg transition-[background-color,color] duration-150 cursor-pointer"
-                            style={{ color: 'var(--color-ink-muted)' }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.color = 'var(--color-accent)'
-                              e.currentTarget.style.backgroundColor = 'var(--color-accent-muted)'
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.color = 'var(--color-ink-muted)'
-                              e.currentTarget.style.backgroundColor = 'transparent'
-                            }}
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          deleteConfirm === row.id ? (
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => { onDelete(row); setDeleteConfirm(null) }}
+                                className="inline-flex items-center gap-1 h-7 px-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-[background-color] duration-150"
+                                style={{ backgroundColor: 'var(--color-accent)' }}
+                                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)')}
+                                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-accent)')}
+                              >
+                                <AlertTriangle size={11} /> Sí
+                              </button>
+                              <button
+                                onClick={() => setDeleteConfirm(null)}
+                                className="h-7 px-2 rounded-lg text-xs font-medium cursor-pointer transition-[background-color,color] duration-150"
+                                style={{ color: 'var(--color-ink-muted)', backgroundColor: 'var(--color-border)' }}
+                                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-ink)'; e.currentTarget.style.backgroundColor = 'var(--color-border-strong)' }}
+                                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-ink-muted)'; e.currentTarget.style.backgroundColor = 'var(--color-border)' }}
+                              >
+                                No
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setDeleteConfirm(row.id)}
+                              className="p-1.5 rounded-lg transition-[background-color,color] duration-150 cursor-pointer"
+                              style={{ color: 'var(--color-ink-muted)' }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.color = 'var(--color-accent)'
+                                e.currentTarget.style.backgroundColor = 'var(--color-accent-muted)'
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.color = 'var(--color-ink-muted)'
+                                e.currentTarget.style.backgroundColor = 'transparent'
+                              }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )
                         )}
                       </div>
                     </td>

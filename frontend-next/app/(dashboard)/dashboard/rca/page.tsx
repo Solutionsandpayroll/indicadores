@@ -15,6 +15,7 @@ import DataTable, { type Column } from '@/components/ui/DataTable'
 import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import ModalActions from '@/components/ui/ModalActions'
+import { useToast } from '@/context/ToastContext'
 
 interface Grupo { id: number; nombre: string }
 interface Cliente { id: number; cliente: string }
@@ -60,6 +61,7 @@ const CustomLabel = ({ cx = 0, cy = 0, midAngle = 0, innerRadius = 0, outerRadiu
 
 export default function RcaPage() {
   const qc = useQueryClient()
+  const toast = useToast()
   const [modal, setModal] = useState<{ open: boolean; row: RcaRecord | null }>({ open: false, row: null })
   const [form, setForm] = useState(empty)
   const [error, setError] = useState('')
@@ -100,10 +102,14 @@ export default function RcaPage() {
       if (modal.row) await api.patch(`/rca/${modal.row.id}`, payload)
       else await api.post('/rca', payload)
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['rca'] }); close() },
-    onError: () => setError('Error al guardar'),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['rca'] }); close(); toast.success(modal.row ? 'RCA actualizado' : 'RCA creado') },
+    onError: () => { setError('Error al guardar'); toast.error('Error al guardar el RCA') },
   })
-  const del = useMutation({ mutationFn: (id: number) => api.delete(`/rca/${id}`), onSuccess: () => qc.invalidateQueries({ queryKey: ['rca'] }) })
+  const del = useMutation({
+    mutationFn: (id: number) => api.delete(`/rca/${id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['rca'] }); toast.success('RCA eliminado') },
+    onError: () => toast.error('Error al eliminar el RCA'),
+  })
 
   function open(row?: RcaRecord) {
     setModal({ open: true, row: row ?? null })

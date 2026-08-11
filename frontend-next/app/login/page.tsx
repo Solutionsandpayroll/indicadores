@@ -1,19 +1,26 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { easeOut } from '@/lib/easing'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/cn'
 
 export default function LoginPage() {
-  const { login } = useAuth()
+  const { login, isAuthenticated, hydrated } = useAuth()
   const router = useRouter()
   const [usuario, setUsuario] = useState('')
   const [contrasena, setContrasena] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (hydrated && isAuthenticated) router.replace('/dashboard')
+  }, [hydrated, isAuthenticated, router])
+
+  if (!hydrated || isAuthenticated) return null
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -57,16 +64,15 @@ export default function LoginPage() {
       >
         {/* Marca */}
         <div className="mb-10 text-center">
-          <div
-            className="inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-5 shadow-lg"
-            style={{ backgroundColor: 'var(--color-primary)' }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" />
-              <rect x="14" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.7" />
-              <rect x="3" y="14" width="7" height="7" rx="1.5" fill="white" opacity="0.7" />
-              <rect x="14" y="14" width="7" height="7" rx="1.5" fill="var(--color-accent)" />
-            </svg>
+          <div className="inline-flex items-center justify-center mb-5">
+            <Image
+              src="/Logo_syp_original.png"
+              alt="Solutions & Payroll"
+              width={64}
+              height={64}
+              className="object-contain"
+              priority
+            />
           </div>
           <h1
             className="text-2xl tracking-tight"

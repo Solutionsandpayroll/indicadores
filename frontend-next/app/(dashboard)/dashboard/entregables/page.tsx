@@ -20,6 +20,7 @@ import FormField from '@/components/ui/FormField'
 import Badge from '@/components/ui/Badge'
 import ModalActions from '@/components/ui/ModalActions'
 import PanelAvances from '@/components/entregables/PanelAvances'
+import { useToast } from '@/context/ToastContext'
 
 interface Cliente { id: number; cliente: string; fecha: string | null; pct_exactitud: number | null }
 interface Estatus { id: number; descripcion: string }
@@ -146,6 +147,7 @@ const CustomPieLabel = (props: {
 
 export default function EntregablesPage() {
   const qc = useQueryClient()
+  const toast = useToast()
   const [modal, setModal] = useState<{ open: boolean; row: Entregable | null }>({ open: false, row: null })
   const [form, setForm] = useState(empty)
   const [error, setError] = useState('')
@@ -400,9 +402,11 @@ export default function EntregablesPage() {
       if (modal.row) await api.patch(`/entregables/${modal.row.id}`, payload)
       else await api.post('/entregables', payload)
     },
-    onSuccess: () => { invalidar(); close() },
-    onError: (e: { response?: { data?: { message?: string } } }) =>
-      setError(e?.response?.data?.message ?? 'Error al guardar'),
+    onSuccess: () => { invalidar(); close(); toast.success(modal.row ? 'Entregable actualizado' : 'Entregable creado') },
+    onError: (e: { response?: { data?: { message?: string } } }) => {
+      const msg = e?.response?.data?.message ?? 'Error al guardar'
+      setError(msg); toast.error(msg)
+    },
   })
 
   const guardarSeguimiento = useMutation({
@@ -422,12 +426,19 @@ export default function EntregablesPage() {
       invalidar()
       qc.invalidateQueries({ queryKey: ['entregable-historial'] })
       setSegModal({ open: false, row: null })
+      toast.success('Seguimiento guardado')
     },
-    onError: (e: { response?: { data?: { message?: string } } }) =>
-      setSegError(e?.response?.data?.message ?? 'Error al guardar el seguimiento'),
+    onError: (e: { response?: { data?: { message?: string } } }) => {
+      const msg = e?.response?.data?.message ?? 'Error al guardar el seguimiento'
+      setSegError(msg); toast.error(msg)
+    },
   })
 
-  const del = useMutation({ mutationFn: (id: number) => api.delete(`/entregables/${id}`), onSuccess: invalidar })
+  const del = useMutation({
+    mutationFn: (id: number) => api.delete(`/entregables/${id}`),
+    onSuccess: () => { invalidar(); toast.success('Entregable eliminado') },
+    onError: () => toast.error('Error al eliminar el entregable'),
+  })
 
   function open(row?: Entregable) {
     setModal({ open: true, row: row ?? null })

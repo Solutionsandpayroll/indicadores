@@ -7,6 +7,7 @@ import DataTable, { type Column } from '@/components/ui/DataTable'
 import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import ModalActions from '@/components/ui/ModalActions'
+import { useToast } from '@/context/ToastContext'
 
 interface Estatus { id: number; descripcion: string }
 
@@ -17,6 +18,7 @@ const COLS: Column<Estatus>[] = [
 
 export default function EstatusPage() {
   const qc = useQueryClient()
+  const toast = useToast()
   const [modal, setModal] = useState<{ open: boolean; row: Estatus | null }>({ open: false, row: null })
   const [descripcion, setDescripcion] = useState('')
   const [error, setError] = useState('')
@@ -31,13 +33,14 @@ export default function EstatusPage() {
       if (modal.row) await api.patch(`/estatus/${modal.row.id}`, { descripcion })
       else await api.post('/estatus', { descripcion })
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['estatus'] }); close() },
-    onError: () => setError('Error al guardar'),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['estatus'] }); close(); toast.success(modal.row ? 'Estatus actualizado' : 'Estatus creado') },
+    onError: () => { setError('Error al guardar'); toast.error('Error al guardar el estatus') },
   })
 
   const del = useMutation({
     mutationFn: (id: number) => api.delete(`/estatus/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['estatus'] }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['estatus'] }); toast.success('Estatus eliminado') },
+    onError: () => toast.error('Error al eliminar el estatus'),
   })
 
   function open(row?: Estatus) {

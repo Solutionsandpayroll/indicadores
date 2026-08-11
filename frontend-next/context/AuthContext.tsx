@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import { api } from '@/lib/api'
 
 interface UsuarioSession {
@@ -15,24 +15,24 @@ interface UsuarioSession {
 interface AuthContextValue {
   usuario: UsuarioSession | null
   isAuthenticated: boolean
+  hydrated: boolean
   login: (usuario: string, contrasena: string) => Promise<void>
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
-function loadSession(): UsuarioSession | null {
-  if (typeof window === 'undefined') return null
-  try {
-    const raw = localStorage.getItem('usuario')
-    return raw ? (JSON.parse(raw) as UsuarioSession) : null
-  } catch {
-    return null
-  }
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [usuario, setUsuario] = useState<UsuarioSession | null>(loadSession)
+  const [usuario, setUsuario] = useState<UsuarioSession | null>(null)
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('usuario')
+      if (raw) setUsuario(JSON.parse(raw) as UsuarioSession)
+    } catch { /* ignorar */ }
+    setHydrated(true)
+  }, [])
 
   const login = useCallback(async (usuarioStr: string, contrasena: string) => {
     const { data } = await api.post<{ access_token: string; usuario: UsuarioSession }>(
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ usuario, isAuthenticated: !!usuario, login, logout }}>
+    <AuthContext.Provider value={{ usuario, isAuthenticated: !!usuario, hydrated, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

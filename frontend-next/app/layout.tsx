@@ -13,6 +13,7 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: 'Sistema de Indicadores — Solutions & Payroll',
   description: 'Panel de gestión de indicadores operacionales',
+  icons: { icon: '/Logo_syp_original.png' },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

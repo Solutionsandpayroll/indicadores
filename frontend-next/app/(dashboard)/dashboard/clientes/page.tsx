@@ -14,6 +14,7 @@ import DataTable, { type Column } from '@/components/ui/DataTable'
 import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import ModalActions from '@/components/ui/ModalActions'
+import { useToast } from '@/context/ToastContext'
 
 interface Grupo { id: number; nombre: string }
 interface Cliente {
@@ -72,6 +73,7 @@ const CustomScatterTooltip = ({ active, payload }: { active?: boolean; payload?:
 
 export default function ClientesPage() {
   const qc = useQueryClient()
+  const toast = useToast()
   const [modal, setModal] = useState<{ open: boolean; row: Cliente | null }>({ open: false, row: null })
   const [form, setForm] = useState(empty)
   const [error, setError] = useState('')
@@ -111,12 +113,13 @@ export default function ClientesPage() {
       if (modal.row) await api.patch(`/clientes/${modal.row.id}`, payload)
       else await api.post('/clientes', payload)
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['clientes'] }); close() },
-    onError: () => setError('Error al guardar'),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['clientes'] }); close(); toast.success(modal.row ? 'Cliente actualizado' : 'Cliente creado') },
+    onError: () => { setError('Error al guardar'); toast.error('Error al guardar el cliente') },
   })
   const del = useMutation({
     mutationFn: (id: number) => api.delete(`/clientes/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['clientes'] }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['clientes'] }); toast.success('Cliente eliminado') },
+    onError: () => toast.error('Error al eliminar el cliente'),
   })
 
   function open(row?: Cliente) {

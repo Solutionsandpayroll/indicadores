@@ -12,6 +12,7 @@ import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import Badge from '@/components/ui/Badge'
 import ModalActions from '@/components/ui/ModalActions'
+import { useToast } from '@/context/ToastContext'
 
 interface Indicador { id: number; nombre: string }
 interface EntregableTipo {
@@ -23,6 +24,7 @@ const empty = { indicador_id: '', nombre: '', orden: '1', mostrar: 'true' }
 
 export default function EntregableTiposPage() {
   const qc = useQueryClient()
+  const toast = useToast()
   const [modal, setModal] = useState<{ open: boolean; row: EntregableTipo | null }>({ open: false, row: null })
   const [form, setForm] = useState(empty)
   const [error, setError] = useState('')
@@ -75,15 +77,17 @@ export default function EntregableTiposPage() {
       if (modal.row) await api.patch(`/entregable-tipos/${modal.row.id}`, payload)
       else await api.post('/entregable-tipos', payload)
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['entregable-tipos'] }); close() },
-    onError: (e: { response?: { data?: { message?: string } } }) =>
-      setError(e?.response?.data?.message ?? 'Error al guardar'),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['entregable-tipos'] }); close(); toast.success(modal.row ? 'Tipo actualizado' : 'Tipo creado') },
+    onError: (e: { response?: { data?: { message?: string } } }) => {
+      const msg = e?.response?.data?.message ?? 'Error al guardar'
+      setError(msg); toast.error(msg)
+    },
   })
 
   const del = useMutation({
     mutationFn: (id: number) => api.delete(`/entregable-tipos/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['entregable-tipos'] }),
-    onError: () => window.alert('No se pudo eliminar: puede haber entregables que usan este tipo.'),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['entregable-tipos'] }); toast.success('Tipo eliminado') },
+    onError: () => toast.error('No se pudo eliminar: puede haber entregables que usan este tipo.'),
   })
 
   function open(row?: EntregableTipo) {

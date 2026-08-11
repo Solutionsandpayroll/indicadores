@@ -11,6 +11,7 @@ import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import Badge from '@/components/ui/Badge'
 import ModalActions from '@/components/ui/ModalActions'
+import { useToast } from '@/context/ToastContext'
 
 interface Cargo { id: number; descripcion: string }
 interface Grupo { id: number; nombre: string }
@@ -24,6 +25,7 @@ const empty = { usuario: '', contrasena: '', nombre: '', cargo_id: '', email: ''
 
 export default function UsuariosPage() {
   const { usuario: currentUser } = useAuth()
+  const toast = useToast()
   const router = useRouter()
 
   useEffect(() => {
@@ -58,11 +60,15 @@ export default function UsuariosPage() {
       if (modal.row) await api.patch(`/usuarios/${modal.row.id}`, payload)
       else await api.post('/usuarios', { ...payload, contrasena: form.contrasena })
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['usuarios'] }); close() },
-    onError: () => setError('Error al guardar'),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['usuarios'] }); close(); toast.success(modal.row ? 'Usuario actualizado' : 'Usuario creado') },
+    onError: () => { setError('Error al guardar'); toast.error('Error al guardar el usuario') },
   })
 
-  const del = useMutation({ mutationFn: (id: number) => api.delete(`/usuarios/${id}`), onSuccess: () => qc.invalidateQueries({ queryKey: ['usuarios'] }) })
+  const del = useMutation({
+    mutationFn: (id: number) => api.delete(`/usuarios/${id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['usuarios'] }); toast.success('Usuario eliminado') },
+    onError: () => toast.error('Error al eliminar el usuario'),
+  })
 
   function open(row?: Usuario) {
     setModal({ open: true, row: row ?? null })

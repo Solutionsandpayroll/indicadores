@@ -72,12 +72,11 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="px-5 pt-5 pb-4 relative" style={{ borderBottom: '1px solid oklch(100% 0 0 / 6%)' }}>
         <Image
-          src="/logosyp.png"
+          src="/Titulo_empresa_v2.png"
           alt="Solutions & Payroll"
-          width={160}
-          height={52}
-          className="object-contain"
-          style={{ filter: 'brightness(0) invert(1)' }}
+          width={200}
+          height={48}
+          className="object-contain w-full"
           priority
         />
       </div>

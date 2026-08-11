@@ -14,6 +14,7 @@ import DataTable, { type Column } from '@/components/ui/DataTable'
 import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import ModalActions from '@/components/ui/ModalActions'
+import { useToast } from '@/context/ToastContext'
 
 interface Indicador { id: number; nombre: string; mostrar: boolean }
 interface Entregable { id: number; indicador_id: number; pct_avance: number | null; mes: number; anio: number }
@@ -46,6 +47,7 @@ function ChartCard({ title, icon: Icon, children }: { title: string; icon: React
 
 export default function IndicadoresPage() {
   const qc = useQueryClient()
+  const toast = useToast()
   const [modal, setModal] = useState<{ open: boolean; row: Indicador | null }>({ open: false, row: null })
   const [nombre, setNombre] = useState('')
   const [error, setError] = useState('')
@@ -83,12 +85,13 @@ export default function IndicadoresPage() {
       if (modal.row) await api.patch(`/indicadores/${modal.row.id}`, { nombre })
       else await api.post('/indicadores', { nombre })
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['indicadores'] }); close() },
-    onError: () => setError('Error al guardar'),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['indicadores'] }); close(); toast.success(modal.row ? 'Indicador actualizado' : 'Indicador creado') },
+    onError: () => { setError('Error al guardar'); toast.error('Error al guardar el indicador') },
   })
   const del = useMutation({
     mutationFn: (id: number) => api.delete(`/indicadores/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['indicadores'] }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['indicadores'] }); toast.success('Indicador eliminado') },
+    onError: () => toast.error('Error al eliminar el indicador'),
   })
 
   function open(row?: Indicador) { setModal({ open: true, row: row ?? null }); setNombre(row?.nombre ?? ''); setError('') }

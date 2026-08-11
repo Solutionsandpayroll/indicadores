@@ -7,6 +7,7 @@ import DataTable, { type Column } from '@/components/ui/DataTable'
 import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import ModalActions from '@/components/ui/ModalActions'
+import { useToast } from '@/context/ToastContext'
 
 interface Cargo { id: number; descripcion: string }
 interface Concepto { id: number; descripcion: string }
@@ -15,13 +16,14 @@ type Tab = 'cargos' | 'conceptos' | 'salario'
 
 function CargosTab() {
   const qc = useQueryClient()
+  const toast = useToast()
   const [modal, setModal] = useState<{ open: boolean; row: Cargo | null }>({ open: false, row: null })
   const [descripcion, setDescripcion] = useState('')
   const [error, setError] = useState('')
   const COLS: Column<Cargo>[] = [{ key: 'id', label: 'ID' }, { key: 'descripcion', label: 'Descripción' }]
   const { data = [], isLoading } = useQuery<Cargo[]>({ queryKey: ['cargos'], queryFn: async () => { const { data } = await api.get<Cargo[]>('/cargos'); return data } })
-  const save = useMutation({ mutationFn: async () => { if (modal.row) await api.patch(`/cargos/${modal.row.id}`, { descripcion }); else await api.post('/cargos', { descripcion }) }, onSuccess: () => { qc.invalidateQueries({ queryKey: ['cargos'] }); close() }, onError: () => setError('Error al guardar') })
-  const del = useMutation({ mutationFn: (id: number) => api.delete(`/cargos/${id}`), onSuccess: () => qc.invalidateQueries({ queryKey: ['cargos'] }) })
+  const save = useMutation({ mutationFn: async () => { if (modal.row) await api.patch(`/cargos/${modal.row.id}`, { descripcion }); else await api.post('/cargos', { descripcion }) }, onSuccess: () => { qc.invalidateQueries({ queryKey: ['cargos'] }); close(); toast.success(modal.row ? 'Cargo actualizado' : 'Cargo creado') }, onError: () => { setError('Error al guardar'); toast.error('Error al guardar el cargo') } })
+  const del = useMutation({ mutationFn: (id: number) => api.delete(`/cargos/${id}`), onSuccess: () => { qc.invalidateQueries({ queryKey: ['cargos'] }); toast.success('Cargo eliminado') }, onError: () => toast.error('Error al eliminar el cargo') })
   function open(row?: Cargo) { setModal({ open: true, row: row ?? null }); setDescripcion(row?.descripcion ?? ''); setError('') }
   function close() { setModal({ open: false, row: null }) }
   return (
@@ -39,13 +41,14 @@ function CargosTab() {
 
 function ConceptosTab() {
   const qc = useQueryClient()
+  const toast = useToast()
   const [modal, setModal] = useState<{ open: boolean; row: Concepto | null }>({ open: false, row: null })
   const [descripcion, setDescripcion] = useState('')
   const [error, setError] = useState('')
   const COLS: Column<Concepto>[] = [{ key: 'id', label: 'ID' }, { key: 'descripcion', label: 'Descripción' }]
   const { data = [], isLoading } = useQuery<Concepto[]>({ queryKey: ['conceptos'], queryFn: async () => { const { data } = await api.get<Concepto[]>('/conceptos'); return data } })
-  const save = useMutation({ mutationFn: async () => { if (modal.row) await api.patch(`/conceptos/${modal.row.id}`, { descripcion }); else await api.post('/conceptos', { descripcion }) }, onSuccess: () => { qc.invalidateQueries({ queryKey: ['conceptos'] }); close() }, onError: () => setError('Error al guardar') })
-  const del = useMutation({ mutationFn: (id: number) => api.delete(`/conceptos/${id}`), onSuccess: () => qc.invalidateQueries({ queryKey: ['conceptos'] }) })
+  const save = useMutation({ mutationFn: async () => { if (modal.row) await api.patch(`/conceptos/${modal.row.id}`, { descripcion }); else await api.post('/conceptos', { descripcion }) }, onSuccess: () => { qc.invalidateQueries({ queryKey: ['conceptos'] }); close(); toast.success(modal.row ? 'Concepto actualizado' : 'Concepto creado') }, onError: () => { setError('Error al guardar'); toast.error('Error al guardar el concepto') } })
+  const del = useMutation({ mutationFn: (id: number) => api.delete(`/conceptos/${id}`), onSuccess: () => { qc.invalidateQueries({ queryKey: ['conceptos'] }); toast.success('Concepto eliminado') }, onError: () => toast.error('Error al eliminar el concepto') })
   function open(row?: Concepto) { setModal({ open: true, row: row ?? null }); setDescripcion(row?.descripcion ?? ''); setError('') }
   function close() { setModal({ open: false, row: null }) }
   return (
@@ -63,6 +66,7 @@ function ConceptosTab() {
 
 function SalarioVariableTab() {
   const qc = useQueryClient()
+  const toast = useToast()
   const [modal, setModal] = useState<{ open: boolean; row: SalarioVariable | null }>({ open: false, row: null })
   const [form, setForm] = useState({ cargo_id: '', concepto_id: '', pct_cumplimiento: '', pct_peso: '' })
   const [error, setError] = useState('')
@@ -83,10 +87,10 @@ function SalarioVariableTab() {
       const payload = { cargo_id: Number(form.cargo_id), concepto_id: Number(form.concepto_id), pct_cumplimiento: form.pct_cumplimiento ? Number(form.pct_cumplimiento) : null, pct_peso: form.pct_peso ? Number(form.pct_peso) : null }
       if (modal.row) await api.patch(`/salario-variable/${modal.row.id}`, payload); else await api.post('/salario-variable', payload)
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['salario-variable'] }); close() },
-    onError: () => setError('Error al guardar'),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['salario-variable'] }); close(); toast.success(modal.row ? 'Salario variable actualizado' : 'Salario variable creado') },
+    onError: () => { setError('Error al guardar'); toast.error('Error al guardar el salario variable') },
   })
-  const del = useMutation({ mutationFn: (id: number) => api.delete(`/salario-variable/${id}`), onSuccess: () => qc.invalidateQueries({ queryKey: ['salario-variable'] }) })
+  const del = useMutation({ mutationFn: (id: number) => api.delete(`/salario-variable/${id}`), onSuccess: () => { qc.invalidateQueries({ queryKey: ['salario-variable'] }); toast.success('Salario variable eliminado') }, onError: () => toast.error('Error al eliminar el salario variable') })
   function open(row?: SalarioVariable) { setModal({ open: true, row: row ?? null }); setForm(row ? { cargo_id: String(row.cargo_id), concepto_id: String(row.concepto_id), pct_cumplimiento: row.pct_cumplimiento != null ? String(row.pct_cumplimiento) : '', pct_peso: row.pct_peso != null ? String(row.pct_peso) : '' } : { cargo_id: '', concepto_id: '', pct_cumplimiento: '', pct_peso: '' }); setError('') }
   function close() { setModal({ open: false, row: null }) }
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setForm((f) => ({ ...f, [k]: e.target.value }))

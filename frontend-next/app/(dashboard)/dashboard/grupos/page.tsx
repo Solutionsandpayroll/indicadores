@@ -7,6 +7,7 @@ import DataTable, { type Column } from '@/components/ui/DataTable'
 import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import ModalActions from '@/components/ui/ModalActions'
+import { useToast } from '@/context/ToastContext'
 
 interface Grupo { id: number; nombre: string }
 
@@ -17,6 +18,7 @@ const COLS: Column<Grupo>[] = [
 
 export default function GruposPage() {
   const qc = useQueryClient()
+  const toast = useToast()
   const [modal, setModal] = useState<{ open: boolean; row: Grupo | null }>({ open: false, row: null })
   const [nombre, setNombre] = useState('')
   const [error, setError] = useState('')
@@ -31,13 +33,14 @@ export default function GruposPage() {
       if (modal.row) await api.patch(`/grupos/${modal.row.id}`, { nombre })
       else await api.post('/grupos', { nombre })
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['grupos'] }); close() },
-    onError: () => setError('Error al guardar'),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['grupos'] }); close(); toast.success(modal.row ? 'Grupo actualizado' : 'Grupo creado') },
+    onError: () => { setError('Error al guardar'); toast.error('Error al guardar el grupo') },
   })
 
   const del = useMutation({
     mutationFn: (id: number) => api.delete(`/grupos/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['grupos'] }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['grupos'] }); toast.success('Grupo eliminado') },
+    onError: () => toast.error('Error al eliminar el grupo'),
   })
 
   function open(row?: Grupo) {

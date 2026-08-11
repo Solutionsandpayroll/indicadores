@@ -9,4 +9,9 @@ export class StatsController {
   getOverview() {
     return this.statsService.getOverview();
   }
+
+  @Get('trends')
+  getTrends() {
+    return this.statsService.getTrends();
+  }
 }

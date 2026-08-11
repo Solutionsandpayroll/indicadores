@@ -7,6 +7,7 @@ import DataTable, { type Column } from '@/components/ui/DataTable'
 import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import ModalActions from '@/components/ui/ModalActions'
+import { useToast } from '@/context/ToastContext'
 
 interface TipoRca { id: number; descripcion: string }
 
@@ -17,6 +18,7 @@ const COLS: Column<TipoRca>[] = [
 
 export default function TipoRcaPage() {
   const qc = useQueryClient()
+  const toast = useToast()
   const [modal, setModal] = useState<{ open: boolean; row: TipoRca | null }>({ open: false, row: null })
   const [descripcion, setDescripcion] = useState('')
   const [error, setError] = useState('')
@@ -31,13 +33,14 @@ export default function TipoRcaPage() {
       if (modal.row) await api.patch(`/tipo-rca/${modal.row.id}`, { descripcion })
       else await api.post('/tipo-rca', { descripcion })
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['tipo-rca'] }); close() },
-    onError: () => setError('Error al guardar'),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['tipo-rca'] }); close(); toast.success(modal.row ? 'Tipo RCA actualizado' : 'Tipo RCA creado') },
+    onError: () => { setError('Error al guardar'); toast.error('Error al guardar el tipo RCA') },
   })
 
   const del = useMutation({
     mutationFn: (id: number) => api.delete(`/tipo-rca/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['tipo-rca'] }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['tipo-rca'] }); toast.success('Tipo RCA eliminado') },
+    onError: () => toast.error('Error al eliminar el tipo RCA'),
   })
 
   function open(row?: TipoRca) {

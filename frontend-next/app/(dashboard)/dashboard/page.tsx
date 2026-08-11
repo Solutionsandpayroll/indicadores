@@ -14,10 +14,12 @@ import { useAuth } from '@/context/AuthContext'
 
 interface Overview { clientes: number; entregables: number; indicadores: number }
 
-// Datos demo para sparklines hasta que la API tenga series temporales
-const sparkClientes = [4,7,5,9,8,12,10,14,11,16,13,18]
-const sparkEntregables = [10,14,12,18,16,22,19,25,21,28,24,31]
-const sparkIndicadores = [2,3,2,4,3,5,4,6,5,7,6,8]
+interface Trends {
+  clientes: number[]
+  entregables: number[]
+  indicadores: number[]
+  crecimiento: { clientes: number; entregables: number; indicadores: number }
+}
 
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
 const cardAnim = {
@@ -78,11 +80,27 @@ function Sparkline({ data, color }: { data: number[]; color: string }) {
   )
 }
 
+function GrowthBadge({ value }: { value: number }) {
+  const positivo = value >= 0
+  return (
+    <div
+      className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg"
+      style={{
+        backgroundColor: positivo ? 'var(--color-success-muted)' : 'var(--color-accent-muted)',
+        color: positivo ? 'var(--color-success)' : 'var(--color-accent)',
+      }}
+    >
+      <TrendingUp size={10} style={positivo ? undefined : { transform: 'rotate(180deg)' }} />
+      <span>{positivo ? '+' : ''}{value}%</span>
+    </div>
+  )
+}
+
 function KpiCard({
-  label, value, subtext, icon: Icon, spark, color, accent, delay, loading,
+  label, value, subtext, icon: Icon, spark, color, accent, growth, loading,
 }: {
   label: string; value: number; subtext: string; icon: React.ElementType
-  spark: number[]; color: string; accent?: boolean; delay: number; loading: boolean
+  spark: number[]; color: string; accent?: boolean; growth: number; loading: boolean
 }) {
   return (
     <motion.div
@@ -105,10 +123,7 @@ function KpiCard({
           >
             <Icon size={18} />
           </div>
-          <div className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg" style={{ backgroundColor: 'var(--color-success-muted)', color: 'var(--color-success)' }}>
-            <TrendingUp size={10} />
-            <span>+12%</span>
-          </div>
+          <GrowthBadge value={growth} />
         </div>
 
         <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-ink-muted)' }}>{label}</p>
@@ -156,6 +171,12 @@ export default function HomePage() {
     staleTime: 60_000,
   })
 
+  const { data: trends } = useQuery<Trends>({
+    queryKey: ['stats-trends'],
+    queryFn: async () => { const { data } = await api.get<Trends>('/stats/trends'); return data },
+    staleTime: 5 * 60_000,
+  })
+
   const [greeting, setGreeting] = useState('Buenos días')
   useEffect(() => {
     const hour = new Date().getHours()
@@ -166,6 +187,13 @@ export default function HomePage() {
   const clientes   = data?.clientes   ?? 0
   const entregables = data?.entregables ?? 0
   const indicadores = data?.indicadores ?? 0
+
+  const sparkClientes   = trends?.clientes     ?? [0,0,0,0,0,0,0,0,0,0,0,0]
+  const sparkEntregables = trends?.entregables   ?? [0,0,0,0,0,0,0,0,0,0,0,0]
+  const sparkIndicadores = trends?.indicadores   ?? [0,0,0,0,0,0,0,0,0,0,0,0]
+  const growthClientes    = trends?.crecimiento?.clientes     ?? 0
+  const growthEntregables = trends?.crecimiento?.entregables  ?? 0
+  const growthIndicadores = trends?.crecimiento?.indicadores  ?? 0
 
   return (
     <div className="max-w-6xl space-y-8">
@@ -197,11 +225,11 @@ export default function HomePage() {
         className="grid grid-cols-1 sm:grid-cols-3 gap-5"
       >
         <KpiCard label="Clientes activos" value={clientes} subtext="registrados en el sistema"
-          icon={Building2} spark={sparkClientes} color="oklch(27% 0.09 252)" delay={0} loading={isLoading} />
+          icon={Building2} spark={sparkClientes} color="oklch(27% 0.09 252)" growth={growthClientes} loading={isLoading} />
         <KpiCard label="Entregables" value={entregables} subtext="registrados este ciclo"
-          icon={Package} spark={sparkEntregables} color="oklch(48% 0.13 240)" delay={0.08} loading={isLoading} />
+          icon={Package} spark={sparkEntregables} color="oklch(48% 0.13 240)" growth={growthEntregables} loading={isLoading} />
         <KpiCard label="Indicadores" value={indicadores} subtext="activos con seguimiento"
-          icon={BarChart3} spark={sparkIndicadores} color="oklch(52% 0.22 15)" accent delay={0.16} loading={isLoading} />
+          icon={BarChart3} spark={sparkIndicadores} color="oklch(52% 0.22 15)" accent growth={growthIndicadores} loading={isLoading} />
       </motion.div>
 
       {/* Panel de actividad */}
