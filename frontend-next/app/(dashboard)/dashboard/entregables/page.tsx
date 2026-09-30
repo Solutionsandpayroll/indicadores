@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { easeOut } from '@/lib/easing'
@@ -21,12 +21,13 @@ import Badge from '@/components/ui/Badge'
 import ModalActions from '@/components/ui/ModalActions'
 import PanelAvances from '@/components/entregables/PanelAvances'
 import { useToast } from '@/context/ToastContext'
+import { useAuth } from '@/context/AuthContext'
 
 interface Cliente { id: number; cliente: string; fecha: string | null; pct_exactitud: number | null }
 interface Estatus { id: number; descripcion: string }
-interface Indicador { id: number; nombre: string }
-interface EntregableTipo { id: number; nombre: string; indicador_id: number; orden: number }
-interface Usuario { id: number; nombre: string }
+interface Indicador { id: number; nombre: string; es_sistema: boolean }
+interface EntregableTipo { id: number; nombre: string; indicador_id: number; orden: number; cliente_id: number | null; mostrar: boolean; activo: boolean }
+interface Usuario { id: number; nombre: string; usuario: string }
 
 interface Entregable {
   id: number; mes: number; anio: number; cliente_id: number
@@ -35,9 +36,12 @@ interface Entregable {
   indicador_id: number; tipo: string | null
   entregable_tipo_id: number
   fecha_compromiso: string | null
+  cantidad_compromiso: number | null
+  resultado_cantidad: number | null
   // Seguimiento
   resultado: string | null; error_interno: number | null; error_cliente: number | null
   aprobado: boolean; terminado_en: string | null; aprobado_en: string | null
+  es_nuevo_modelo: boolean
   // Cumplimiento (calculado por el backend)
   diferencia: number | null; puntualidad: number | null; exactitud: number | null
   pct_cumple: number | null; cumple_meta: boolean | null
@@ -70,12 +74,13 @@ const empty = {
   mes: String(AHORA.getMonth() + 1), anio: String(AHORA.getFullYear()),
   cliente_id: '', lider_id: '', estatus_id: '', usuario_id: '',
   comentarios: '', indicador_id: '', entregable_tipo_id: '',
-  fecha_compromiso: finDeMes(AHORA.getMonth() + 1, AHORA.getFullYear()),
+  fecha_compromiso: '',
+  cantidad_compromiso: '',
 }
 
 const emptySeguimiento = {
   resultado: '', fecha_compromiso: '', error_interno: '0', error_cliente: '0',
-  aprobado: false, comentarios: '',
+  aprobado: false, comentarios: '', cantidad_compromiso: '', resultado_cantidad: '',
 }
 
 const PIE_COLORS = ['oklch(27% 0.09 252)','oklch(48% 0.13 240)','oklch(52% 0.22 15)','oklch(56% 0.18 145)','oklch(70% 0.16 65)','oklch(60% 0.14 300)']
@@ -148,6 +153,8 @@ const CustomPieLabel = (props: {
 export default function EntregablesPage() {
   const qc = useQueryClient()
   const toast = useToast()
+  const { usuario: currentUser } = useAuth()
+  const isAnalista = currentUser?.rol === 'Analista'
   const [modal, setModal] = useState<{ open: boolean; row: Entregable | null }>({ open: false, row: null })
   const [form, setForm] = useState(empty)
   const [error, setError] = useState('')
@@ -162,6 +169,15 @@ export default function EntregablesPage() {
 
   // ── Filtros dinámicos ──
   const [filtros, setFiltros] = useState<Record<string, string>>({})
+
+  // Filtros iniciales desde la URL (redirecciones desde "Mis Clientes" u otros módulos)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const claves = ['cliente_id', 'indicador_id', 'estatus_id', 'entregable_tipo_id', 'lider_id', 'usuario_id', 'aprobado', 'anio', 'mes', 'anio_desde', 'mes_desde', 'anio_hasta', 'mes_hasta', 'q']
+    const iniciales: Record<string, string> = {}
+    claves.forEach((k) => { const v = params.get(k); if (v) iniciales[k] = v })
+    if (Object.keys(iniciales).length) setFiltros((f) => ({ ...f, ...iniciales }))
+  }, [])
 
   // Se envían al backend solo los filtros con valor.
   const queryString = useMemo(() => {
@@ -203,14 +219,38 @@ export default function EntregablesPage() {
     queryFn: async () => { const { data } = await api.get<EntregableTipo[]>('/entregable-tipos'); return data },
   })
 
-  // Los tipos disponibles dependen del indicador elegido.
-  const tiposPorIndicador = tipos
-    .filter((t) => t.indicador_id === Number(form.indicador_id))
-    .sort((a, b) => a.orden - b.orden)
   const clienteMap = Object.fromEntries(clientes.map((c) => [c.id, c.cliente]))
   const estatusMap = Object.fromEntries(estatusList.map((e) => [e.id, e.descripcion]))
   const indicadorMap = Object.fromEntries(indicadores.map((i) => [i.id, i.nombre]))
   const tipoMap = Object.fromEntries(tipos.map((t) => [t.id, t.nombre]))
+
+  // ── Nuevo modelo ──
+  // Crear un entregable nuevo siempre usa el nuevo flujo: indicadores del
+  // sistema con conceptos configurados para el cliente elegido.
+  const esEdicionLegacy = !!modal.row && !modal.row.es_nuevo_modelo
+  const sistemaIndicadores = indicadores.filter((i) => i.es_sistema)
+  const indicadoresDisponibles = esEdicionLegacy
+    ? indicadores
+    : sistemaIndicadores.filter((i) =>
+        tipos.some((t) => t.cliente_id === Number(form.cliente_id) && t.indicador_id === i.id && t.mostrar && t.activo),
+      )
+
+  // Modo de captura según el indicador seleccionado.
+  const nombreIndicadorSel = indicadorMap[Number(form.indicador_id)] ?? ''
+  const modoPlan = nombreIndicadorSel.trim().toUpperCase() === 'PLAN DE ENTREGABLES'
+  const modoExactitud = nombreIndicadorSel.trim().toUpperCase() === 'EXACTITUD DE CÁLCULOS'
+  const esNuevoFlujo = !esEdicionLegacy && (modoPlan || modoExactitud)
+
+  // Los tipos disponibles dependen del indicador (y cliente en el nuevo flujo).
+  const tiposPorIndicador = esNuevoFlujo
+    ? tipos
+        .filter((t) => t.cliente_id === Number(form.cliente_id)
+          && t.indicador_id === Number(form.indicador_id)
+          && t.mostrar && t.activo)
+        .sort((a, b) => a.orden - b.orden)
+    : tipos
+        .filter((t) => t.indicador_id === Number(form.indicador_id))
+        .sort((a, b) => a.orden - b.orden)
 
   const anios = Array.from(
     new Set([AHORA.getFullYear(), AHORA.getFullYear() - 1, ...entregables.map((e) => e.anio)]),
@@ -288,24 +328,35 @@ export default function EntregablesPage() {
     },
     {
       key: 'fecha_compromiso', label: 'Compromiso',
-      render: (r) => r.fecha_compromiso
-        ? <span className="text-xs tabular-nums" style={{ color: 'var(--color-ink-muted)' }}>{r.fecha_compromiso}</span>
-        : <span className="text-xs" style={{ color: 'var(--color-ink-subtle)' }}>—</span>,
+      render: (r) => {
+        const fecha = r.fecha_compromiso
+          ? <span className="text-xs tabular-nums" style={{ color: 'var(--color-ink-muted)' }}>{r.fecha_compromiso}</span>
+          : null
+        const cant = r.cantidad_compromiso != null
+          ? <span className="text-xs tabular-nums" style={{ color: 'var(--color-ink-muted)' }}>{r.cantidad_compromiso}</span>
+          : null
+        if (!fecha && !cant) return <span className="text-xs" style={{ color: 'var(--color-ink-subtle)' }}>—</span>
+        return <div className="flex items-center gap-1.5">{fecha}{fecha && cant && <span style={{ color: 'var(--color-border-strong)' }}>·</span>}{cant}</div>
+      },
     },
     {
       key: 'resultado', label: 'Resultado',
-      render: (r) => r.resultado
-        ? <span className="text-xs tabular-nums" style={{ color: 'var(--color-ink)' }}>{r.resultado}</span>
-        : <span className="text-xs" style={{ color: 'var(--color-ink-subtle)' }}>—</span>,
+      render: (r) => {
+        const valor = r.resultado ?? (r.resultado_cantidad != null ? String(r.resultado_cantidad) : null)
+        return valor
+          ? <span className="text-xs tabular-nums" style={{ color: 'var(--color-ink)' }}>{valor}</span>
+          : <span className="text-xs" style={{ color: 'var(--color-ink-subtle)' }}>—</span>
+      },
     },
     {
       key: 'diferencia', label: 'Diferencia',
       render: (r) => {
         if (r.diferencia === null) return <span className="text-xs" style={{ color: 'var(--color-ink-subtle)' }}>—</span>
         const tarde = r.diferencia > 0
+        const esCantidad = r.cantidad_compromiso != null
         return (
           <Badge variant={tarde ? 'danger' : 'success'}>
-            {tarde ? `+${r.diferencia}` : r.diferencia} d
+            {tarde ? `+${r.diferencia}` : r.diferencia}{esCantidad ? '' : ' d'}
           </Badge>
         )
       },
@@ -315,7 +366,7 @@ export default function EntregablesPage() {
       render: (r) => {
         const ei = r.error_interno ?? 0
         const ec = r.error_cliente ?? 0
-        if (!r.resultado) return <span className="text-xs" style={{ color: 'var(--color-ink-subtle)' }}>—</span>
+        if (!r.resultado && r.resultado_cantidad == null) return <span className="text-xs" style={{ color: 'var(--color-ink-subtle)' }}>—</span>
         return (
           <div className="flex items-center gap-1.5 text-xs tabular-nums">
             <span title="Errores internos" style={{ color: ei ? 'var(--color-warning)' : 'var(--color-ink-subtle)' }}>Int {ei}</span>
@@ -398,6 +449,7 @@ export default function EntregablesPage() {
         indicador_id: Number(form.indicador_id),
         entregable_tipo_id: Number(form.entregable_tipo_id),
         fecha_compromiso: form.fecha_compromiso || null,
+        cantidad_compromiso: form.cantidad_compromiso ? Number(form.cantidad_compromiso) : null,
       }
       if (modal.row) await api.patch(`/entregables/${modal.row.id}`, payload)
       else await api.post('/entregables', payload)
@@ -415,11 +467,14 @@ export default function EntregablesPage() {
       const payload: Record<string, unknown> = {
         error_interno: Number(segForm.error_interno) || 0,
         error_cliente: Number(segForm.error_cliente) || 0,
-        aprobado: segForm.aprobado,
       }
+      // Los analistas no envían el campo de aprobación (backend lo bloquea).
+      if (!isAnalista) payload.aprobado = segForm.aprobado
       if (segForm.resultado) payload.resultado = segForm.resultado
-      if (segForm.fecha_compromiso) payload.fecha_compromiso = segForm.fecha_compromiso
-      if (segForm.comentarios) payload.comentarios = segForm.comentarios
+    if (segForm.fecha_compromiso) payload.fecha_compromiso = segForm.fecha_compromiso
+    if (segForm.cantidad_compromiso) payload.cantidad_compromiso = Number(segForm.cantidad_compromiso)
+    if (segForm.resultado_cantidad) payload.resultado_cantidad = Number(segForm.resultado_cantidad)
+    if (segForm.comentarios) payload.comentarios = segForm.comentarios
       await api.patch(`/entregables/${segModal.row.id}/seguimiento`, payload)
     },
     onSuccess: () => {
@@ -448,7 +503,8 @@ export default function EntregablesPage() {
       usuario_id: row.usuario_id ? String(row.usuario_id) : '',
       comentarios: row.comentarios ?? '', indicador_id: String(row.indicador_id),
       entregable_tipo_id: row.entregable_tipo_id ? String(row.entregable_tipo_id) : '',
-      fecha_compromiso: row.fecha_compromiso ?? finDeMes(row.mes, row.anio),
+      fecha_compromiso: row.fecha_compromiso ?? '',
+      cantidad_compromiso: row.cantidad_compromiso != null ? String(row.cantidad_compromiso) : '',
     } : empty)
     setError('')
   }
@@ -456,13 +512,16 @@ export default function EntregablesPage() {
 
   function openSeguimiento(row: Entregable) {
     setSegModal({ open: true, row })
+    const esCantidad = row.cantidad_compromiso != null
     setSegForm({
-      resultado: row.resultado ?? new Date().toISOString().slice(0, 10),
-      fecha_compromiso: row.fecha_compromiso ?? finDeMes(row.mes, row.anio),
+      resultado: esCantidad ? '' : (row.resultado ?? new Date().toISOString().slice(0, 10)),
+      fecha_compromiso: esCantidad ? '' : (row.fecha_compromiso ?? finDeMes(row.mes, row.anio)),
       error_interno: String(row.error_interno ?? 0),
       error_cliente: String(row.error_cliente ?? 0),
       aprobado: row.aprobado ?? false,
       comentarios: row.comentarios ?? '',
+      cantidad_compromiso: row.cantidad_compromiso != null ? String(row.cantidad_compromiso) : '',
+      resultado_cantidad: row.resultado_cantidad != null ? String(row.resultado_cantidad) : '',
     })
     setSegError('')
   }
@@ -470,8 +529,23 @@ export default function EntregablesPage() {
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [k]: e.target.value }))
   const setSeg = (k: keyof typeof segForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setSegForm((f) => ({ ...f, [k]: e.target.value }))
   // Cambiar de indicador invalida el tipo elegido: los tipos son por indicador.
+  // En el nuevo flujo también limpia el compromiso del modo contrario.
   const handleIndicadorChange = (value: string) =>
-    setForm((f) => ({ ...f, indicador_id: value, entregable_tipo_id: '' }))
+    setForm((f) => {
+      const next = { ...f, indicador_id: value, entregable_tipo_id: '' }
+      const nombre = indicadorMap[Number(value)] ?? ''
+      const n = nombre.trim().toUpperCase()
+      if (n === 'PLAN DE ENTREGABLES') next.cantidad_compromiso = ''
+      if (n === 'EXACTITUD DE CÁLCULOS') next.fecha_compromiso = ''
+      return next
+    })
+
+  // Cambiar de cliente invalida indicador y tipo en el nuevo flujo:
+  // los conceptos dependen del cliente.
+  const handleClienteChange = (value: string) =>
+    setForm((f) => (esEdicionLegacy
+      ? { ...f, cliente_id: value }
+      : { ...f, cliente_id: value, indicador_id: '', entregable_tipo_id: '' }))
 
   /**
    * Al mover mes o año, re-sugiere la fecha de compromiso al fin del nuevo
@@ -481,29 +555,69 @@ export default function EntregablesPage() {
   const setPeriodo = (k: 'mes' | 'anio') => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => {
       const next = { ...f, [k]: e.target.value }
-      const eraSugerencia = f.fecha_compromiso === finDeMes(Number(f.mes), Number(f.anio))
+      const eraSugerencia = f.fecha_compromiso === '' || f.fecha_compromiso === finDeMes(Number(f.mes), Number(f.anio))
       const mes = Number(next.mes)
       const anio = Number(next.anio)
-      if (eraSugerencia && mes >= 1 && mes <= 12 && anio >= 2000) {
+      // Solo sugiere fecha si el usuario no está trabajando con cantidad.
+      if (eraSugerencia && !f.cantidad_compromiso && mes >= 1 && mes <= 12 && anio >= 2000) {
         next.fecha_compromiso = finDeMes(mes, anio)
       }
       return next
     })
 
   const canSave = form.mes && form.anio && form.cliente_id && form.estatus_id
-    && form.indicador_id && form.entregable_tipo_id && form.fecha_compromiso
+    && form.indicador_id && form.entregable_tipo_id
+    && (form.fecha_compromiso || form.cantidad_compromiso)
 
   // Vista previa del cumplimiento dentro del modal de seguimiento
   const previewCumple = useMemo(() => {
-    if (!segModal.row || !segForm.resultado || !segForm.fecha_compromiso) return null
-    const dias = Math.round(
-      (new Date(`${segForm.resultado}T00:00:00Z`).getTime()
-        - new Date(`${segForm.fecha_compromiso}T00:00:00Z`).getTime()) / 86400000,
-    )
+    if (!segModal.row) return null
+    const esCantidad = segModal.row.cantidad_compromiso != null
+    const nuevoModelo = !!segModal.row.es_nuevo_modelo
+
+    let dif = 0
+    let difLabel = ''
+
+    if (esCantidad && segForm.resultado_cantidad && segForm.cantidad_compromiso) {
+      dif = Number(segForm.cantidad_compromiso) - Number(segForm.resultado_cantidad)
+      difLabel = `${dif > 0 ? '+' : ''}${dif}`
+      if (dif === 0) difLabel = '0'
+    } else if (!esCantidad && segForm.resultado && segForm.fecha_compromiso) {
+      dif = Math.round(
+        (new Date(`${segForm.resultado}T00:00:00Z`).getTime()
+          - new Date(`${segForm.fecha_compromiso}T00:00:00Z`).getTime()) / 86400000,
+      )
+      difLabel = `${dif > 0 ? '+' : ''}${dif} d`
+      if (dif === 0) difLabel = '0 d'
+    } else {
+      return null
+    }
+
+    // Nuevo modelo: cada indicador mide una sola cosa.
+    if (nuevoModelo) {
+      if (esCantidad) {
+        // Exactitud de Cálculos: correctos / compromiso.
+        const exactitud = Math.max(0, Math.min(100,
+          (Number(segForm.resultado_cantidad) / Number(segForm.cantidad_compromiso)) * 100))
+        return {
+          difLabel, exactitud: Math.round(exactitud * 100) / 100,
+          puntualidad: null as number | null,
+          cumple: Math.round(exactitud * 100) / 100,
+        }
+      }
+      // Plan de Entregables: solo puntualidad.
+      const puntualidad = Math.max(0, Math.min(100, 100 - Math.max(0, dif) * 10))
+      return {
+        difLabel, exactitud: null as number | null,
+        puntualidad, cumple: puntualidad,
+      }
+    }
+
+    // Modelo histórico: fórmula mixta original.
     const exactitud = Math.max(0, Math.min(100, 100 - Number(segForm.error_interno) * 2 - Number(segForm.error_cliente) * 5))
-    const puntualidad = Math.max(0, Math.min(100, 100 - Math.max(0, dias) * 10))
-    return { dias, exactitud, puntualidad, cumple: Math.round(((puntualidad + exactitud) / 2) * 100) / 100 }
-  }, [segModal.row, segForm.resultado, segForm.fecha_compromiso, segForm.error_interno, segForm.error_cliente])
+    const puntualidad = Math.max(0, Math.min(100, 100 - Math.max(0, dif) * 10))
+    return { difLabel, exactitud, puntualidad, cumple: Math.round(((puntualidad + exactitud) / 2) * 100) / 100 }
+  }, [segModal.row, segForm.resultado, segForm.fecha_compromiso, segForm.error_interno, segForm.error_cliente, segForm.cantidad_compromiso, segForm.resultado_cantidad])
 
   return (
     <div className="max-w-7xl space-y-6">
@@ -620,7 +734,7 @@ export default function EntregablesPage() {
       )}
 
       <DataTable data={entregables} columns={COLS} loading={isLoading} searchKeys={['tipo', 'comentarios']}
-        onAdd={() => open()} onEdit={open} onDelete={(row) => del.mutate(row.id)} addLabel="Nuevo entregable"
+        onAdd={isAnalista ? undefined : () => open()} onEdit={isAnalista ? undefined : open} onDelete={isAnalista ? undefined : (row) => del.mutate(row.id)} addLabel="Nuevo entregable"
         expandLabel="Ver avances"
         renderExpanded={(row) => <PanelAvances entregableId={row.id} />} />
 
@@ -631,24 +745,56 @@ export default function EntregablesPage() {
             {MESES_CORTO.map((m, i) => <option key={i + 1} value={i + 1}>{m}</option>)}
           </FormField>
           <FormField label="Año" required type="number" min="2000" value={form.anio} onChange={setPeriodo('anio')} />
-          <div className="col-span-2">
-            <FormField
-              label="Fecha de compromiso" required type="date"
-              value={form.fecha_compromiso} onChange={set('fecha_compromiso')}
-            />
-            <p className="text-xs mt-1" style={{ color: 'var(--color-ink-subtle)' }}>
-              Fecha pactada de entrega. Es la referencia contra la que se mide la puntualidad
-              y se calcula la diferencia al cerrar el entregable.
-            </p>
-          </div>
-          <FormField as="select" label="Cliente" required value={form.cliente_id} onChange={set('cliente_id')}>
+          <FormField as="select" label="Cliente" required value={form.cliente_id} onChange={(e) => handleClienteChange(e.target.value)}>
             <option value="">Selecciona…</option>
             {clientes.map((c) => <option key={c.id} value={c.id}>{c.cliente}</option>)}
           </FormField>
-          <FormField as="select" label="Indicador" required value={form.indicador_id} onChange={(e) => handleIndicadorChange(e.target.value)}>
-            <option value="">Selecciona…</option>
-            {indicadores.map((i) => <option key={i.id} value={i.id}>{i.nombre}</option>)}
+          <FormField as="select" label="Indicador" required value={form.indicador_id} onChange={(e) => handleIndicadorChange(e.target.value)}
+            disabled={!esEdicionLegacy && !form.cliente_id}>
+            <option value="">
+              {esEdicionLegacy
+                ? 'Selecciona…'
+                : !form.cliente_id
+                  ? 'Elige un cliente primero…'
+                  : indicadoresDisponibles.length === 0
+                    ? 'Sin conceptos para este cliente'
+                    : 'Selecciona…'}
+            </option>
+            {indicadoresDisponibles.map((i) => <option key={i.id} value={i.id}>{i.nombre}</option>)}
           </FormField>
+          <div className="col-span-2">
+            <div className="grid grid-cols-2 gap-4">
+              {esNuevoFlujo && modoExactitud ? (
+                <FormField
+                  label="Cantidad de compromiso" type="number" min="1" placeholder="Ej: 100 procesos"
+                  value={form.cantidad_compromiso} onChange={set('cantidad_compromiso')}
+                />
+              ) : esNuevoFlujo && modoPlan ? (
+                <FormField
+                  label="Fecha de compromiso" type="date"
+                  value={form.fecha_compromiso} onChange={set('fecha_compromiso')}
+                />
+              ) : (
+                <>
+                  <FormField
+                    label="Fecha de compromiso" type="date"
+                    value={form.fecha_compromiso} onChange={set('fecha_compromiso')}
+                  />
+                  <FormField
+                    label="Cantidad de compromiso" type="number" min="1" placeholder="Ej: 3"
+                    value={form.cantidad_compromiso} onChange={set('cantidad_compromiso')}
+                  />
+                </>
+              )}
+            </div>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-ink-subtle)' }}>
+              {esNuevoFlujo && modoPlan
+                ? 'Plan de Entregables: el cumplimiento se mide por fecha de entrega.'
+                : esNuevoFlujo && modoExactitud
+                  ? 'Exactitud de Cálculos: el cumplimiento se mide por cantidad de resultados correctos.'
+                  : 'Llena al menos uno de los dos. La fecha es para puntualidad; la cantidad es para compromisos numéricos.'}
+            </p>
+          </div>
           <FormField as="select" label="Estatus" required value={form.estatus_id} onChange={set('estatus_id')}>
             <option value="">Selecciona…</option>
             {estatusList.map((e) => <option key={e.id} value={e.id}>{e.descripcion}</option>)}
@@ -667,7 +813,7 @@ export default function EntregablesPage() {
           </FormField>
           <FormField as="select" label="Usuario asignado" value={form.usuario_id} onChange={set('usuario_id')}>
             <option value="">Sin asignar</option>
-            {usuarios.map((u) => <option key={u.id} value={u.id}>{u.nombre}</option>)}
+            {usuarios.map((u) => <option key={u.id} value={u.id}>{u.usuario}</option>)}
           </FormField>
           <FormField
             as="select" label="Tipo" required
@@ -678,7 +824,9 @@ export default function EntregablesPage() {
               {!form.indicador_id
                 ? 'Elige un indicador primero…'
                 : tiposPorIndicador.length === 0
-                  ? 'Este indicador no tiene tipos'
+                  ? esNuevoFlujo
+                    ? 'Sin conceptos para este cliente e indicador'
+                    : 'Este indicador no tiene tipos'
                   : 'Selecciona…'}
             </option>
             {tiposPorIndicador.map((t) => <option key={t.id} value={t.id}>{t.nombre}</option>)}
@@ -707,26 +855,51 @@ export default function EntregablesPage() {
             </div>
           )}
 
-          <FormField label="Fecha de compromiso" type="date" value={segForm.fecha_compromiso} onChange={setSeg('fecha_compromiso')} />
-          <FormField label="Resultado (fecha de entrega)" type="date" value={segForm.resultado} onChange={setSeg('resultado')} />
-          <FormField as="select" label="Aprobado"
-            value={segForm.aprobado ? 'true' : 'false'}
-            onChange={(e) => setSegForm((f) => ({ ...f, aprobado: e.target.value === 'true' }))}
-          >
-            <option value="false">No aprobado</option>
-            <option value="true">Aprobado</option>
-          </FormField>
-          <FormField label="Error interno" type="number" min="0" value={segForm.error_interno} onChange={setSeg('error_interno')} />
-          <FormField label="Error cliente" type="number" min="0" value={segForm.error_cliente} onChange={setSeg('error_cliente')} />
+          {(() => {
+            const esCantidad = segModal.row && segModal.row.cantidad_compromiso != null
+            const nuevoModelo = !!segModal.row?.es_nuevo_modelo
+            return esCantidad ? (
+              <>
+                <FormField label="Cantidad de compromiso" type="number" min="1" value={segForm.cantidad_compromiso} onChange={setSeg('cantidad_compromiso')} />
+                <FormField label={nuevoModelo ? 'Cantidad de resultados correctos' : 'Resultado (cantidad)'} type="number" min="0" value={segForm.resultado_cantidad} onChange={setSeg('resultado_cantidad')} />
+              </>
+            ) : (
+              <>
+                <FormField label="Fecha de compromiso" type="date" value={segForm.fecha_compromiso} onChange={setSeg('fecha_compromiso')} />
+                <FormField label="Resultado (fecha de entrega)" type="date" value={segForm.resultado} onChange={setSeg('resultado')} />
+              </>
+            )
+          })()}
+          {!isAnalista && (
+            <FormField as="select" label="Aprobado"
+              value={segForm.aprobado ? 'true' : 'false'}
+              onChange={(e) => setSegForm((f) => ({ ...f, aprobado: e.target.value === 'true' }))}
+            >
+              <option value="false">No aprobado</option>
+              <option value="true">Aprobado</option>
+            </FormField>
+          )}
+          {(() => {
+            // Errores: solo aplican en Exactitud de Cálculos (nuevo modelo) o
+            // en registros históricos; y solo los registran líderes/admin.
+            const nuevoModeloPlan = !!segModal.row?.es_nuevo_modelo && segModal.row.cantidad_compromiso == null
+            if (nuevoModeloPlan || isAnalista) return null
+            return (
+              <>
+                <FormField label="Error interno" type="number" min="0" value={segForm.error_interno} onChange={setSeg('error_interno')} />
+                <FormField label="Error cliente" type="number" min="0" value={segForm.error_cliente} onChange={setSeg('error_cliente')} />
+              </>
+            )
+          })()}
 
           {/* Vista previa del cálculo antes de guardar */}
           {previewCumple && (
             <div className="col-span-2 rounded-xl px-4 py-3 grid grid-cols-4 gap-3"
               style={{ backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
               {[
-                { l: 'Diferencia', v: `${previewCumple.dias > 0 ? '+' : ''}${previewCumple.dias} d`, c: previewCumple.dias > 0 ? 'var(--color-accent)' : 'var(--color-success)' },
-                { l: 'Puntualidad', v: `${previewCumple.puntualidad}%`, c: colorCumple(previewCumple.puntualidad) },
-                { l: 'Exactitud', v: `${previewCumple.exactitud}%`, c: colorCumple(previewCumple.exactitud) },
+                { l: 'Diferencia', v: previewCumple.difLabel, c: previewCumple.difLabel.startsWith('+') ? 'var(--color-accent)' : 'var(--color-success)' },
+                { l: 'Puntualidad', v: previewCumple.puntualidad != null ? `${previewCumple.puntualidad}%` : '—', c: previewCumple.puntualidad != null ? colorCumple(previewCumple.puntualidad) : 'var(--color-ink-subtle)' },
+                { l: 'Exactitud', v: previewCumple.exactitud != null ? `${previewCumple.exactitud}%` : '—', c: previewCumple.exactitud != null ? colorCumple(previewCumple.exactitud) : 'var(--color-ink-subtle)' },
                 { l: '% Cumple', v: `${previewCumple.cumple}%`, c: colorCumple(previewCumple.cumple) },
               ].map((m) => (
                 <div key={m.l} className="flex flex-col">

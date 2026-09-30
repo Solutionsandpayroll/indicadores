@@ -3,8 +3,11 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { easeOut } from '@/lib/easing'
-import { Search, Plus, Pencil, Trash2, ChevronRight, AlertTriangle } from 'lucide-react'
+import { Search, Plus, Pencil, Trash2, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/cn'
+
+/** Registros por página. */
+const PAGE_SIZE = 30
 
 export interface Column<T> {
   key: keyof T | string
@@ -43,6 +46,7 @@ export default function DataTable<T extends { id: number }>({
   expandLabel = 'Ver detalle',
 }: DataTableProps<T>) {
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
   const [expanded, setExpanded] = useState<number | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null)
 
@@ -53,6 +57,11 @@ export default function DataTable<T extends { id: number }>({
         ),
       )
     : data
+
+  // Paginación: se clampa por si el filtro reduce las páginas disponibles.
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   return (
     <div
@@ -75,7 +84,7 @@ export default function DataTable<T extends { id: number }>({
           />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             placeholder="Buscar…"
             className="w-full h-8 pl-8 pr-3 text-sm rounded-lg outline-none transition-[border-color,background-color] duration-150"
             style={{
@@ -159,7 +168,7 @@ export default function DataTable<T extends { id: number }>({
                 </td>
               </tr>
             ) : (
-              filtered.flatMap((row, i) => [
+              paginated.flatMap((row, i) => [
                 <motion.tr
                   key={row.id}
                   initial={{ opacity: 0 }}
@@ -303,6 +312,45 @@ export default function DataTable<T extends { id: number }>({
           </tbody>
         </table>
       </div>
+
+      {/* Paginación */}
+      {filtered.length > PAGE_SIZE && (
+        <div
+          className="flex items-center justify-between px-4 py-2.5"
+          style={{ borderTop: '1px solid var(--color-border)' }}
+        >
+          <span className="text-xs tabular-nums" style={{ color: 'var(--color-ink-muted)' }}>
+            {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)} de {filtered.length}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(currentPage - 1)}
+              disabled={currentPage <= 1}
+              aria-label="Página anterior"
+              className="p-1.5 rounded-lg cursor-pointer transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{ color: 'var(--color-ink-muted)' }}
+              onMouseEnter={(e) => { if (currentPage > 1) e.currentTarget.style.backgroundColor = 'var(--color-border)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
+            >
+              <ChevronLeft size={14} />
+            </button>
+            <span className="text-xs tabular-nums" style={{ color: 'var(--color-ink)' }}>
+              Página {currentPage} de {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(currentPage + 1)}
+              disabled={currentPage >= totalPages}
+              aria-label="Página siguiente"
+              className="p-1.5 rounded-lg cursor-pointer transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{ color: 'var(--color-ink-muted)' }}
+              onMouseEnter={(e) => { if (currentPage < totalPages) e.currentTarget.style.backgroundColor = 'var(--color-border)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

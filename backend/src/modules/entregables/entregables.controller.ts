@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { BaseController } from '../../common/base.controller';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import { EntregablesService, Entregable } from './entregables.service';
+import type { UsuarioCtx } from './entregables.service';
 import { FiltrarEntregablesDto } from './dto/filtrar-entregables.dto';
 import { SeguimientoEntregableDto } from './dto/seguimiento.dto';
 import { CrearAvanceDto } from './dto/avance.dto';
@@ -15,26 +16,57 @@ export class EntregablesController extends BaseController<Entregable> {
   // ⚠️ Las rutas literales van ANTES que el `@Get(':id')` heredado,
   // si no Nest intentaría interpretar "buscar" como un id.
 
+  /** Sobrescribe el findAll base para restringir por rol. */
+  @Get()
+  findAll(@CurrentUser() usuario?: UsuarioCtx) {
+    return this.entregablesService.buscar({}, usuario);
+  }
+
+  /** Crear: solo Líder y Admin. */
+  @Post()
+  create(@Body() dto: Partial<Entregable>, @CurrentUser() usuario?: UsuarioCtx) {
+    if (usuario?.rol === 'Analista') {
+      throw new ForbiddenException('Los analistas no pueden crear entregables');
+    }
+    return this.entregablesService.create(dto, usuario);
+  }
+
+  /** Editar: solo Líder y Admin. */
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: Partial<Entregable>,
+    @CurrentUser() usuario?: UsuarioCtx,
+  ) {
+    if (usuario?.rol === 'Analista') {
+      throw new ForbiddenException('Los analistas no pueden editar entregables');
+    }
+    return this.entregablesService.update(id, dto, usuario);
+  }
+
   /** Listado con filtros dinámicos + cumplimiento calculado. */
   @Get('buscar')
-  buscar(@Query() filtros: FiltrarEntregablesDto) {
-    return this.entregablesService.buscar(filtros);
+  buscar(@Query() filtros: FiltrarEntregablesDto, @CurrentUser() usuario?: UsuarioCtx) {
+    return this.entregablesService.buscar(filtros, usuario);
   }
 
   /** Totales agregados del conjunto filtrado. */
   @Get('resumen')
-  resumen(@Query() filtros: FiltrarEntregablesDto) {
-    return this.entregablesService.resumen(filtros);
+  resumen(@Query() filtros: FiltrarEntregablesDto, @CurrentUser() usuario?: UsuarioCtx) {
+    return this.entregablesService.resumen(filtros, usuario);
   }
 
   @Get('con-relaciones')
-  findAllWithRelations() {
-    return this.entregablesService.findAllWithRelations();
+  findAllWithRelations(@CurrentUser() usuario?: UsuarioCtx) {
+    return this.entregablesService.findAllWithRelations(usuario);
   }
 
   @Get('por-cliente/:id')
-  findByCliente(@Param('id', ParseIntPipe) id: number) {
-    return this.entregablesService.findByCliente(id);
+  findByCliente(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() usuario?: UsuarioCtx,
+  ) {
+    return this.entregablesService.findByCliente(id, usuario);
   }
 
   @Get(':id/historial')
@@ -77,8 +109,11 @@ export class EntregablesController extends BaseController<Entregable> {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: SeguimientoEntregableDto,
     // El payload del JWT identifica al usuario en `sub`, no en `id`.
-    @CurrentUser() usuario?: { sub: number },
+    @CurrentUser() usuario?: { sub: number; rol?: string },
   ) {
-    return this.entregablesService.registrarSeguimiento(id, dto, usuario?.sub);
+    if (dto.aprobado === true && usuario?.rol === 'Analista') {
+      throw new ForbiddenException('Los analistas no pueden aprobar entregables');
+    }
+    return this.entregablesService.registrarSeguimiento(id, dto, usuario);
   }
 }

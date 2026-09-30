@@ -16,6 +16,14 @@ export class SeguimientoEntregableDto {
   @IsOptional() @IsDateString()
   fecha_compromiso?: string;
 
+  /** Cantidad pactada (ej: 3 meses, 5 entregas). Alternativa a fecha. */
+  @IsOptional() @Type(() => Number) @IsInt() @Min(1)
+  cantidad_compromiso?: number;
+
+  /** Cantidad real entregada para entregables por cantidad. */
+  @IsOptional() @Type(() => Number) @IsInt() @Min(0)
+  resultado_cantidad?: number;
+
   @IsOptional() @Type(() => Number) @IsInt() @Min(0)
   error_interno?: number;
 

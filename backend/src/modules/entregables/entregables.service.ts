@@ -1,7 +1,7 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { BaseService } from '../../common/base.service';
 import { SupabaseService } from '../../supabase/supabase.service';
-import { calcularCumplimiento, ResultadoCumplimiento } from './cumplimiento';
+import { calcularCumplimiento, calcularPlan, calcularExactitud, esIndicadorSistema, ResultadoCumplimiento } from './cumplimiento';
 import { FiltrarEntregablesDto } from './dto/filtrar-entregables.dto';
 import { SeguimientoEntregableDto } from './dto/seguimiento.dto';
 import { CrearAvanceDto } from './dto/avance.dto';
@@ -16,10 +16,16 @@ export interface Entregable {
   tipo: string | null;
   /** Fecha pactada de entrega, capturada al crear. Referencia de puntualidad. */
   fecha_compromiso: string | null;
+  /** Cantidad de compromiso numérica (ej: 3 meses, 5 revisiones). Alternativa a fecha. */
+  cantidad_compromiso: number | null;
+  /** Resultado numérico real para entregables por cantidad. */
+  resultado_cantidad: number | null;
   // Seguimiento
   resultado: string | null; error_interno: number | null; error_cliente: number | null;
   aprobado: boolean; terminado_en: string | null; aprobado_en: string | null;
   aprobado_por_id: number | null; actualizado_en: string;
+  /** true = registros del nuevo modelo (indicador del sistema + concepto por cliente). */
+  es_nuevo_modelo: boolean;
 }
 
 /** Entregable con las métricas de cumplimiento ya calculadas. */
@@ -40,8 +46,12 @@ const SELECT_RELACIONES = `
 `;
 
 interface FilaConRelaciones extends Entregable {
-  clientes?: { pct_exactitud?: number | null } | null;
+  clientes?: { pct_exactitud?: number | null; pct_puntualidad?: number | null } | null;
+  indicadores?: { id: number; nombre: string } | null;
 }
+
+/** Contexto del usuario autenticado para restringir visibilidad por rol. */
+export type UsuarioCtx = { sub: number; rol?: string } | undefined;
 
 @Injectable()
 export class EntregablesService extends BaseService<Entregable> {
@@ -51,11 +61,39 @@ export class EntregablesService extends BaseService<Entregable> {
 
   /** Adjunta diferencia y % cumple a una fila que ya trae su cliente embebido. */
   private enriquecer<T extends FilaConRelaciones>(fila: T): T & ResultadoCumplimiento {
+    // Nuevo modelo: la fórmula depende del indicador del sistema.
+    if ((fila as { es_nuevo_modelo?: boolean }).es_nuevo_modelo) {
+      const modo = esIndicadorSistema(fila.indicadores?.nombre);
+      if (modo === 'plan') {
+        return {
+          ...fila,
+          ...calcularPlan({
+            resultado: fila.resultado,
+            fechaCompromiso: fila.fecha_compromiso,
+            metaPuntualidad: fila.clientes?.pct_puntualidad,
+          }),
+        };
+      }
+      if (modo === 'exactitud') {
+        return {
+          ...fila,
+          ...calcularExactitud({
+            resultadoCantidad: fila.resultado_cantidad,
+            cantidadCompromiso: fila.cantidad_compromiso,
+            metaExactitud: fila.clientes?.pct_exactitud,
+          }),
+        };
+      }
+    }
+
+    // Modelo histórico: fórmula mixta original (intacta).
     return {
       ...fila,
       ...calcularCumplimiento({
         resultado: fila.resultado,
         fechaCompromiso: fila.fecha_compromiso,
+        cantidadCompromiso: fila.cantidad_compromiso,
+        resultadoCantidad: fila.resultado_cantidad,
         error_interno: fila.error_interno,
         error_cliente: fila.error_cliente,
         metaExactitud: fila.clientes?.pct_exactitud,
@@ -64,10 +102,27 @@ export class EntregablesService extends BaseService<Entregable> {
   }
 
   /**
+   * Restringe las filas según el rol del usuario autenticado:
+   * - Analista: solo entregables donde es responsable (usuario_id).
+   * - Líder: solo entregables donde es responsable o líder.
+   * - Admin (o sin rol): sin restricción.
+   */
+  private restringir<T extends Entregable>(filas: T[], usuario: UsuarioCtx): T[] {
+    if (!usuario?.rol || usuario.rol === 'Admin') return filas;
+    if (usuario.rol === 'Analista') {
+      return filas.filter((e) => e.usuario_id === usuario.sub);
+    }
+    if (usuario.rol === 'Lider') {
+      return filas.filter((e) => e.usuario_id === usuario.sub || e.lider_id === usuario.sub);
+    }
+    return filas;
+  }
+
+  /**
    * Listado con filtros dinámicos combinables.
    * Devuelve las métricas de cumplimiento ya calculadas por fila.
    */
-  async buscar(f: FiltrarEntregablesDto): Promise<EntregableConCumplimiento[]> {
+  async buscar(f: FiltrarEntregablesDto, usuario?: UsuarioCtx): Promise<EntregableConCumplimiento[]> {
     let query = this.supabase.db.from('entregables').select(SELECT_RELACIONES);
 
     // Filtros de igualdad directa
@@ -120,7 +175,7 @@ export class EntregablesService extends BaseService<Entregable> {
     if (f.orden === 'cumplimiento') {
       filas.sort((a, b) => ((a.pct_cumple ?? -1) - (b.pct_cumple ?? -1)) * (asc ? 1 : -1));
     }
-    return filas as EntregableConCumplimiento[];
+    return this.restringir(filas as EntregableConCumplimiento[], usuario);
   }
 
   /** Un entregable con relaciones y cumplimiento. */
@@ -142,11 +197,111 @@ export class EntregablesService extends BaseService<Entregable> {
     return data ? { ...dto, tipo: (data as { nombre: string }).nombre } : dto;
   }
 
-  async create(dto: Partial<Entregable>): Promise<Entregable> {
+  /**
+   * Valida que el usuario pueda operar entregables de un cliente:
+   * Admin = todos; Líder = clientes asignados (usuario_clientes) o donde
+   * ya tiene entregables como líder/responsable.
+   */
+  private async puedeOperarCliente(usuario: UsuarioCtx, clienteId: number): Promise<boolean> {
+    if (!usuario?.rol || usuario.rol === 'Admin') return true;
+    if (usuario.rol !== 'Lider') return false;
+
+    const { data: asignado } = await this.supabase.db
+      .from('usuario_clientes')
+      .select('id')
+      .eq('usuario_id', usuario.sub)
+      .eq('cliente_id', clienteId)
+      .maybeSingle();
+    if (asignado) return true;
+
+    const { data: ent } = await this.supabase.db
+      .from('entregables')
+      .select('id')
+      .eq('cliente_id', clienteId)
+      .or(`lider_id.eq.${usuario.sub},usuario_id.eq.${usuario.sub}`)
+      .limit(1);
+    return (ent ?? []).length > 0;
+  }
+
+  async create(dto: Partial<Entregable>, usuario?: UsuarioCtx): Promise<Entregable> {
+    // Líder: solo puede crear para sus clientes. (Analista ya bloqueado en controller.)
+    if (usuario?.rol === 'Lider' && dto.cliente_id) {
+      const ok = await this.puedeOperarCliente(usuario, dto.cliente_id);
+      if (!ok) throw new ForbiddenException('Solo puedes crear entregables de tus clientes asignados');
+    }
+
+    // Nuevo modelo: el concepto (tipo) define cliente + indicador del sistema.
+    if (dto.entregable_tipo_id) {
+      const { data: tipo } = await this.supabase.db
+        .from('entregable_tipos')
+        .select('id, nombre, cliente_id, indicador_id, mostrar, activo, indicadores(nombre)')
+        .eq('id', dto.entregable_tipo_id)
+        .single();
+
+      if (tipo?.cliente_id != null) {
+        const nombreIndicador = (tipo.indicadores as unknown as { nombre: string } | null)?.nombre;
+        const modo = esIndicadorSistema(nombreIndicador);
+
+        if (dto.cliente_id !== tipo.cliente_id) {
+          throw new BadRequestException('El concepto seleccionado no pertenece a ese cliente');
+        }
+        if (dto.indicador_id !== tipo.indicador_id) {
+          throw new BadRequestException('El concepto seleccionado no pertenece a ese indicador');
+        }
+        if (!tipo.mostrar || !tipo.activo) {
+          throw new BadRequestException('El concepto seleccionado no está disponible');
+        }
+
+        if (modo === 'plan') {
+          if (!dto.fecha_compromiso) {
+            throw new BadRequestException('Plan de Entregables requiere fecha de compromiso');
+          }
+          if (dto.cantidad_compromiso != null || dto.resultado_cantidad != null
+            || dto.error_interno != null || dto.error_cliente != null) {
+            throw new BadRequestException(
+              'Plan de Entregables no admite cantidades ni errores, solo fechas',
+            );
+          }
+          dto = { ...dto, cantidad_compromiso: null, resultado_cantidad: null, error_interno: null, error_cliente: null };
+        } else if (modo === 'exactitud') {
+          if (dto.cantidad_compromiso == null) {
+            throw new BadRequestException('Exactitud de Cálculos requiere cantidad de compromiso');
+          }
+          if (dto.fecha_compromiso != null || dto.resultado != null) {
+            throw new BadRequestException(
+              'Exactitud de Cálculos no admite fechas de compromiso ni resultado, solo cantidades',
+            );
+          }
+          dto = { ...dto, fecha_compromiso: null, resultado: null };
+        }
+
+        dto = { ...dto, es_nuevo_modelo: true };
+      }
+    }
+
     return super.create(await this.conNombreDeTipo(dto));
   }
 
-  async update(id: number, dto: Partial<Entregable>): Promise<Entregable> {
+  async update(id: number, dto: Partial<Entregable>, usuario?: UsuarioCtx): Promise<Entregable> {
+    // Nuevo modelo: no permitir cambiar el compromiso de modo incompatible.
+    const { data: actual } = await this.supabase.db
+      .from('entregables')
+      .select('cliente_id, es_nuevo_modelo')
+      .eq('id', id)
+      .single();
+
+    if (usuario?.rol === 'Lider' && actual?.cliente_id) {
+      const ok = await this.puedeOperarCliente(usuario, actual.cliente_id);
+      if (!ok) throw new ForbiddenException('Solo puedes editar entregables de tus clientes asignados');
+    }
+
+    if (actual?.es_nuevo_modelo) {
+      // Coherencia de modo: no permitir mezclar fechas y cantidades.
+      if (dto.fecha_compromiso != null && dto.cantidad_compromiso != null) {
+        throw new BadRequestException('Un entregable del nuevo modelo no admite fecha y cantidad a la vez');
+      }
+    }
+
     return super.update(id, await this.conNombreDeTipo(dto));
   }
 
@@ -162,15 +317,60 @@ export class EntregablesService extends BaseService<Entregable> {
    * Al aprobarlo, mueve el estatus a "Aprobado" y sella quién y cuándo.
    */
   async registrarSeguimiento(
-    id: number, dto: SeguimientoEntregableDto, usuarioId?: number,
+    id: number, dto: SeguimientoEntregableDto, usuario?: { sub: number; rol?: string },
   ): Promise<EntregableConCumplimiento> {
     const actual = await this.findOne(id);
+    const usuarioId = usuario?.sub;
 
     const cambios: Record<string, unknown> = { ...dto };
 
-    // Poner fecha de resultado implica que el entregable quedó terminado.
+    // ── Nuevo modelo: validación por modo de indicador ──
+    if (actual.es_nuevo_modelo) {
+      const { data: ind } = await this.supabase.db
+        .from('indicadores')
+        .select('nombre')
+        .eq('id', actual.indicador_id)
+        .single();
+      const modo = esIndicadorSistema((ind as { nombre?: string } | null)?.nombre);
+
+      if (modo === 'plan') {
+        // Plan de Entregables: solo fecha real. Sin cantidades ni errores.
+        if (dto.resultado_cantidad != null) {
+          throw new BadRequestException('Plan de Entregables no admite cantidades de resultado');
+        }
+        delete cambios.resultado_cantidad;
+        delete cambios.cantidad_compromiso;
+        // Los errores no aplican en este modo: se ignoran silenciosamente.
+        delete cambios.error_interno;
+        delete cambios.error_cliente;
+      } else if (modo === 'exactitud') {
+        // Exactitud de Cálculos: solo cantidad correcta. Sin fechas.
+        if (dto.resultado != null) {
+          throw new BadRequestException('Exactitud de Cálculos no admite fechas de resultado');
+        }
+        delete cambios.resultado;
+        delete cambios.fecha_compromiso;
+      }
+
+      // Los errores solo los registran líderes y administradores.
+      if (usuario?.rol === 'Analista'
+        && (dto.error_interno !== undefined || dto.error_cliente !== undefined)) {
+        delete cambios.error_interno;
+        delete cambios.error_cliente;
+      }
+    } else {
+      // Modelo histórico: los analistas tampoco modifican errores.
+      if (usuario?.rol === 'Analista'
+        && (dto.error_interno !== undefined || dto.error_cliente !== undefined)) {
+        delete cambios.error_interno;
+        delete cambios.error_cliente;
+      }
+    }
+
+    // Poner resultado (fecha o cantidad) implica que el entregable quedó terminado.
     let cerrarAl100 = false;
-    if (dto.resultado && !actual.terminado_en) {
+    const tieneResultado = dto.resultado != null || dto.resultado_cantidad != null;
+    if (tieneResultado && !actual.terminado_en) {
       cambios.terminado_en = new Date().toISOString();
       if (dto.estatus_id === undefined) {
         const terminado = await this.idEstatus(ESTATUS_TERMINADO);
@@ -294,17 +494,17 @@ export class EntregablesService extends BaseService<Entregable> {
    * Resumen agregado del conjunto filtrado: alimenta las tarjetas
    * de cumplimiento de la pestaña Entregables.
    */
-  async resumen(f: FiltrarEntregablesDto) {
-    const filas = await this.buscar(f);
+  async resumen(f: FiltrarEntregablesDto, usuario?: UsuarioCtx) {
+    const filas = await this.buscar(f, usuario);
     const evaluados = filas.filter((e) => e.pct_cumple !== null);
     const promedio = (xs: number[]) =>
       xs.length ? Math.round((xs.reduce((s, x) => s + x, 0) / xs.length) * 100) / 100 : null;
 
     return {
       total: filas.length,
-      terminados: filas.filter((e) => e.resultado).length,
+      terminados: filas.filter((e) => e.resultado || e.resultado_cantidad).length,
       aprobados: filas.filter((e) => e.aprobado).length,
-      pendientes: filas.filter((e) => !e.resultado).length,
+      pendientes: filas.filter((e) => !e.resultado && !e.resultado_cantidad).length,
       a_tiempo: evaluados.filter((e) => (e.diferencia ?? 0) <= 0).length,
       con_retraso: evaluados.filter((e) => (e.diferencia ?? 0) > 0).length,
       error_interno_total: filas.reduce((s, e) => s + (e.error_interno ?? 0), 0),
@@ -322,11 +522,16 @@ export class EntregablesService extends BaseService<Entregable> {
     };
   }
 
-  findAllWithRelations() {
-    return this.supabase.db.from('entregables').select(SELECT_RELACIONES).order('id');
+  async findAllWithRelations(usuario?: UsuarioCtx) {
+    const { data, error } = await this.supabase.db
+      .from('entregables')
+      .select(SELECT_RELACIONES)
+      .order('id');
+    if (error) throw new InternalServerErrorException(error.message);
+    return this.restringir((data ?? []) as Entregable[], usuario);
   }
 
-  findByCliente(cliente_id: number) {
-    return this.buscar({ cliente_id });
+  findByCliente(cliente_id: number, usuario?: UsuarioCtx) {
+    return this.buscar({ cliente_id }, usuario);
   }
 }

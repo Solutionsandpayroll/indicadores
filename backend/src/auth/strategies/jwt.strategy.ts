@@ -20,6 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     es_admin: boolean;
     cargo_id: number;
     grupo_id: number;
+    rol?: string;
   }) {
     return payload;
   }

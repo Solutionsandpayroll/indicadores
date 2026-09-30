@@ -8,7 +8,7 @@ import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, BarChart, Bar, Cell, Legend,
 } from 'recharts'
-import { Building2, TrendingUp, Target } from 'lucide-react'
+import { Building2, TrendingUp, Target, Users } from 'lucide-react'
 import { api } from '@/lib/api'
 import DataTable, { type Column } from '@/components/ui/DataTable'
 import Modal from '@/components/ui/Modal'
@@ -17,20 +17,12 @@ import ModalActions from '@/components/ui/ModalActions'
 import { useToast } from '@/context/ToastContext'
 
 interface Grupo { id: number; nombre: string }
+interface UsuarioRow { id: number; nombre: string; usuario: string; rol: string }
 interface Cliente {
   id: number; cliente: string; grupo_id: number
   pct_puntualidad: number | null; pct_exactitud: number | null
   pct_contratacion: number | null; fecha: string | null; mostrar: boolean
 }
-
-const COLS: Column<Cliente>[] = [
-  { key: 'id', label: 'ID' },
-  { key: 'cliente', label: 'Cliente' },
-  { key: 'grupo_id', label: 'Grupo ID' },
-  { key: 'pct_puntualidad', label: 'Puntualidad %', render: (r) => r.pct_puntualidad != null ? `${r.pct_puntualidad}%` : '—' },
-  { key: 'pct_exactitud', label: 'Exactitud %', render: (r) => r.pct_exactitud != null ? `${r.pct_exactitud}%` : '—' },
-  { key: 'fecha', label: 'Fecha', render: (r) => r.fecha ?? '—' },
-]
 
 const empty = { cliente: '', grupo_id: '', pct_puntualidad: '', pct_exactitud: '', pct_contratacion: '', fecha: '' }
 
@@ -78,6 +70,11 @@ export default function ClientesPage() {
   const [form, setForm] = useState(empty)
   const [error, setError] = useState('')
 
+  // Modal de asignaciones cliente ↔ usuario
+  const [asigModal, setAsigModal] = useState<{ open: boolean; cliente: Cliente | null }>({ open: false, cliente: null })
+  const [asigLider, setAsigLider] = useState('')
+  const [asigAnalistas, setAsigAnalistas] = useState<number[]>([])
+
   const { data: clientes = [], isLoading } = useQuery<Cliente[]>({
     queryKey: ['clientes'],
     queryFn: async () => { const { data } = await api.get<Cliente[]>('/clientes'); return data },
@@ -86,8 +83,63 @@ export default function ClientesPage() {
     queryKey: ['grupos'],
     queryFn: async () => { const { data } = await api.get<Grupo[]>('/grupos'); return data },
   })
+  const { data: usuarios = [] } = useQuery<UsuarioRow[]>({
+    queryKey: ['usuarios'],
+    queryFn: async () => { const { data } = await api.get<UsuarioRow[]>('/usuarios'); return data },
+  })
 
   const grupoMap = Object.fromEntries(grupos.map((g) => [g.id, g.nombre]))
+  const lideres = usuarios.filter((u) => u.rol === 'Lider')
+  const analistas = usuarios.filter((u) => u.rol === 'Analista')
+
+  // Cargar asignaciones actuales al abrir el modal
+  async function openAsig(cliente: Cliente) {
+    setAsigModal({ open: true, cliente })
+    setAsigLider('')
+    setAsigAnalistas([])
+    try {
+      const { data } = await api.get<{ usuario_id: number; rol: string }[]>(`/usuario-clientes?cliente_id=${cliente.id}`)
+      const l = data.find((a) => a.rol === 'Lider')
+      setAsigLider(l ? String(l.usuario_id) : '')
+      setAsigAnalistas(data.filter((a) => a.rol === 'Analista').map((a) => a.usuario_id))
+    } catch { /* sin asignaciones */ }
+  }
+
+  const saveAsig = useMutation({
+    mutationFn: async () => {
+      const asignaciones: { usuario_id: number; rol: string }[] = []
+      if (asigLider) asignaciones.push({ usuario_id: Number(asigLider), rol: 'Lider' })
+      asigAnalistas.forEach((id) => asignaciones.push({ usuario_id: id, rol: 'Analista' }))
+      await api.put('/usuario-clientes/sync', { cliente_id: asigModal.cliente!.id, asignaciones })
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['mis-clientes'] })
+      setAsigModal({ open: false, cliente: null })
+      toast.success('Asignaciones guardadas')
+    },
+    onError: () => toast.error('Error al guardar las asignaciones'),
+  })
+
+  const COLS: Column<Cliente>[] = [
+    { key: 'id', label: 'ID' },
+    { key: 'cliente', label: 'Cliente' },
+    { key: 'grupo_id', label: 'Grupo ID' },
+    { key: 'pct_puntualidad', label: 'Puntualidad %', render: (r) => r.pct_puntualidad != null ? `${r.pct_puntualidad}%` : '—' },
+    { key: 'pct_exactitud', label: 'Exactitud %', render: (r) => r.pct_exactitud != null ? `${r.pct_exactitud}%` : '—' },
+    { key: 'fecha', label: 'Fecha', render: (r) => r.fecha ?? '—' },
+    {
+      key: 'asignaciones', label: 'Equipo',
+      render: (r) => (
+        <button
+          onClick={() => openAsig(r)}
+          className="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium cursor-pointer transition-colors"
+          style={{ backgroundColor: 'var(--color-primary-muted)', color: 'var(--color-primary)' }}
+        >
+          <Users size={11} /> Asignar
+        </button>
+      ),
+    },
+  ]
 
   // Datos para scatter: puntualidad vs exactitud
   const scatterData = clientes
@@ -250,6 +302,54 @@ export default function ClientesPage() {
           <FormField label="% Exactitud" type="number" min="0" max="100" step="0.01" value={form.pct_exactitud} onChange={set('pct_exactitud')} />
           <FormField label="% Contratación" type="number" min="0" max="100" step="0.01" value={form.pct_contratacion} onChange={set('pct_contratacion')} />
           <ModalActions colSpan onClose={close} onSave={() => save.mutate()} isPending={save.isPending} disabled={!form.cliente.trim() || !form.grupo_id} />
+        </div>
+      </Modal>
+
+      {/* Modal de asignaciones */}
+      <Modal open={asigModal.open} onClose={() => setAsigModal({ open: false, cliente: null })} title={`Equipo · ${asigModal.cliente?.cliente ?? ''}`} size="lg">
+        <div className="space-y-4">
+          <div>
+            <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Líder del cliente</label>
+            <select value={asigLider} onChange={(e) => setAsigLider(e.target.value)}
+              className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none"
+              style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
+              <option value="">Sin líder</option>
+              {lideres.map((u) => <option key={u.id} value={u.id}>{u.nombre}</option>)}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>
+              Analistas asignados ({asigAnalistas.length})
+            </label>
+            <div className="mt-2 grid grid-cols-2 gap-1.5 max-h-56 overflow-y-auto p-2 rounded-lg" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)' }}>
+              {analistas.map((u) => {
+                const checked = asigAnalistas.includes(u.id)
+                return (
+                  <label key={u.id} className="flex items-center gap-2 text-xs cursor-pointer select-none px-2 py-1.5 rounded-md" style={{ color: 'var(--color-ink)' }}>
+                    <input type="checkbox" checked={checked} className="w-3.5 h-3.5 rounded"
+                      style={{ accentColor: 'var(--color-accent)' }}
+                      onChange={() => setAsigAnalistas((xs) => checked ? xs.filter((x) => x !== u.id) : [...xs, u.id])} />
+                    <span className="truncate">{u.nombre}</span>
+                  </label>
+                )
+              })}
+              {analistas.length === 0 && <p className="text-xs col-span-2" style={{ color: 'var(--color-ink-muted)' }}>No hay usuarios con rol Analista</p>}
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button onClick={() => setAsigModal({ open: false, cliente: null })}
+              className="px-3 py-2 rounded-lg text-xs font-medium cursor-pointer"
+              style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', color: 'var(--color-ink-muted)' }}>
+              Cancelar
+            </button>
+            <button onClick={() => saveAsig.mutate()} disabled={saveAsig.isPending}
+              className="px-3 py-2 rounded-lg text-xs font-medium text-white cursor-pointer disabled:opacity-50"
+              style={{ backgroundColor: 'var(--color-accent)' }}>
+              Guardar asignaciones
+            </button>
+          </div>
         </div>
       </Modal>
     </div>

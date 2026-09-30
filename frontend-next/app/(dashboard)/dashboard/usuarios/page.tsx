@@ -18,10 +18,10 @@ interface Grupo { id: number; nombre: string }
 interface Usuario {
   id: number; usuario: string; nombre: string; cargo_id: number | null
   email: string | null; grupo_id: number | null; lider_id: number | null
-  es_admin: boolean; activo: boolean
+  es_admin: boolean; activo: boolean; rol: string
 }
 
-const empty = { usuario: '', contrasena: '', nombre: '', cargo_id: '', email: '', grupo_id: '', lider_id: '', es_admin: false, activo: true }
+const empty = { usuario: '', contrasena: '', nombre: '', cargo_id: '', email: '', grupo_id: '', lider_id: '', es_admin: false, activo: true, rol: 'Analista' }
 
 export default function UsuariosPage() {
   const { usuario: currentUser } = useAuth()
@@ -49,13 +49,13 @@ export default function UsuariosPage() {
     { key: 'nombre', label: 'Nombre' },
     { key: 'cargo_id', label: 'Cargo', render: (r) => cargoMap[r.cargo_id ?? 0] ?? '—' },
     { key: 'email', label: 'Email', render: (r) => r.email ?? '—' },
-    { key: 'es_admin', label: 'Rol', render: (r) => <Badge variant={r.es_admin ? 'danger' : 'default'}>{r.es_admin ? 'Admin' : 'Usuario'}</Badge> },
+    { key: 'rol', label: 'Rol', render: (r) => <Badge variant={r.rol === 'Admin' ? 'danger' : r.rol === 'Lider' ? 'warning' : 'default'}>{r.rol}</Badge> },
     { key: 'activo', label: 'Estado', render: (r) => <Badge variant={r.activo ? 'success' : 'muted'}>{r.activo ? 'Activo' : 'Inactivo'}</Badge> },
   ]
 
   const save = useMutation({
     mutationFn: async () => {
-      const payload: Record<string, unknown> = { usuario: form.usuario, nombre: form.nombre, cargo_id: form.cargo_id ? Number(form.cargo_id) : null, email: form.email || null, grupo_id: form.grupo_id ? Number(form.grupo_id) : null, lider_id: form.lider_id ? Number(form.lider_id) : null, es_admin: form.es_admin, activo: form.activo }
+      const payload: Record<string, unknown> = { usuario: form.usuario, nombre: form.nombre, cargo_id: form.cargo_id ? Number(form.cargo_id) : null, email: form.email || null, grupo_id: form.grupo_id ? Number(form.grupo_id) : null, lider_id: form.lider_id ? Number(form.lider_id) : null, es_admin: form.es_admin, activo: form.activo, rol: form.rol }
       if (form.contrasena) payload.contrasena = form.contrasena
       if (modal.row) await api.patch(`/usuarios/${modal.row.id}`, payload)
       else await api.post('/usuarios', { ...payload, contrasena: form.contrasena })
@@ -72,7 +72,7 @@ export default function UsuariosPage() {
 
   function open(row?: Usuario) {
     setModal({ open: true, row: row ?? null })
-    setForm(row ? { usuario: row.usuario, contrasena: '', nombre: row.nombre, cargo_id: row.cargo_id ? String(row.cargo_id) : '', email: row.email ?? '', grupo_id: row.grupo_id ? String(row.grupo_id) : '', lider_id: row.lider_id ? String(row.lider_id) : '', es_admin: row.es_admin, activo: row.activo } : empty)
+    setForm(row ? { usuario: row.usuario, contrasena: '', nombre: row.nombre, cargo_id: row.cargo_id ? String(row.cargo_id) : '', email: row.email ?? '', grupo_id: row.grupo_id ? String(row.grupo_id) : '', lider_id: row.lider_id ? String(row.lider_id) : '', es_admin: row.es_admin, activo: row.activo, rol: row.rol ?? 'Analista' } : empty)
     setError('')
   }
   function close() { setModal({ open: false, row: null }) }
@@ -98,6 +98,11 @@ export default function UsuariosPage() {
           <FormField as="select" label="Cargo" value={form.cargo_id} onChange={set('cargo_id')}>
             <option value="">Sin cargo</option>
             {cargos.map((c) => <option key={c.id} value={c.id}>{c.descripcion}</option>)}
+          </FormField>
+          <FormField as="select" label="Rol" value={form.rol} onChange={set('rol')}>
+            <option value="Analista">Analista</option>
+            <option value="Lider">Lider</option>
+            <option value="Admin">Admin</option>
           </FormField>
           <FormField label="Email" type="email" value={form.email} onChange={set('email')} />
           <FormField as="select" label="Grupo" value={form.grupo_id} onChange={set('grupo_id')}>

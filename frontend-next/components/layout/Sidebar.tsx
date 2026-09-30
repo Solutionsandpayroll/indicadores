@@ -7,25 +7,29 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, Building2, Package,
   BarChart2, AlertTriangle, SlidersHorizontal,
-  UserCog, LogOut, CheckCircle, FileText, ChevronRight, Tags,
+  UserCog, LogOut, CheckCircle, FileText, ChevronRight, Tags, DollarSign, MessageSquareWarning,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/cn'
 
-const NAV_ITEMS = [
+const NAV_BASE = [
   { to: '/dashboard',                 label: 'Home',            icon: LayoutDashboard, exact: true },
-  { to: '/dashboard/clientes',        label: 'Clientes',        icon: Building2 },
+  { to: '/dashboard/clientes',        label: 'Clientes',        icon: Building2,    roles: ['Admin'] },
+  { to: '/dashboard/mis-clientes',    label: 'Mis Clientes',    icon: Building2,    roles: ['Analista', 'Lider'] },
   { to: '/dashboard/grupos',          label: 'Grupos',          icon: Users },
   { to: '/dashboard/entregables',     label: 'Entregables',     icon: Package },
-  { to: '/dashboard/indicadores',     label: 'Indicadores',     icon: BarChart2 },
+  { to: '/dashboard/reportes',        label: 'Reportes',        icon: FileText,       roles: ['Admin', 'Lider'] },
+  { to: '/dashboard/entregable-tipos', label: 'Catálogo Entregables', icon: Tags, roles: ['Admin', 'Lider'] },
+  { to: '/dashboard/indicadores',     label: 'Indicadores',     icon: BarChart2,    roles: ['Admin', 'Lider'] },
   { to: '/dashboard/rca',             label: 'RCA',             icon: AlertTriangle },
+  { to: '/dashboard/quejas',          label: 'Quejas',          icon: MessageSquareWarning, roles: ['Admin'] },
   { to: '/dashboard/otras-variables', label: 'Otras Variables', icon: SlidersHorizontal },
+  { to: '/dashboard/salario-variable', label: 'Salario Variable', icon: DollarSign },
 ]
 
 const ADMIN_ITEMS = [
   { to: '/dashboard/usuarios',          label: 'Usuarios',          icon: UserCog },
   { to: '/dashboard/estatus',           label: 'Estatus',           icon: CheckCircle },
-  { to: '/dashboard/entregable-tipos',  label: 'Tipos entregable',  icon: Tags },
   { to: '/dashboard/tipo-rca',          label: 'Tipo RCA',          icon: FileText },
 ]
 
@@ -83,9 +87,9 @@ export default function Sidebar() {
 
       {/* Navegación */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 flex flex-col gap-0.5 relative">
-        {NAV_ITEMS.map(({ to, label, icon: Icon, exact }) => {
+        {NAV_BASE.filter((i) => !i.roles || i.roles.includes(usuario?.rol ?? '')).map(({ to, label, icon: Icon, exact }) => {
           const isActive = exact ? pathname === to : pathname.startsWith(to)
-          return <NavItem key={to} to={to} label={label} icon={Icon} isActive={isActive} />
+          return <NavItem key={`${to}-${label}`} to={to} label={label} icon={Icon} isActive={isActive} />
         })}
 
         {usuario?.es_admin && (

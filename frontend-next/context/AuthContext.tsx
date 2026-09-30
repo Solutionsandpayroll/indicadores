@@ -10,6 +10,7 @@ interface UsuarioSession {
   es_admin: boolean
   cargo_id: number
   grupo_id: number | null
+  rol: string
 }
 
 interface AuthContextValue {

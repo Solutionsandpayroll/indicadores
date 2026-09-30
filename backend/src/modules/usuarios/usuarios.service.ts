@@ -5,10 +5,10 @@ import * as bcrypt from 'bcrypt';
 export interface Usuario {
   id: number; usuario: string; contrasena?: string; nombre: string;
   cargo_id: number; email: string; grupo_id: number; lider_id: number;
-  es_admin: boolean; activo: boolean; creado_en: string;
+  es_admin: boolean; activo: boolean; creado_en: string; rol: string;
 }
 
-const SAFE_SELECT = 'id, usuario, nombre, cargo_id, email, grupo_id, lider_id, es_admin, activo, creado_en';
+const SAFE_SELECT = 'id, usuario, nombre, cargo_id, email, grupo_id, lider_id, es_admin, activo, creado_en, rol';
 
 @Injectable()
 export class UsuariosService {

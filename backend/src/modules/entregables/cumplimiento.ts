@@ -28,6 +28,10 @@ export interface EntradaCumplimiento {
   resultado?: string | null;
   /** Fecha pactada de entrega del entregable (`fecha_compromiso`). */
   fechaCompromiso?: string | null;
+  /** Cantidad pactada (`cantidad_compromiso`). */
+  cantidadCompromiso?: number | null;
+  /** Cantidad real entregada (`resultado_cantidad`). */
+  resultadoCantidad?: number | null;
   error_interno?: number | null;
   error_cliente?: number | null;
   /** Meta de exactitud del cliente (`clientes.pct_exactitud`). */
@@ -73,10 +77,22 @@ function diasEntre(desde: string, hasta: string): number | null {
  * `resultado`: un entregable sin fecha de entrega aún no se evalúa.
  */
 export function calcularCumplimiento(e: EntradaCumplimiento): ResultadoCumplimiento {
-  if (!e.resultado) return SIN_CALCULAR;
+  const tieneResultadoFecha = e.resultado != null;
+  const tieneResultadoCantidad = e.resultadoCantidad != null;
 
-  // Diferencia contra la fecha pactada del entregable.
-  const diferencia = e.fechaCompromiso ? diasEntre(e.resultado, e.fechaCompromiso) : null;
+  if (!tieneResultadoFecha && !tieneResultadoCantidad) return SIN_CALCULAR;
+
+  let diferencia: number | null = null;
+
+  if (tieneResultadoCantidad) {
+    // Entregable por cantidad: diferencia = pactado - real
+    if (e.cantidadCompromiso != null) {
+      diferencia = e.cantidadCompromiso - e.resultadoCantidad!;
+    }
+  } else if (tieneResultadoFecha) {
+    // Entregable por fecha: diferencia en días
+    diferencia = e.fechaCompromiso ? diasEntre(e.resultado!, e.fechaCompromiso) : null;
+  }
 
   // Puntualidad: entregar en o antes de la fecha vale 100.
   const puntualidad =
@@ -97,4 +113,74 @@ export function calcularCumplimiento(e: EntradaCumplimiento): ResultadoCumplimie
     e.metaExactitud == null ? null : pct_cumple >= Number(e.metaExactitud);
 
   return { diferencia, puntualidad, exactitud, pct_cumple, cumple_meta };
+}
+
+// =====================================================
+// NUEVO MODELO — indicadores del sistema.
+// Los dos indicadores miden cosas independientes:
+//   Plan de Entregables → solo puntualidad (fechas).
+//   Exactitud de Cálculos → solo exactitud (cantidades).
+// =====================================================
+
+/** Nombres canónicos de los indicadores del sistema. */
+export const INDICADOR_PLAN = 'PLAN DE ENTREGABLES';
+export const INDICADOR_EXACTITUD = 'EXACTITUD DE CÁLCULOS';
+
+/** Normaliza un nombre de indicador para compararlo. */
+export function esIndicadorSistema(nombre: string | null | undefined): 'plan' | 'exactitud' | null {
+  if (!nombre) return null;
+  const n = nombre.trim().toUpperCase();
+  if (n === INDICADOR_PLAN) return 'plan';
+  if (n === INDICADOR_EXACTITUD) return 'exactitud';
+  return null;
+}
+
+/** Plan de Entregables: cumplimiento = puntualidad vs meta de puntualidad. */
+export function calcularPlan(e: {
+  resultado?: string | null;
+  fechaCompromiso?: string | null;
+  metaPuntualidad?: number | null;
+}): ResultadoCumplimiento {
+  if (e.resultado == null) return SIN_CALCULAR;
+
+  const diferencia = e.fechaCompromiso ? diasEntre(e.resultado, e.fechaCompromiso) : null;
+  const puntualidad =
+    diferencia === null ? null : acotar(100 - Math.max(0, diferencia) * PESO_DIA_RETRASO);
+
+  const pct_cumple = puntualidad;
+  const cumple_meta =
+    e.metaPuntualidad == null || pct_cumple == null
+      ? null
+      : pct_cumple >= Number(e.metaPuntualidad);
+
+  return { diferencia, puntualidad, exactitud: null, pct_cumple, cumple_meta };
+}
+
+/** Exactitud de Cálculos: cumplimiento = correctos/compromiso vs meta de exactitud. */
+export function calcularExactitud(e: {
+  resultadoCantidad?: number | null;
+  cantidadCompromiso?: number | null;
+  metaExactitud?: number | null;
+}): ResultadoCumplimiento {
+  if (e.resultadoCantidad == null) return SIN_CALCULAR;
+
+  // diferencia = compromiso − correctos (positivo = procesos fallidos)
+  const diferencia =
+    e.cantidadCompromiso != null ? e.cantidadCompromiso - e.resultadoCantidad : null;
+
+  // exactitud = correctos / compromiso × 100 (acotada 0–100)
+  const exactitud =
+    e.cantidadCompromiso != null && e.cantidadCompromiso > 0
+      ? acotar((e.resultadoCantidad / e.cantidadCompromiso) * 100)
+      : null;
+
+  const pct_cumple = exactitud;
+  // Los errores se registran y clasifican, pero no penalizan aquí:
+  // alimentarán el salario variable en fases posteriores.
+  const cumple_meta =
+    e.metaExactitud == null || pct_cumple == null
+      ? null
+      : pct_cumple >= Number(e.metaExactitud);
+
+  return { diferencia, puntualidad: null, exactitud, pct_cumple, cumple_meta };
 }

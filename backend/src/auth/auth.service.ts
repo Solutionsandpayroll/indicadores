@@ -14,7 +14,7 @@ export class AuthService {
   async login(dto: LoginDto) {
     const { data, error } = await this.supabase.db
       .from('usuarios')
-      .select('id, usuario, contrasena, nombre, es_admin, cargo_id, grupo_id, activo')
+      .select('id, usuario, contrasena, nombre, es_admin, cargo_id, grupo_id, activo, rol')
       .eq('usuario', dto.usuario)
       .single();
 
@@ -31,6 +31,7 @@ export class AuthService {
       es_admin: data.es_admin,
       cargo_id: data.cargo_id,
       grupo_id: data.grupo_id,
+      rol: data.rol,
     };
 
     return {
@@ -42,6 +43,7 @@ export class AuthService {
         es_admin: data.es_admin,
         cargo_id: data.cargo_id,
         grupo_id: data.grupo_id,
+        rol: data.rol,
       },
     };
   }

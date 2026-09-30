@@ -14,6 +14,10 @@ import { EntregablesModule } from './modules/entregables/entregables.module';
 import { EntregableTiposModule } from './modules/entregable-tipos/entregable-tipos.module';
 import { RcaModule } from './modules/rca/rca.module';
 import { SalarioVariableModule } from './modules/salario-variable/salario-variable.module';
+import { SalarioVariableAdminModule } from './modules/salario-variable-admin/salario-variable-admin.module';
+import { UsuarioClientesModule } from './modules/usuario-clientes/usuario-clientes.module';
+import { QuejasModule } from './modules/quejas/quejas.module';
+import { ReportesModule } from './modules/reportes/reportes.module';
 import { StatsModule } from './modules/stats/stats.module';
 import { HealthController } from './health/health.controller';
 
@@ -35,6 +39,10 @@ import { HealthController } from './health/health.controller';
     EntregableTiposModule,
     RcaModule,
     SalarioVariableModule,
+    SalarioVariableAdminModule,
+    UsuarioClientesModule,
+    QuejasModule,
+    ReportesModule,
     StatsModule,
   ],
 })
