@@ -27,7 +27,7 @@ interface Cliente { id: number; cliente: string; fecha: string | null; pct_exact
 interface Estatus { id: number; descripcion: string }
 interface Indicador { id: number; nombre: string; es_sistema: boolean }
 interface EntregableTipo { id: number; nombre: string; indicador_id: number; orden: number; cliente_id: number | null; mostrar: boolean; activo: boolean }
-interface Usuario { id: number; nombre: string; usuario: string }
+interface Usuario { id: number; nombre: string; usuario: string; rol: string }
 
 interface Entregable {
   id: number; mes: number; anio: number; cliente_id: number
@@ -205,7 +205,7 @@ export default function EntregablesPage() {
   const { data: clientes = [] } = useQuery<Cliente[]>({ queryKey: ['clientes'], queryFn: async () => { const { data } = await api.get<Cliente[]>('/clientes'); return data } })
   const { data: estatusList = [] } = useQuery<Estatus[]>({ queryKey: ['estatus'], queryFn: async () => { const { data } = await api.get<Estatus[]>('/estatus'); return data } })
   const { data: indicadores = [] } = useQuery<Indicador[]>({ queryKey: ['indicadores'], queryFn: async () => { const { data } = await api.get<Indicador[]>('/indicadores'); return data } })
-  const { data: usuarios = [] } = useQuery<Usuario[]>({ queryKey: ['usuarios'], queryFn: async () => { const { data } = await api.get<Usuario[]>('/usuarios'); return data } })
+  const { data: usuarios = [] } = useQuery<Usuario[]>({ queryKey: ['usuarios-dropdown'], queryFn: async () => { const { data } = await api.get<Usuario[]>('/entregables/usuarios-dropdown'); return data } })
 
   const { data: historial = [] } = useQuery<HistorialRow[]>({
     queryKey: ['entregable-historial', histId],
@@ -809,11 +809,11 @@ export default function EntregablesPage() {
           </div>
           <FormField as="select" label="Líder" value={form.lider_id} onChange={set('lider_id')}>
             <option value="">Sin líder</option>
-            {usuarios.map((u) => <option key={u.id} value={u.id}>{u.nombre}</option>)}
+            {usuarios.filter((u) => u.rol === 'Lider').map((u) => <option key={u.id} value={u.id}>{u.nombre}</option>)}
           </FormField>
           <FormField as="select" label="Usuario asignado" value={form.usuario_id} onChange={set('usuario_id')}>
             <option value="">Sin asignar</option>
-            {usuarios.map((u) => <option key={u.id} value={u.id}>{u.usuario}</option>)}
+            {usuarios.filter((u) => u.rol === 'Analista').map((u) => <option key={u.id} value={u.id}>{u.usuario}</option>)}
           </FormField>
           <FormField
             as="select" label="Tipo" required
@@ -880,10 +880,9 @@ export default function EntregablesPage() {
             </FormField>
           )}
           {(() => {
-            // Errores: solo aplican en Exactitud de Cálculos (nuevo modelo) o
-            // en registros históricos; y solo los registran líderes/admin.
-            const nuevoModeloPlan = !!segModal.row?.es_nuevo_modelo && segModal.row.cantidad_compromiso == null
-            if (nuevoModeloPlan || isAnalista) return null
+            // Los errores se registran en cualquier modo del nuevo modelo;
+            // solo los líderes/admin pueden editarlos.
+            if (isAnalista) return null
             return (
               <>
                 <FormField label="Error interno" type="number" min="0" value={segForm.error_interno} onChange={setSeg('error_interno')} />

@@ -221,6 +221,61 @@ export class CumplimientoService {
       });
     }
 
+    // ── Líder: generar su fila consolidada desde los datos de sus clientes ──
+    if (rol === 'Lider') {
+      const { data: liderInfo } = await this.supabase.db
+        .from('usuarios')
+        .select('id, nombre, usuario, rol')
+        .eq('id', usuario.sub)
+        .single();
+
+      const planLider = { ...PLAN_VACIO };
+      const exactLider = { ...EXACTITUD_VACIA };
+      let errIntLider = 0;
+      let errCliLider = 0;
+      let quejasLider = 0;
+      let maxMetaPlan: number | null = null;
+      let maxMetaExact: number | null = null;
+
+      for (const acc of porClave.values()) {
+        planLider.asignados += acc.plan.asignados;
+        planLider.evaluados += acc.plan.evaluados;
+        planLider.cumplidos += acc.plan.cumplidos;
+        planLider.incumplidos += acc.plan.incumplidos;
+        planLider.pendientes += acc.plan.pendientes;
+
+        exactLider.asignados += acc.exactitud.asignados;
+        exactLider.evaluados += acc.exactitud.evaluados;
+        exactLider.pendientes += acc.exactitud.pendientes;
+        exactLider.compromiso_total += acc.exactitud.compromiso_total;
+        exactLider.correctos_total += acc.exactitud.correctos_total;
+
+        errIntLider += acc.errores_internos;
+        errCliLider += acc.errores_cliente;
+        quejasLider += (quejas.get(`${acc.usuario.id}-${acc.cliente.id}`) ?? 0);
+
+        if (acc.plan.meta != null) maxMetaPlan = maxMetaPlan == null ? acc.plan.meta : Math.max(maxMetaPlan, acc.plan.meta);
+        if (acc.exactitud.meta != null) maxMetaExact = maxMetaExact == null ? acc.exactitud.meta : Math.max(maxMetaExact, acc.exactitud.meta);
+      }
+
+      if (planLider.asignados > 0 || exactLider.asignados > 0) {
+        planLider.pct = planLider.evaluados > 0 ? redondo((planLider.cumplidos / planLider.evaluados) * 100) : null;
+        planLider.cumple_meta = planLider.pct != null && maxMetaPlan != null ? planLider.pct >= maxMetaPlan : null;
+        exactLider.pct = exactLider.compromiso_total > 0 ? redondo((exactLider.correctos_total / exactLider.compromiso_total) * 100) : null;
+        exactLider.cumple_meta = exactLider.pct != null && maxMetaExact != null ? exactLider.pct >= maxMetaExact : null;
+
+        resultado.push({
+          usuario: (liderInfo as FilaCumplimiento['usuario']) ?? { id: usuario.sub, nombre: `#${usuario.sub}`, usuario: '', rol: 'Lider' },
+          cliente: { id: 0, cliente: 'Todos sus clientes' },
+          plan: planLider,
+          exactitud: exactLider,
+          errores_internos: errIntLider,
+          errores_cliente: errCliLider,
+          quejas: quejasLider,
+        });
+      }
+    }
+
     resultado.sort((a, b) =>
       a.usuario.nombre.localeCompare(b.usuario.nombre) || a.cliente.cliente.localeCompare(b.cliente.cliente),
     );

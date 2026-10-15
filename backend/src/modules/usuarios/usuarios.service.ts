@@ -68,4 +68,15 @@ export class UsuariosService {
     if (error) throw new InternalServerErrorException(error.message);
     return { message: `Usuario ${id} eliminado` };
   }
+
+  /** Lista reducida para dropdowns de formularios (id, nombre, usuario, rol). */
+  async findAllForDropdown(): Promise<Usuario[]> {
+    const { data, error } = await this.supabase.db
+      .from('usuarios')
+      .select('id, nombre, usuario, rol')
+      .eq('activo', true)
+      .order('nombre');
+    if (error) throw new InternalServerErrorException(error.message);
+    return (data ?? []) as unknown as Usuario[];
+  }
 }

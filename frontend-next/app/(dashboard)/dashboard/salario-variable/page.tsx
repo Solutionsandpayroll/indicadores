@@ -42,7 +42,7 @@ const TABS = [
   { key: 'valores', label: 'Valores de Variable', icon: DollarSign, roles: ['Admin'] },
   { key: 'casos', label: 'Casos Especiales', icon: Users, roles: ['Admin'] },
   { key: 'cumplimiento', label: 'Cumplimiento', icon: CheckCircle2, roles: ['Admin', 'Lider', 'Analista'] },
-  { key: 'resultados', label: 'Resultados', icon: BarChart3, roles: ['Admin'] },
+  { key: 'resultados', label: 'Resultados', icon: BarChart3, roles: ['Admin', 'Lider'] },
 ] as const
 
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
@@ -547,18 +547,34 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
     queryKey: ['usuarios'],
     queryFn: async () => { const { data } = await api.get<Usuario[]>('/usuarios'); return data },
   })
+  const { data: configComponentes = [] } = useQuery<{ descripcion: string; metrica: string }[]>({
+    queryKey: ['sv-config-componentes'],
+    queryFn: async () => {
+      const { data } = await api.get<Array<{ conceptos: { descripcion: string }; metrica: string }>>('/salario-variable-admin/config?metrica=not.is.null')
+      const seen = new Set<string>()
+      return data
+        .filter((c) => { const k = c.metrica + '-' + c.conceptos.descripcion; if (seen.has(k)) return false; seen.add(k); return true })
+        .map((c) => ({ descripcion: c.conceptos.descripcion, metrica: c.metrica }))
+    },
+  })
 
   const [showModal, setShowModal] = useState(false)
   const [editRow, setEditRow] = useState<CasoRow | null>(null)
-  const [form, setForm] = useState({ usuario_id: '', descripcion: '', tipo_regla: 'equipo', configuracion: '' })
+  const [form, setForm] = useState<{
+    usuario_id: string; descripcion: string;
+    usuariosFuente: number[]; componentesExcluidos: string[];
+  }>({ usuario_id: '', descripcion: '', usuariosFuente: [], componentesExcluidos: [] })
+
+  // Componentes únicos por métrica (evita duplicados en checkboxes)
+  const componentesUnicos = [...new Map(configComponentes.map((c) => [c.metrica, c])).values()]
 
   const save = useMutation({
     mutationFn: async () => {
       const payload = {
         usuario_id: Number(form.usuario_id),
         descripcion: form.descripcion,
-        tipo_regla: form.tipo_regla,
-        configuracion: form.configuracion ? JSON.parse(form.configuracion) : {},
+        tipo_regla: 'consolidado',
+        configuracion: { usuarios_fuente: form.usuariosFuente, componentes_excluidos: form.componentesExcluidos },
       }
       if (editRow) await api.patch(`/salario-variable-admin/casos/${editRow.id}`, payload)
       else await api.post('/salario-variable-admin/casos', payload)
@@ -573,14 +589,36 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
     onError: () => toast.error('Error al eliminar'),
   })
 
-  function openNew() { setEditRow(null); setForm({ usuario_id: '', descripcion: '', tipo_regla: 'equipo', configuracion: '' }); setShowModal(true) }
-  function openEdit(r: CasoRow) { setEditRow(r); setForm({ usuario_id: String(r.usuario_id), descripcion: r.descripcion, tipo_regla: r.tipo_regla, configuracion: JSON.stringify(r.configuracion, null, 2) }); setShowModal(true) }
+  function openNew() {
+    setEditRow(null)
+    setForm({ usuario_id: '', descripcion: '', usuariosFuente: [], componentesExcluidos: [] })
+    setShowModal(true)
+  }
+  function openEdit(r: CasoRow) {
+    setEditRow(r)
+    const cfg = r.configuracion ?? {}
+    setForm({
+      usuario_id: String(r.usuario_id),
+      descripcion: r.descripcion,
+      usuariosFuente: (cfg.usuarios_fuente as number[]) ?? [],
+      componentesExcluidos: (cfg.componentes_excluidos as string[]) ?? [],
+    })
+    setShowModal(true)
+  }
+
+  function toggleUsuarioFuente(id: number) {
+    setForm((f) => ({ ...f, usuariosFuente: f.usuariosFuente.includes(id) ? f.usuariosFuente.filter((x) => x !== id) : [...f.usuariosFuente, id] }))
+  }
+
+  function toggleComponente(metrica: string) {
+    setForm((f) => ({ ...f, componentesExcluidos: f.componentesExcluidos.includes(metrica) ? f.componentesExcluidos.filter((x) => x !== metrica) : [...f.componentesExcluidos, metrica] }))
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-          Configura reglas personalizadas para colaboradores cuyo cálculo depende de equipos o grupos
+          Reglas especiales: el cálculo de un usuario se consolida desde otros usuarios fuente.
         </p>
         <button onClick={openNew} className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white cursor-pointer hover:opacity-90" style={{ backgroundColor: 'var(--color-accent)' }}>
           <Plus size={13} /> Nuevo caso
@@ -596,72 +634,98 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
         </div>
       ) : (
         <div className="grid gap-4">
-          {casos.map((c) => (
-            <div key={c.id} className="rounded-xl p-4" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="text-xs font-semibold" style={{ color: 'var(--color-ink)' }}>{c.usuario?.nombre}</p>
-                    <Badge variant={c.tipo_regla === 'equipo' ? 'info' : c.tipo_regla === 'grupo' ? 'warning' : 'default'}>{c.tipo_regla}</Badge>
+          {casos.map((c) => {
+            const cfg = c.configuracion ?? {}
+            const fuentes = (cfg.usuarios_fuente as number[]) ?? []
+            const excluidos = (cfg.componentes_excluidos as string[]) ?? []
+            const fuenteNombres = usuarios.filter((u) => fuentes.includes(u.id)).map((u) => u.nombre)
+            return (
+              <div key={c.id} className="rounded-xl p-4" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-xs font-semibold" style={{ color: 'var(--color-ink)' }}>{c.usuario?.nombre}</p>
+                      <Badge variant="info">Consolidado</Badge>
+                    </div>
+                    <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>{c.descripcion}</p>
+                    {fuenteNombres.length > 0 && (
+                      <p className="text-[10px] mt-1.5" style={{ color: 'var(--color-ink-muted)' }}>
+                        <strong>Usuarios fuente:</strong> {fuenteNombres.join(', ')}
+                      </p>
+                    )}
+                    {excluidos.length > 0 && (
+                      <p className="text-[10px]" style={{ color: 'var(--color-ink-muted)' }}>
+                        <strong>Excluidos:</strong> {excluidos.map((m) => componentesUnicos.find((cc) => cc.metrica === m)?.descripcion ?? m).join(', ')}
+                      </p>
+                    )}
                   </div>
-                  <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>{c.descripcion}</p>
-                  {c.configuracion && Object.keys(c.configuracion).length > 0 && (
-                    <pre className="mt-2 text-[10px] p-2 rounded-lg overflow-x-auto" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)', color: 'var(--color-ink-muted)' }}>
-                      {JSON.stringify(c.configuracion, null, 2)}
-                    </pre>
-                  )}
-                </div>
-                <div className="flex gap-1">
-                  <button onClick={() => openEdit(c)} className="p-1.5 rounded-md cursor-pointer hover:bg-white/10" style={{ color: 'var(--color-ink-muted)' }}><Pencil size={12} /></button>
-                  <button onClick={() => del.mutate(c.id)} className="p-1.5 rounded-md cursor-pointer hover:bg-white/10" style={{ color: 'var(--color-accent)' }}><Trash2 size={12} /></button>
+                  <div className="flex gap-1">
+                    <button onClick={() => openEdit(c)} className="p-1.5 rounded-md cursor-pointer hover:bg-white/10" style={{ color: 'var(--color-ink-muted)' }}><Pencil size={12} /></button>
+                    <button onClick={() => del.mutate(c.id)} className="p-1.5 rounded-md cursor-pointer hover:bg-white/10" style={{ color: 'var(--color-accent)' }}><Trash2 size={12} /></button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
-      {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowModal(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowModal(false)}>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-            className="rounded-2xl p-6 w-full max-w-md" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+            className="rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
             onClick={(e) => e.stopPropagation()}>
             <h3 className="text-sm font-bold mb-4" style={{ color: 'var(--color-ink)' }}>{editRow ? 'Editar caso' : 'Nuevo caso especial'}</h3>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Usuario</label>
+                <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Usuario destino</label>
                 <select value={form.usuario_id} onChange={(e) => setForm({ ...form, usuario_id: e.target.value })}
-                  className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
+                  className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none cursor-pointer" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
                   <option value="">Seleccionar...</option>
-                  {usuarios.map((u) => <option key={u.id} value={u.id}>{u.nombre}</option>)}
+                  {usuarios.map((u) => <option key={u.id} value={u.id}>{u.nombre} ({u.usuario})</option>)}
                 </select>
               </div>
               <div>
                 <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Descripción</label>
                 <input type="text" value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                  className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} placeholder="Ej: Depende del equipo de implementación" />
+                  className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} placeholder="Ej: Consolidado equipos Nomina y Admin. Personal" />
               </div>
               <div>
-                <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Tipo de regla</label>
-                <select value={form.tipo_regla} onChange={(e) => setForm({ ...form, tipo_regla: e.target.value })}
-                  className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
-                  <option value="equipo">Equipo</option>
-                  <option value="grupo">Grupo</option>
-                  <option value="mixto">Mixto</option>
-                </select>
+                <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>
+                  Usuarios fuente ({form.usuariosFuente.length} seleccionados)
+                </label>
+                <div className="mt-1.5 grid grid-cols-2 gap-1.5 max-h-44 overflow-y-auto p-2 rounded-lg" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)' }}>
+                  {usuarios.filter((u) => u.id !== Number(form.usuario_id)).map((u) => {
+                    const checked = form.usuariosFuente.includes(u.id)
+                    return (
+                      <label key={u.id} className="flex items-center gap-2 text-xs cursor-pointer select-none px-2 py-1.5 rounded-md" style={{ color: 'var(--color-ink)' }}>
+                        <input type="checkbox" checked={checked} className="w-3.5 h-3.5 rounded" style={{ accentColor: 'var(--color-accent)' }} onChange={() => toggleUsuarioFuente(u.id)} />
+                        <span className="truncate">{u.nombre}</span>
+                      </label>
+                    )
+                  })}
+                </div>
               </div>
               <div>
-                <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Configuración (JSON)</label>
-                <textarea rows={4} value={form.configuracion} onChange={(e) => setForm({ ...form, configuracion: e.target.value })}
-                  className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none font-mono" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} placeholder='{"equipo_ids": [1, 2], "ponderacion": 0.5}' />
+                <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Componentes a excluir</label>
+                <div className="mt-1.5 space-y-1.5 p-2 rounded-lg" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)' }}>
+                  {componentesUnicos.map((c) => {
+                    const checked = form.componentesExcluidos.includes(c.metrica)
+                    return (
+                      <label key={c.metrica} className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: 'var(--color-ink)' }}>
+                        <input type="checkbox" checked={checked} className="w-3.5 h-3.5 rounded" style={{ accentColor: 'var(--color-accent)' }} onChange={() => toggleComponente(c.metrica)} />
+                        <span>{c.descripcion}</span>
+                      </label>
+                    )
+                  })}
+                </div>
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-5">
               <button onClick={() => setShowModal(false)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', color: 'var(--color-ink-muted)' }}>
                 <X size={12} /> Cancelar
               </button>
-              <button onClick={() => save.mutate()} disabled={save.isPending || !form.usuario_id || !form.descripcion}
+              <button onClick={() => save.mutate()} disabled={save.isPending || !form.usuario_id || !form.descripcion || form.usuariosFuente.length === 0}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-white cursor-pointer disabled:opacity-50" style={{ backgroundColor: 'var(--color-accent)' }}>
                 <Save size={12} /> Guardar
               </button>
@@ -672,10 +736,6 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
     </div>
   )
 }
-
-// =====================================================
-// SECCIÓN 4: RESULTADOS DE PAGO
-// =====================================================
 interface ComponentePago {
   nombre: string; metrica: string | null; peso: number
   estado: 'ganado' | 'perdido' | 'pendiente'; detalle: string

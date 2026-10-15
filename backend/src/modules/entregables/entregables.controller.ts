@@ -6,11 +6,21 @@ import type { UsuarioCtx } from './entregables.service';
 import { FiltrarEntregablesDto } from './dto/filtrar-entregables.dto';
 import { SeguimientoEntregableDto } from './dto/seguimiento.dto';
 import { CrearAvanceDto } from './dto/avance.dto';
+import { UsuariosService } from '../usuarios/usuarios.service';
 
 @Controller('entregables')
 export class EntregablesController extends BaseController<Entregable> {
-  constructor(private entregablesService: EntregablesService) {
+  constructor(
+    private entregablesService: EntregablesService,
+    private usuariosService: UsuariosService,
+  ) {
     super(entregablesService);
+  }
+
+  /** Usuarios para dropdowns del formulario (accesible por cualquier rol). */
+  @Get('usuarios-dropdown')
+  getUsuariosDropdown() {
+    return this.usuariosService.findAllForDropdown();
   }
 
   // ⚠️ Las rutas literales van ANTES que el `@Get(':id')` heredado,
