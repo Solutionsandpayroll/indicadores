@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException, ForbiddenException, NotFoundE
 import { BaseService } from '../../common/base.service';
 import { SupabaseService } from '../../supabase/supabase.service';
 import {
-  calcularPlan, calcularExactitud, esIndicadorSistema, Perspectiva,
+  calcularPlan, calcularExactitud, calcularImpactoVariable, esIndicadorSistema, Perspectiva,
 } from '../entregables/cumplimiento';
 
 export interface Cliente {
@@ -223,7 +223,17 @@ export class ClientesService extends BaseService<Cliente> {
               errorInterno: errs.interno, errorCliente: errs.cliente, perspectiva,
             })
           : { diferencia: null, puntualidad: null, exactitud: null, pct_cumple: null, cumple_meta: null };
-      return { ...e, ...calculo, error_interno: errs.interno, error_cliente: errs.cliente, _modo: modo };
+      const impacto_variable = calcularImpactoVariable({
+        modo,
+        resultado: e.resultado,
+        resultadoCantidad: e.resultado_cantidad,
+        fechaCompromiso: e.fecha_compromiso,
+        cantidadCompromiso: e.cantidad_compromiso,
+        errorInterno: errs.interno,
+        errorCliente: errs.cliente,
+        perspectiva,
+      });
+      return { ...e, ...calculo, error_interno: errs.interno, error_cliente: errs.cliente, impacto_variable, _modo: modo };
     });
 
     const evaluados = entregables.filter((e) => e.pct_cumple !== null);

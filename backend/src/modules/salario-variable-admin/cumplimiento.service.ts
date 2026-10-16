@@ -150,12 +150,15 @@ export class CumplimientoService {
         }
       } else if (modo === 'exactitud') {
         acc.exactitud.asignados++;
-        acc.exactitud.error_interno += interno;
-        acc.exactitud.error_cliente += errCli;
         if (e.resultado_cantidad != null) {
+          // Los errores solo penalizan cuando la fila ya tiene resultado definitivo.
+          // Un pendiente excepcional con errores registrados no debe afectar el
+          // consolidado hasta que el analista registre su resultado (regla William).
           acc.exactitud.evaluados++;
           acc.exactitud.compromiso_total += e.cantidad_compromiso ?? 0;
           acc.exactitud.procesados_total += e.resultado_cantidad;
+          acc.exactitud.error_interno += interno;
+          acc.exactitud.error_cliente += errCli;
         }
       }
     }

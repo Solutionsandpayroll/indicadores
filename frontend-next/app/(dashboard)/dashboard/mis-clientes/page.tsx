@@ -25,6 +25,7 @@ interface EntregableRow {
   pct_cumple: number | null; resultado: string | null
   resultado_cantidad: number | null; aprobado: boolean
   error_interno: number | null; error_cliente: number | null
+  impacto_variable: 'sin_afectacion' | 'afecta' | 'pendiente' | null
   estatus?: { id: number; descripcion: string } | null
   indicadores?: { id: number; nombre: string } | null
   entregable_tipos?: { id: number; nombre: string } | null
@@ -357,6 +358,7 @@ export default function MisClientesPage() {
                   <th className="text-left px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>Estatus</th>
                   <th className="text-center px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>Errores</th>
                   <th className="text-center px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>% Cumple</th>
+                  <th className="text-center px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>Impacto variable</th>
                   <th className="text-center px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>Aprobado</th>
                 </tr>
               </thead>
@@ -380,6 +382,20 @@ export default function MisClientesPage() {
                       </div>
                     </td>
                     <td className="px-4 py-2.5 text-center" style={{ color: 'var(--color-ink)' }}>{e.pct_cumple != null ? `${e.pct_cumple}%` : '—'}</td>
+                    <td className="px-4 py-2.5 text-center">
+                      {e.impacto_variable === 'afecta' && (
+                        <span title={`Esta fila está reduciendo tu consolidado para el variable. Perspectiva: ${isLider ? 'líder' : 'analista'}`}>
+                          <Badge variant="danger"><AlertTriangle size={10} className="inline -mt-0.5 mr-1" />Afecta</Badge>
+                        </span>
+                      )}
+                      {e.impacto_variable === 'sin_afectacion' && (
+                        <span title={`Esta fila no perjudica tu cálculo del variable. Perspectiva: ${isLider ? 'líder' : 'analista'}`}>
+                          <Badge variant="success"><CheckCircle2 size={10} className="inline -mt-0.5 mr-1" />Sin afectación</Badge>
+                        </span>
+                      )}
+                      {e.impacto_variable === 'pendiente' && <Badge variant="default">— Pendiente</Badge>}
+                      {e.impacto_variable == null && <span style={{ color: 'var(--color-ink-subtle)' }}>—</span>}
+                    </td>
                     <td className="px-4 py-2.5 text-center">
                       {e.aprobado ? <CheckCircle2 size={13} style={{ color: 'oklch(56% 0.18 145)' }} className="mx-auto" /> : <span style={{ color: 'var(--color-ink-muted)' }}>—</span>}
                     </td>

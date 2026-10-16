@@ -50,7 +50,9 @@ interface Entregable {
   // Cumplimiento (calculado por el backend)
   diferencia: number | null; puntualidad: number | null; exactitud: number | null
   pct_cumple: number | null; cumple_meta: boolean | null
+  impacto_variable: 'sin_afectacion' | 'afecta' | 'pendiente' | null
   clientes?: { cliente: string } | null
+  responsable?: { nombre: string; rol?: string } | null
 }
 
 interface Resumen {
@@ -424,6 +426,36 @@ export default function EntregablesPage() {
             </div>
             <span className="text-xs font-semibold tabular-nums" style={{ color }}>{r.pct_cumple}%</span>
           </div>
+        )
+      },
+    },
+    {
+      key: 'impacto_variable', label: 'Impacto variable',
+      render: (r) => {
+        const persp = currentUser?.rol === 'Admin'
+          ? `Perspectiva: ${r.responsable?.rol === 'Lider' ? 'líder' : 'analista'} (responsable)`
+          : currentUser?.rol === 'Lider' ? 'Perspectiva: líder' : 'Perspectiva: analista'
+        if (r.impacto_variable === null) {
+          return <span className="text-xs" style={{ color: 'var(--color-ink-subtle)' }}>—</span>
+        }
+        if (r.impacto_variable === 'pendiente') {
+          return <Badge variant="muted">— Pendiente</Badge>
+        }
+        if (r.impacto_variable === 'afecta') {
+          return (
+            <span title={`Está reduciendo tu consolidado para el variable. ${persp}`}>
+              <Badge variant="danger" className="gap-1">
+                <AlertTriangle size={11} /> Afecta
+              </Badge>
+            </span>
+          )
+        }
+        return (
+          <span title={`No está perjudicando tu cálculo del variable. ${persp}`}>
+            <Badge variant="success" className="gap-1">
+              <CheckCircle2 size={11} /> Sin afectación
+            </Badge>
+          </span>
         )
       },
     },
@@ -880,10 +912,11 @@ export default function EntregablesPage() {
               <option value="true">Aprobado</option>
             </FormField>
           )}
-          {/* Errores del entregable (tabla hija). Solo Exactitud de Cálculos. */}
+          {/* Errores del entregable (tabla hija). Plan marca Impacto; Exactitud además penaliza %. */}
           {(() => {
-            const esExactitud = segModal.row?.indicador_id === 36
-            if (!esExactitud) return null
+            const nombreInd = segModal.row ? (indicadorMap[segModal.row.indicador_id] ?? '') : ''
+            const esSistema = ['PLAN DE ENTREGABLES', 'EXACTITUD DE CÁLCULOS'].includes(nombreInd.trim().toUpperCase())
+            if (!esSistema) return null
             const puedeGestionar = !isAnalista
             return (
               <div className="col-span-2 rounded-xl p-4" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)' }}>

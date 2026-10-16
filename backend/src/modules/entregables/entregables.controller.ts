@@ -1,6 +1,8 @@
-import { Body, Controller, Delete, ForbiddenException, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { BaseController } from '../../common/base.controller';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { RolesGuard } from '../../auth/guards/roles.guard';
 import { EntregablesService, Entregable } from './entregables.service';
 import type { UsuarioCtx } from './entregables.service';
 import { FiltrarEntregablesDto } from './dto/filtrar-entregables.dto';
@@ -9,6 +11,7 @@ import { CrearErrorDto } from './dto/error.dto';
 import { UsuariosService } from '../usuarios/usuarios.service';
 
 @Controller('entregables')
+@UseGuards(RolesGuard)
 export class EntregablesController extends BaseController<Entregable> {
   constructor(
     private entregablesService: EntregablesService,
@@ -118,8 +121,8 @@ export class EntregablesController extends BaseController<Entregable> {
   }
 
   @Get(':id/detalle')
-  detalle(@Param('id', ParseIntPipe) id: number) {
-    return this.entregablesService.findOneConCumplimiento(id);
+  detalle(@Param('id', ParseIntPipe) id: number, @CurrentUser() usuario?: UsuarioCtx) {
+    return this.entregablesService.findOneConCumplimiento(id, usuario);
   }
 
   /** Seguimiento: resultado, errores y aprobación. */
@@ -134,5 +137,12 @@ export class EntregablesController extends BaseController<Entregable> {
       throw new ForbiddenException('Los analistas no pueden aprobar entregables');
     }
     return this.entregablesService.registrarSeguimiento(id, dto, usuario);
+  }
+
+  /** Eliminar: solo Admin. */
+  @Delete(':id')
+  @Roles('Admin')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return super.remove(id);
   }
 }

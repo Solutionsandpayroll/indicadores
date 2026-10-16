@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { RolesGuard } from '../../auth/guards/roles.guard';
 import { SalarioVariableAdminService } from './salario-variable-admin.service';
 import { CumplimientoService } from './cumplimiento.service';
 import { ResultadosPagoService } from './resultados-pago.service';
 
 @Controller('salario-variable-admin')
+@UseGuards(RolesGuard)
 export class SalarioVariableAdminController {
   constructor(
     private svc: SalarioVariableAdminService,
@@ -38,57 +41,71 @@ export class SalarioVariableAdminController {
 
   // ---- SECCIÓN 1: Configuración por Perfil ----
   @Get('config')
+  @Roles('Admin')
   getConfig() { return this.svc.getConfig(); }
 
   @Post('config')
+  @Roles('Admin')
   createConfig(@Body() dto: Record<string, unknown>) { return this.svc.createConfig(dto as never); }
 
   @Patch('config/:id')
+  @Roles('Admin')
   updateConfig(@Param('id', ParseIntPipe) id: number, @Body() dto: Record<string, unknown>) {
     return this.svc.updateConfig(id, dto as never);
   }
 
   @Delete('config/:id')
+  @Roles('Admin')
   deleteConfig(@Param('id', ParseIntPipe) id: number) { return this.svc.deleteConfig(id); }
 
   // ---- SECCIÓN 2: Valores de Variable (anual) ----
   @Get('valores')
+  @Roles('Admin')
   getValores(@Query('anio') anio?: string) {
     return this.svc.getValores(anio ? Number(anio) : undefined);
   }
 
   @Post('valores')
+  @Roles('Admin')
   createValor(@Body() dto: Record<string, unknown>) { return this.svc.createValor(dto as never); }
 
   @Patch('valores/:id')
+  @Roles('Admin')
   updateValor(@Param('id', ParseIntPipe) id: number, @Body() dto: Record<string, unknown>) {
     return this.svc.updateValor(id, dto as never);
   }
 
   @Delete('valores/:id')
+  @Roles('Admin')
   deleteValor(@Param('id', ParseIntPipe) id: number) { return this.svc.deleteValor(id); }
 
   @Get('valores/:id/historial')
+  @Roles('Admin')
   getHistorial(@Param('id', ParseIntPipe) id: number) { return this.svc.getHistorial(id); }
 
   // ---- SECCIÓN 3: Casos Especiales ----
   @Get('casos')
+  @Roles('Admin')
   getCasos() { return this.svc.getCasos(); }
 
   @Post('casos')
+  @Roles('Admin')
   createCaso(@Body() dto: Record<string, unknown>) { return this.svc.createCaso(dto as never); }
 
   @Patch('casos/:id')
+  @Roles('Admin')
   updateCaso(@Param('id', ParseIntPipe) id: number, @Body() dto: Record<string, unknown>) {
     return this.svc.updateCaso(id, dto as never);
   }
 
   @Delete('casos/:id')
+  @Roles('Admin')
   deleteCaso(@Param('id', ParseIntPipe) id: number) { return this.svc.deleteCaso(id); }
 
   // ---- SECCIÓN 4: Resultados de pago ----
   // Calculados en vivo desde Cumplimiento + configuración. No se persisten.
   @Get('resultados-pago')
+  @Roles('Admin', 'Lider')
   getResultadosPago(
     @Query('anio') anio: string,
     @Query('mes') mes: string,

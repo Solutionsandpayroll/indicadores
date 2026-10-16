@@ -6,6 +6,7 @@ import { BaseService } from '../../common/base.service';
 import { SupabaseService } from '../../supabase/supabase.service';
 import {
   calcularPlan, calcularExactitud, esIndicadorSistema, ResultadoCumplimiento,
+  calcularImpactoVariable, ImpactoVariable, Perspectiva,
 } from './cumplimiento';
 import { FiltrarEntregablesDto } from './dto/filtrar-entregables.dto';
 import { SeguimientoEntregableDto } from './dto/seguimiento.dto';
@@ -33,8 +34,10 @@ export interface ConteosError {
   error_cliente: number;
 }
 
-/** Entregable con cumplimiento + conteos de error derivados. */
-export type EntregableConCumplimiento = Entregable & ResultadoCumplimiento & ConteosError;
+/** Entregable con cumplimiento + conteos de error derivados + señal de impacto al variable. */
+export type EntregableConCumplimiento = Entregable & ResultadoCumplimiento & ConteosError & {
+  impacto_variable: ImpactoVariable | null;
+};
 
 const ESTATUS_ASIGNADO = 'asignado';
 const ESTATUS_TERMINADO = 'terminado';
@@ -51,13 +54,14 @@ const SELECT_RELACIONES = `
   indicadores(id, nombre),
   entregable_tipos(id, nombre),
   lider:usuarios!lider_id(id, nombre),
-  responsable:usuarios!usuario_id(id, nombre),
+  responsable:usuarios!usuario_id(id, nombre, rol),
   entregable_errores(id, tipo, descripcion, correccion)
 `;
 
 interface FilaConRelaciones extends Entregable {
   clientes?: { pct_exactitud?: number | null; pct_puntualidad?: number | null } | null;
   indicadores?: { id: number; nombre: string } | null;
+  responsable?: { id: number; nombre: string; rol?: string } | null;
   entregable_errores?: { tipo: string }[] | null;
 }
 
@@ -82,10 +86,22 @@ export class EntregablesService extends BaseService<Entregable> {
   }
 
   /**
-   * Adjunta cumplimiento y conteos de error a una fila con relaciones embebidas.
-   * El % del registro se evalúa en perspectiva ANALISTA (quien lo ejecutó).
+   * Perspectiva para Impacto variable:
+   * Analista ve sus dos errores; Líder solo errores de cliente;
+   * Admin (sin variable propio) usa la del responsable de la fila.
    */
-  private enriquecer<T extends FilaConRelaciones>(fila: T): T & EntregableConCumplimiento {
+  private perspectivaPara(usuario: UsuarioCtx, fila: FilaConRelaciones): Perspectiva {
+    if (usuario?.rol === 'Lider') return 'lider';
+    if (usuario?.rol === 'Analista') return 'analista';
+    return fila.responsable?.rol === 'Lider' ? 'lider' : 'analista';
+  }
+
+  /**
+   * Adjunta cumplimiento, conteos de error e impacto al variable a una fila.
+   * El % del registro se evalúa en perspectiva ANALISTA (quien lo ejecutó);
+   * el Impacto variable usa la perspectiva del usuario que consulta.
+   */
+  private enriquecer<T extends FilaConRelaciones>(fila: T, usuario?: UsuarioCtx): T & EntregableConCumplimiento {
     const conteos = contarErrores(fila.entregable_errores);
     const modo = esIndicadorSistema(fila.indicadores?.nombre);
 
@@ -109,11 +125,23 @@ export class EntregablesService extends BaseService<Entregable> {
       calculo = { diferencia: null, puntualidad: null, exactitud: null, pct_cumple: null, cumple_meta: null };
     }
 
+    const impacto_variable = calcularImpactoVariable({
+      modo,
+      resultado: fila.resultado,
+      resultadoCantidad: fila.resultado_cantidad,
+      fechaCompromiso: fila.fecha_compromiso,
+      cantidadCompromiso: fila.cantidad_compromiso,
+      errorInterno: conteos.error_interno,
+      errorCliente: conteos.error_cliente,
+      perspectiva: this.perspectivaPara(usuario, fila),
+    });
+
     return {
       ...fila,
       ...calculo,
       error_interno: conteos.error_interno,
       error_cliente: conteos.error_cliente,
+      impacto_variable,
     } as T & EntregableConCumplimiento;
   }
 
@@ -169,7 +197,7 @@ export class EntregablesService extends BaseService<Entregable> {
     const { data, error } = await query;
     if (error) throw new InternalServerErrorException(error.message);
 
-    const filas = (data ?? []).map((r) => this.enriquecer(r as unknown as FilaConRelaciones));
+    const filas = (data ?? []).map((r) => this.enriquecer(r as unknown as FilaConRelaciones, usuario));
 
     if (f.orden === 'cumplimiento') {
       filas.sort((a, b) => ((a.pct_cumple ?? -1) - (b.pct_cumple ?? -1)) * (asc ? 1 : -1));
@@ -177,11 +205,11 @@ export class EntregablesService extends BaseService<Entregable> {
     return this.restringir(filas as EntregableConCumplimiento[], usuario);
   }
 
-  async findOneConCumplimiento(id: number): Promise<EntregableConCumplimiento> {
+  async findOneConCumplimiento(id: number, usuario?: UsuarioCtx): Promise<EntregableConCumplimiento> {
     const { data, error } = await this.supabase.db
       .from('entregables').select(SELECT_RELACIONES).eq('id', id).single();
     if (error || !data) throw new NotFoundException(`Entregable ${id} no encontrado`);
-    return this.enriquecer(data as unknown as FilaConRelaciones) as EntregableConCumplimiento;
+    return this.enriquecer(data as unknown as FilaConRelaciones, usuario) as EntregableConCumplimiento;
   }
 
   private async conNombreDeTipo(dto: Partial<Entregable>): Promise<Partial<Entregable>> {
@@ -334,7 +362,7 @@ export class EntregablesService extends BaseService<Entregable> {
     const { error } = await this.supabase.db.from('entregables').update(cambios).eq('id', id);
     if (error) throw new InternalServerErrorException(error.message);
 
-    return this.findOneConCumplimiento(id);
+    return this.findOneConCumplimiento(id, usuario);
   }
 
   // ─────────────────────────────────────────────
@@ -352,7 +380,11 @@ export class EntregablesService extends BaseService<Entregable> {
     return data ?? [];
   }
 
-  /** Valida que el entregable sea de Exactitud y el usuario pueda gestionar errores. */
+  /**
+   * Valida que el entregable sea de un indicador del sistema y que el
+   * usuario pueda gestionar errores. En Plan no alteran % Cumple (solo la
+   * fecha), pero sí marcan Impacto variable; en Exactitud además penalizan.
+   */
   private async validarGestionError(entregableId: number, usuario?: { sub: number; rol?: string }) {
     const { data: ent } = await this.supabase.db
       .from('entregables').select('id, indicador_id, cliente_id').eq('id', entregableId).single();
@@ -360,8 +392,8 @@ export class EntregablesService extends BaseService<Entregable> {
 
     const { data: ind } = await this.supabase.db
       .from('indicadores').select('nombre').eq('id', ent.indicador_id).single();
-    if (esIndicadorSistema((ind as { nombre?: string } | null)?.nombre) !== 'exactitud') {
-      throw new BadRequestException('Solo los entregables de Exactitud de Cálculos admiten errores');
+    if (esIndicadorSistema((ind as { nombre?: string } | null)?.nombre) === null) {
+      throw new BadRequestException('Solo Plan de Entregables y Exactitud de Cálculos admiten errores');
     }
     if (usuario?.rol === 'Analista') {
       throw new ForbiddenException('Solo el líder o el administrador registran errores');

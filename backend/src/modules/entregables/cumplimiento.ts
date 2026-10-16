@@ -162,3 +162,57 @@ export function pctExactitudConjunto(
   const correctos = correctosExactitud(procesados, errorInterno, errorCliente, perspectiva);
   return Math.round((correctos / compromiso) * 10000) / 100;
 }
+
+// =====================================================
+// Impacto sobre el salario variable (señal cualitativa por fila)
+// =====================================================
+
+/**
+ * Señal VISUAL que indica si la fila está reduciendo el consolidado
+ * que alimenta el variable, desde la perspectiva evaluada.
+ * No altera % Cumple ni la liquidación: solo informa.
+ */
+export type ImpactoVariable = 'sin_afectacion' | 'afecta' | 'pendiente';
+
+export function calcularImpactoVariable(e: {
+  modo: 'plan' | 'exactitud' | null;
+  resultado?: string | null;
+  resultadoCantidad?: number | null;
+  fechaCompromiso?: string | null;
+  cantidadCompromiso?: number | null;
+  errorInterno: number;
+  errorCliente: number;
+  perspectiva: Perspectiva;
+}): ImpactoVariable | null {
+  // Indicadores que no son del sistema: no aplica Impacto variable.
+  if (e.modo === null) return null;
+
+  if (e.modo === 'plan') {
+    if (e.resultado == null) return 'pendiente';
+    // Error de cliente en Plan: afecta al analista, al líder y al global.
+    if (e.errorCliente > 0) return 'afecta';
+    // Error interno: solo penaliza la perspectiva del analista que ejecutó.
+    if (e.perspectiva === 'analista' && e.errorInterno > 0) return 'afecta';
+    // Sin fecha meta no se puede juzgar puntualidad: no evaluable.
+    if (e.fechaCompromiso == null) return 'pendiente';
+    // Misma semántica que el motor: a tiempo si resultado <= compromiso.
+    return e.resultado > e.fechaCompromiso ? 'afecta' : 'sin_afectacion';
+  }
+
+  // exactitud: sin resultado registrado la fila no participa del consolidado,
+  // aunque tenga errores excepcionales no penaliza todavía.
+  if (e.resultadoCantidad == null) return 'pendiente';
+
+  // Error de cliente afecta a analista y a líder.
+  if (e.errorCliente > 0) return 'afecta';
+  // Error interno solo penaliza al analista que ejecutó.
+  if (e.perspectiva === 'analista' && e.errorInterno > 0) return 'afecta';
+  // Procesar menos de lo comprometido reduce el consolidado para cualquiera.
+  if (
+    e.cantidadCompromiso != null && e.cantidadCompromiso > 0 &&
+    e.resultadoCantidad < e.cantidadCompromiso
+  ) {
+    return 'afecta';
+  }
+  return 'sin_afectacion';
+}
