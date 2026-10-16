@@ -51,10 +51,10 @@ export class SalarioVariableAdminController {
   @Delete('config/:id')
   deleteConfig(@Param('id', ParseIntPipe) id: number) { return this.svc.deleteConfig(id); }
 
-  // ---- SECCIÓN 2: Valores de Variable ----
+  // ---- SECCIÓN 2: Valores de Variable (anual) ----
   @Get('valores')
-  getValores(@Query('anio') anio?: string, @Query('mes') mes?: string) {
-    return this.svc.getValores(anio ? Number(anio) : undefined, mes ? Number(mes) : undefined);
+  getValores(@Query('anio') anio?: string) {
+    return this.svc.getValores(anio ? Number(anio) : undefined);
   }
 
   @Post('valores')

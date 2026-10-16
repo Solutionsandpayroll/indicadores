@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
   Building2, ArrowLeft, Package, CheckCircle2, Clock, Plus,
-  ClipboardList, Users, BarChart2, ChevronRight,
+  ClipboardList, Users, BarChart2, ChevronRight, AlertTriangle, X,
 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
@@ -16,18 +16,24 @@ interface ClienteCard {
   id: number; cliente: string; grupo_id: number
   pct_puntualidad: number | null; pct_exactitud: number | null
   puntualidad_actual: number | null; exactitud_actual: number | null
-  pendientes: number; total: number
+  pendientes: number; total: number; quejas: number
   grupos?: { nombre: string } | null
 }
 
 interface EntregableRow {
-  id: number; mes: number; anio: number; pct_avance: number | null
+  id: number; mes: number; anio: number;
   pct_cumple: number | null; resultado: string | null
   resultado_cantidad: number | null; aprobado: boolean
+  error_interno: number | null; error_cliente: number | null
   estatus?: { id: number; descripcion: string } | null
   indicadores?: { id: number; nombre: string } | null
   entregable_tipos?: { id: number; nombre: string } | null
   responsable?: { id: number; nombre: string; usuario: string } | null
+}
+
+interface QuejaDetalle {
+  id: number; descripcion: string; fecha_registro: string | null
+  afectados: { id: number; nombre: string }[]
 }
 
 interface ResumenCliente {
@@ -36,10 +42,12 @@ interface ResumenCliente {
     aprobados: number; pct_cumple_promedio: number | null
     meta_puntualidad: number | null; meta_exactitud: number | null
     puntualidad_promedio: number | null; exactitud_promedio: number | null
+    errores_internos: number; errores_cliente: number; quejas: number
   }
   analistas: { id: number; nombre: string; usuario: string }[]
   indicadores: { id: number; nombre: string }[]
   entregables: EntregableRow[]
+  quejas: QuejaDetalle[]
 }
 
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
@@ -72,19 +80,22 @@ export default function MisClientesPage() {
   const [selected, setSelected] = useState<ClienteCard | null>(null)
   const [entPage, setEntPage] = useState(1)
   const ENT_PAGE_SIZE = 30
+  const [anio, setAnio] = useState(new Date().getFullYear())
+  const [mes, setMes] = useState(new Date().getMonth() + 1)
+  const [quejasOpen, setQuejasOpen] = useState(false)
 
   const isLider = usuario?.rol === 'Lider'
   const isAnalista = usuario?.rol === 'Analista'
 
   const { data: clientes = [], isLoading } = useQuery<ClienteCard[]>({
-    queryKey: ['mis-clientes', usuario?.id],
-    queryFn: async () => { const { data } = await api.get<ClienteCard[]>('/clientes/mis-clientes'); return data },
+    queryKey: ['mis-clientes', usuario?.id, anio, mes],
+    queryFn: async () => { const { data } = await api.get<ClienteCard[]>(`/clientes/mis-clientes?anio=${anio}&mes=${mes}`); return data },
     enabled: !!usuario,
   })
 
   const { data: detalle, isLoading: loadingDetalle } = useQuery<ResumenCliente>({
-    queryKey: ['mis-clientes-detalle', selected?.id, usuario?.id],
-    queryFn: async () => { const { data } = await api.get<ResumenCliente>(`/clientes/mis-clientes/resumen?cliente_id=${selected!.id}`); return data },
+    queryKey: ['mis-clientes-detalle', selected?.id, usuario?.id, anio, mes],
+    queryFn: async () => { const { data } = await api.get<ResumenCliente>(`/clientes/mis-clientes/resumen?cliente_id=${selected!.id}&anio=${anio}&mes=${mes}`); return data },
     enabled: !!selected,
   })
 
@@ -99,6 +110,17 @@ export default function MisClientesPage() {
           <p className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>
             {isLider ? 'Clientes bajo tu responsabilidad' : 'Clientes con los que trabajas'}
           </p>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>Período:</span>
+            <select value={mes} onChange={(e) => setMes(Number(e.target.value))}
+              className="px-2.5 py-1.5 rounded-lg text-xs outline-none cursor-pointer" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
+              {MESES.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
+            </select>
+            <select value={anio} onChange={(e) => setAnio(Number(e.target.value))}
+              className="px-2.5 py-1.5 rounded-lg text-xs outline-none cursor-pointer" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
+              {[2025, 2026, 2027].map((y) => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
         </div>
 
         {isLoading ? (
@@ -153,6 +175,10 @@ export default function MisClientesPage() {
                     <span style={{ color: 'var(--color-ink-muted)' }}>Pendientes</span>
                     <span className="font-semibold" style={{ color: c.pendientes > 0 ? 'oklch(70% 0.16 65)' : 'var(--color-ink)' }}>{c.pendientes}</span>
                   </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span style={{ color: 'var(--color-ink-muted)' }}>Quejas</span>
+                    <span className="font-semibold" style={{ color: c.quejas > 0 ? 'oklch(52% 0.22 15)' : 'var(--color-ink)' }}>{c.quejas}</span>
+                  </div>
                 </div>
               </motion.button>
             ))}
@@ -180,17 +206,19 @@ export default function MisClientesPage() {
         </button>
         <div>
           <h1 className="text-xl font-bold" style={{ color: 'var(--color-ink)', letterSpacing: '-0.03em' }}>{selected.cliente}</h1>
-          <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>{selected.grupos?.nombre ?? ''}</p>
+          <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+            {selected.grupos?.nombre ? `${selected.grupos.nombre} · ` : ''}Período: {MESES[mes - 1]} {anio}
+          </p>
         </div>
       </div>
 
       {/* Resumen */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
         {[
           { label: 'Entregables', value: r?.total ?? '—', icon: Package },
           { label: 'Pendientes', value: r?.pendientes ?? '—', icon: Clock },
           { label: 'Aprobados', value: r?.aprobados ?? '—', icon: CheckCircle2 },
-          { label: '% Cumple prom.', value: r?.pct_cumple_promedio != null ? `${r.pct_cumple_promedio}%` : '—', icon: BarChart2 },
+          { label: '% Cumple prom.', value: r?.pct_cumple_promedio != null ? `${r.pct_cumple_promedio}%` : 'Sin datos', icon: BarChart2 },
         ].map(({ label, value, icon: Icon }) => (
           <div key={label} className="rounded-xl p-3" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
             <div className="flex items-center gap-1.5 mb-1">
@@ -200,6 +228,21 @@ export default function MisClientesPage() {
             <p className="text-lg font-bold" style={{ color: 'var(--color-ink)' }}>{value}</p>
           </div>
         ))}
+        {/* Quejas: clicable */}
+        <button
+          onClick={() => { if ((r?.quejas ?? 0) > 0) setQuejasOpen(true) }}
+          disabled={(r?.quejas ?? 0) === 0}
+          className="rounded-xl p-3 text-left transition-colors cursor-pointer disabled:cursor-default"
+          style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+        >
+          <div className="flex items-center gap-1.5 mb-1">
+            <AlertTriangle size={11} style={{ color: (r?.quejas ?? 0) > 0 ? 'oklch(52% 0.22 15)' : 'var(--color-ink-muted)' }} />
+            <span className="text-[9px] uppercase font-semibold tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Quejas</span>
+          </div>
+          <p className="text-lg font-bold" style={{ color: (r?.quejas ?? 0) > 0 ? 'oklch(52% 0.22 15)' : 'var(--color-ink)' }}>
+            {r?.quejas ?? 0}{(r?.quejas ?? 0) > 0 && <span className="text-[10px] font-normal ml-1" style={{ color: 'var(--color-ink-muted)' }}>ver ›</span>}
+          </p>
+        </button>
       </div>
 
       {/* Metas del cliente vs actual */}
@@ -312,7 +355,7 @@ export default function MisClientesPage() {
                   <th className="text-left px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>Tipo</th>
                   {isLider && <th className="text-left px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>Responsable</th>}
                   <th className="text-left px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>Estatus</th>
-                  <th className="text-center px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>Avance</th>
+                  <th className="text-center px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>Errores</th>
                   <th className="text-center px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>% Cumple</th>
                   <th className="text-center px-4 py-2.5 font-semibold text-[10px] uppercase" style={{ color: 'var(--color-ink-muted)' }}>Aprobado</th>
                 </tr>
@@ -329,7 +372,13 @@ export default function MisClientesPage() {
                     </td>
                     {isLider && <td className="px-4 py-2.5" style={{ color: 'var(--color-ink-muted)' }}>{e.responsable?.nombre ?? '—'}</td>}
                     <td className="px-4 py-2.5"><Badge variant={e.aprobado ? 'success' : 'info'}>{e.estatus?.descripcion ?? '—'}</Badge></td>
-                    <td className="px-4 py-2.5"><div className="flex items-center justify-center gap-2"><Bar pct={e.pct_avance} /><span style={{ color: 'var(--color-ink-muted)' }}>{e.pct_avance ?? 0}%</span></div></td>
+                    <td className="px-4 py-2.5 text-center">
+                      <div className="flex items-center justify-center gap-1.5 text-[10px] tabular-nums">
+                        <span style={{ color: (e.error_interno ?? 0) > 0 ? 'oklch(70% 0.16 65)' : 'var(--color-ink-subtle)' }} title="Errores internos">Int {e.error_interno ?? 0}</span>
+                        <span style={{ color: 'var(--color-border-strong)' }}>·</span>
+                        <span style={{ color: (e.error_cliente ?? 0) > 0 ? 'oklch(52% 0.22 15)' : 'var(--color-ink-subtle)' }} title="Errores de cliente">Cli {e.error_cliente ?? 0}</span>
+                      </div>
+                    </td>
                     <td className="px-4 py-2.5 text-center" style={{ color: 'var(--color-ink)' }}>{e.pct_cumple != null ? `${e.pct_cumple}%` : '—'}</td>
                     <td className="px-4 py-2.5 text-center">
                       {e.aprobado ? <CheckCircle2 size={13} style={{ color: 'oklch(56% 0.18 145)' }} className="mx-auto" /> : <span style={{ color: 'var(--color-ink-muted)' }}>—</span>}
@@ -366,8 +415,45 @@ export default function MisClientesPage() {
           <button onClick={() => irAEntregables({ usuario_id: String(usuario.id) })}
             className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors hover:opacity-90"
             style={{ backgroundColor: 'var(--color-accent)' }}>
-            <ClipboardList size={13} /> Registrar avances
+            <ClipboardList size={13} /> Registrar resultado
           </button>
+        </div>
+      )}
+
+      {/* Modal detalle de quejas */}
+      {quejasOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setQuejasOpen(false)}>
+          <div className="rounded-2xl p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto"
+            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+            onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold flex items-center gap-2" style={{ color: 'var(--color-ink)' }}>
+                <AlertTriangle size={14} style={{ color: 'oklch(52% 0.22 15)' }} />
+                Quejas · {selected.cliente} · {MESES[mes - 1]} {anio}
+              </h3>
+              <button onClick={() => setQuejasOpen(false)} className="p-1.5 rounded-lg cursor-pointer" style={{ color: 'var(--color-ink-muted)' }}><X size={14} /></button>
+            </div>
+            {(detalle?.quejas ?? []).length === 0 ? (
+              <p className="text-xs text-center py-6" style={{ color: 'var(--color-ink-muted)' }}>Sin quejas en este período.</p>
+            ) : (
+              <div className="space-y-3">
+                {detalle?.quejas.map((q) => (
+                  <div key={q.id} className="rounded-xl p-4" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)', border: '1px solid var(--color-border)' }}>
+                    <p className="text-xs" style={{ color: 'var(--color-ink)' }}>{q.descripcion}</p>
+                    <div className="flex items-center justify-between mt-2 text-[10px]" style={{ color: 'var(--color-ink-muted)' }}>
+                      <span>{q.fecha_registro ? new Date(q.fecha_registro).toLocaleDateString('es-CO') : ''}</span>
+                      {q.afectados.length > 0 && (
+                        <span>Involucrados: {q.afectados.map((a) => a.nombre).join(', ')}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <p className="text-[10px] mt-4" style={{ color: 'var(--color-ink-subtle)' }}>
+              Las quejas solo pueden ser registradas o modificadas por el administrador.
+            </p>
+          </div>
         </div>
       )}
     </div>

@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { CumplimientoService, FilaCumplimiento } from './cumplimiento.service';
+import { correctosExactitud } from '../entregables/cumplimiento';
 
 export interface FiltrosResultados {
   anio: number;
@@ -103,6 +104,12 @@ export class ResultadosPagoService {
     f: FiltrosResultados,
     usuario: { sub: number; rol?: string },
   ): Promise<FilaResultado[]> {
+    // Resultados ECONÓMICOS: solo cada quien ve el suyo; Admin ve todos.
+    // (A diferencia de Cumplimiento, donde el líder sí ve a sus analistas.)
+    if (usuario?.rol && usuario.rol !== 'Admin' && f.usuarioId && f.usuarioId !== usuario.sub) {
+      throw new ForbiddenException('Solo puedes consultar tu propio resultado económico');
+    }
+
     const filas = await this.cumplimiento.getResumen(
       { anio: f.anio, mes: f.mes, usuarioId: f.usuarioId, rol: f.rol },
       usuario,
@@ -172,12 +179,17 @@ export class ResultadosPagoService {
       .from('salario_variable_casos')
       .select('usuario_id, configuracion')
       .eq('activo', true);
-    const mapaCasos = new Map<number, { usuariosFuente: number[]; componentesExcluidos: string[] }>();
+    const mapaCasos = new Map<number, {
+      usuariosFuente: number[]; componentesExcluidos: string[];
+      componentes: Array<{ metrica: string; nombre: string; peso: number }> | null;
+    }>();
     for (const c of (casos ?? []) as Array<{ usuario_id: number; configuracion: Record<string, unknown> }>) {
       const cfg = c.configuracion ?? {};
+      const comps = cfg.componentes as Array<{ metrica: string; nombre: string; peso: number }> | undefined;
       mapaCasos.set(c.usuario_id, {
         usuariosFuente: (cfg.usuarios_fuente as number[]) ?? [],
         componentesExcluidos: (cfg.componentes_excluidos as string[]) ?? [],
+        componentes: Array.isArray(comps) && comps.length > 0 ? comps : null,
       });
     }
 
@@ -205,9 +217,7 @@ export class ResultadosPagoService {
       }
 
       const plan = { asignados: 0, evaluados: 0, cumplidos: 0, incumplidos: 0, pendientes: 0 };
-      const exactitud = { asignados: 0, evaluados: 0, pendientes: 0, compromiso_total: 0, correctos_total: 0 };
-      let erroresInternos = 0;
-      let erroresCliente = 0;
+      const ex = { asignados: 0, evaluados: 0, pendientes: 0, compromiso_total: 0, procesados_total: 0, error_interno: 0, error_cliente: 0 };
       let quejas = 0;
       const todosLosClientes = new Set<number>();
       let maxMetaPlan: number | null = null;
@@ -219,13 +229,13 @@ export class ResultadosPagoService {
         plan.cumplidos += fila.plan.cumplidos;
         plan.incumplidos += fila.plan.incumplidos;
         plan.pendientes += fila.plan.pendientes;
-        exactitud.asignados += fila.exactitud.asignados;
-        exactitud.evaluados += fila.exactitud.evaluados;
-        exactitud.pendientes += fila.exactitud.pendientes;
-        exactitud.compromiso_total += fila.exactitud.compromiso_total;
-        exactitud.correctos_total += fila.exactitud.correctos_total;
-        erroresInternos += fila.errores_internos;
-        erroresCliente += fila.errores_cliente;
+        ex.asignados += fila.exactitud.asignados;
+        ex.evaluados += fila.exactitud.evaluados;
+        ex.pendientes += fila.exactitud.pendientes;
+        ex.compromiso_total += fila.exactitud.compromiso_total;
+        ex.procesados_total += fila.exactitud.procesados_total ?? 0;
+        ex.error_interno += fila.exactitud.error_interno ?? 0;
+        ex.error_cliente += fila.exactitud.error_cliente ?? 0;
         quejas += fila.quejas;
         todosLosClientes.add(fila.cliente.id);
         if (fila.plan.meta != null) maxMetaPlan = maxMetaPlan == null ? fila.plan.meta : Math.max(maxMetaPlan, fila.plan.meta);
@@ -233,23 +243,31 @@ export class ResultadosPagoService {
       }
 
       const planPct = plan.evaluados > 0 ? redondo((plan.cumplidos / plan.evaluados) * 100) : null;
-      const exactPct = exactitud.compromiso_total > 0 ? redondo((exactitud.correctos_total / exactitud.compromiso_total) * 100) : null;
-      const errCliPct = exactitud.compromiso_total > 0 ? redondo(((exactitud.compromiso_total - erroresCliente) / exactitud.compromiso_total) * 100) : null;
-      const errIntPct = exactitud.compromiso_total > 0 ? redondo(((exactitud.compromiso_total - erroresInternos) / exactitud.compromiso_total) * 100) : null;
+      // Perspectiva LÍDER: solo los errores de cliente penalizan (los internos no).
+      const correctosLider = correctosExactitud(ex.procesados_total, ex.error_interno, ex.error_cliente, 'lider');
+      const exactPct = ex.compromiso_total > 0 ? redondo((correctosLider / ex.compromiso_total) * 100) : null;
+      const errCliPct = ex.compromiso_total > 0 ? redondo(((ex.compromiso_total - ex.error_cliente) / ex.compromiso_total) * 100) : null;
+      const errIntPct = ex.compromiso_total > 0 ? redondo(((ex.compromiso_total - ex.error_interno) / ex.compromiso_total) * 100) : null;
 
       const consolidado: ConsolidadoGlobal = {
         plan: { ...plan, pct: planPct, meta: maxMetaPlan },
-        exactitud: { ...exactitud, pct: exactPct, meta: maxMetaExactitud },
-        error_cliente: erroresCliente,
-        error_interno: erroresInternos,
+        exactitud: { asignados: ex.asignados, evaluados: ex.evaluados, pendientes: ex.pendientes, compromiso_total: ex.compromiso_total, correctos_total: correctosLider, pct: exactPct, meta: maxMetaExactitud },
+        error_cliente: ex.error_cliente,
+        error_interno: ex.error_interno,
         quejas,
       };
 
       const perfil = (usuarioCaso?.rol === 'Lider') ? 'Lider' : 'Analista';
-      const componentes = configRows
-        .filter((c) => c.perfil === perfil)
-        .filter((c) => !cfgCaso.componentesExcluidos.includes(c.metrica ?? ''))
-        .map((c) => evaluarComponente(c, planPct, exactPct, errCliPct, errIntPct, quejas, maxMetaPlan, maxMetaExactitud));
+      // Si el caso define componentes propios, priman sobre la configuración del perfil.
+      const componentes: ComponentePago[] = cfgCaso.componentes
+        ? cfgCaso.componentes.map((comp) => evaluarComponente(
+            { perfil, metrica: comp.metrica, pct_peso: comp.peso, pct_meta: 100, conceptos: { descripcion: comp.nombre } } as unknown as ConfigRow,
+            planPct, exactPct, errCliPct, errIntPct, quejas, maxMetaPlan, maxMetaExactitud,
+          ))
+        : configRows
+            .filter((c) => c.perfil === perfil)
+            .filter((c) => !cfgCaso.componentesExcluidos.includes(c.metrica ?? ''))
+            .map((c) => evaluarComponente(c, planPct, exactPct, errCliPct, errIntPct, quejas, maxMetaPlan, maxMetaExactitud));
 
       const pctFinal = redondo(componentes.filter((c) => c.estado === 'ganado').reduce((s, c) => s + c.peso, 0));
       const valorBase = valorMap.get(uidCaso) ?? null;

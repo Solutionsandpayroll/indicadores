@@ -47,14 +47,14 @@ export default function Modal({ open, onClose, title, children, size = 'md' }: M
             style={{ zIndex: 'var(--z-modal)', transformOrigin: 'center' }}
           >
             <div
-              className="rounded-2xl shadow-xl overflow-hidden"
+              className="rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[calc(100vh-2rem)]"
               style={{
                 backgroundColor: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
               }}
             >
               <div
-                className="flex items-center justify-between px-6 py-4"
+                className="flex items-center justify-between px-6 py-4 shrink-0"
                 style={{ borderBottom: '1px solid var(--color-border)' }}
               >
                 <h2
@@ -79,7 +79,7 @@ export default function Modal({ open, onClose, title, children, size = 'md' }: M
                   <X size={16} />
                 </button>
               </div>
-              <div className="px-6 py-5">{children}</div>
+              <div className="px-6 py-5 overflow-y-auto min-h-0">{children}</div>
             </div>
           </motion.div>
         </>

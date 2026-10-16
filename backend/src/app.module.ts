@@ -6,13 +6,11 @@ import { GruposModule } from './modules/grupos/grupos.module';
 import { IndicadoresModule } from './modules/indicadores/indicadores.module';
 import { CargosModule } from './modules/cargos/cargos.module';
 import { ConceptosModule } from './modules/conceptos/conceptos.module';
-import { TipoRcaModule } from './modules/tipo-rca/tipo-rca.module';
 import { EstatusModule } from './modules/estatus/estatus.module';
 import { ClientesModule } from './modules/clientes/clientes.module';
 import { UsuariosModule } from './modules/usuarios/usuarios.module';
 import { EntregablesModule } from './modules/entregables/entregables.module';
 import { EntregableTiposModule } from './modules/entregable-tipos/entregable-tipos.module';
-import { RcaModule } from './modules/rca/rca.module';
 import { SalarioVariableModule } from './modules/salario-variable/salario-variable.module';
 import { SalarioVariableAdminModule } from './modules/salario-variable-admin/salario-variable-admin.module';
 import { UsuarioClientesModule } from './modules/usuario-clientes/usuario-clientes.module';
@@ -31,13 +29,11 @@ import { HealthController } from './health/health.controller';
     IndicadoresModule,
     CargosModule,
     ConceptosModule,
-    TipoRcaModule,
     EstatusModule,
     ClientesModule,
     UsuariosModule,
     EntregablesModule,
     EntregableTiposModule,
-    RcaModule,
     SalarioVariableModule,
     SalarioVariableAdminModule,
     UsuarioClientesModule,

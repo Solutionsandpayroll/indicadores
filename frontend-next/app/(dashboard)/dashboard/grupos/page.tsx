@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import DataTable, { type Column } from '@/components/ui/DataTable'
@@ -8,6 +9,7 @@ import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import ModalActions from '@/components/ui/ModalActions'
 import { useToast } from '@/context/ToastContext'
+import { useAuth } from '@/context/AuthContext'
 
 interface Grupo { id: number; nombre: string }
 
@@ -17,8 +19,15 @@ const COLS: Column<Grupo>[] = [
 ]
 
 export default function GruposPage() {
+  const { usuario: currentUser } = useAuth()
+  const router = useRouter()
   const qc = useQueryClient()
   const toast = useToast()
+
+  useEffect(() => {
+    if (currentUser && currentUser.rol !== 'Admin') router.replace('/dashboard')
+  }, [currentUser, router])
+
   const [modal, setModal] = useState<{ open: boolean; row: Grupo | null }>({ open: false, row: null })
   const [nombre, setNombre] = useState('')
   const [error, setError] = useState('')
@@ -49,6 +58,8 @@ export default function GruposPage() {
     setError('')
   }
   function close() { setModal({ open: false, row: null }) }
+
+  if (currentUser && currentUser.rol !== 'Admin') return null
 
   return (
     <div className="max-w-2xl">

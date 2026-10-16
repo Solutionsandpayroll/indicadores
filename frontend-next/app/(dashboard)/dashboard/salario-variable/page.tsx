@@ -24,7 +24,6 @@ interface ConfigRow {
 
 interface ValorRow {
   id: number; usuario_id: number; valor: number; periodo_anio: number;
-  periodo_mes: number; vigencia_desde: string; vigencia_hasta: string | null;
   activo: boolean; usuario?: { nombre: string; usuario: string };
 }
 
@@ -73,7 +72,7 @@ export default function SalarioVariablePage() {
   const qc = useQueryClient()
 
   // Tabs visibles según rol: Analista/Líder solo ven Cumplimiento.
-  const tabsVisibles = TABS.filter((t) => t.roles.includes(currentUser?.rol ?? ''))
+  const tabsVisibles = TABS.filter((t) => (t.roles as readonly string[]).includes(currentUser?.rol ?? ''))
   const tabInicial = tabsVisibles[0]?.key ?? 'cumplimiento'
   const [tab, setTab] = useState<typeof TABS[number]['key']>(tabInicial)
 
@@ -326,10 +325,9 @@ function ConfigTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retu
 // =====================================================
 function ValoresTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: ReturnType<typeof useQueryClient> }) {
   const [anio, setAnio] = useState(2026)
-  const [mes, setMes] = useState(new Date().getMonth() + 1)
   const { data: valores = [], isLoading } = useQuery<ValorRow[]>({
-    queryKey: ['sv-valores', anio, mes],
-    queryFn: async () => { const { data } = await api.get<ValorRow[]>(`/salario-variable-admin/valores?anio=${anio}&mes=${mes}`); return data },
+    queryKey: ['sv-valores', anio],
+    queryFn: async () => { const { data } = await api.get<ValorRow[]>(`/salario-variable-admin/valores?anio=${anio}`); return data },
   })
   const { data: usuarios = [] } = useQuery<Usuario[]>({
     queryKey: ['usuarios'],
@@ -339,7 +337,7 @@ function ValoresTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Ret
   const [showModal, setShowModal] = useState(false)
   const [editRow, setEditRow] = useState<ValorRow | null>(null)
   const [showHist, setShowHist] = useState<number | null>(null)
-  const [form, setForm] = useState({ usuario_id: '', valor: '', periodo_anio: '2026', periodo_mes: String(new Date().getMonth() + 1), vigencia_hasta: '' })
+  const [form, setForm] = useState({ usuario_id: '', valor: '', periodo_anio: '2026' })
 
   const save = useMutation({
     mutationFn: async () => {
@@ -347,8 +345,6 @@ function ValoresTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Ret
         usuario_id: Number(form.usuario_id),
         valor: Number(form.valor),
         periodo_anio: Number(form.periodo_anio),
-        periodo_mes: Number(form.periodo_mes),
-        vigencia_hasta: form.vigencia_hasta || null,
       }
       if (editRow) await api.patch(`/salario-variable-admin/valores/${editRow.id}`, payload)
       else await api.post('/salario-variable-admin/valores', payload)
@@ -363,8 +359,8 @@ function ValoresTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Ret
     onError: () => toast.error('Error al eliminar'),
   })
 
-  function openNew() { setEditRow(null); setForm({ usuario_id: '', valor: '', periodo_anio: String(anio), periodo_mes: String(mes), vigencia_hasta: '' }); setShowModal(true) }
-  function openEdit(r: ValorRow) { setEditRow(r); setForm({ usuario_id: String(r.usuario_id), valor: String(r.valor), periodo_anio: String(r.periodo_anio), periodo_mes: String(r.periodo_mes), vigencia_hasta: r.vigencia_hasta ?? '' }); setShowModal(true) }
+  function openNew() { setEditRow(null); setForm({ usuario_id: '', valor: '', periodo_anio: String(anio) }); setShowModal(true) }
+  function openEdit(r: ValorRow) { setEditRow(r); setForm({ usuario_id: String(r.usuario_id), valor: String(r.valor), periodo_anio: String(r.periodo_anio) }); setShowModal(true) }
 
   const totalValor = valores.reduce((s, v) => s + (v.valor || 0), 0)
   const asignados = valores.length
@@ -401,10 +397,6 @@ function ValoresTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Ret
             className="px-3 py-2 rounded-lg text-xs outline-none" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
             {[2025, 2026, 2027].map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
-          <select value={mes} onChange={(e) => setMes(Number(e.target.value))}
-            className="px-3 py-2 rounded-lg text-xs outline-none" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
-            {MESES.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
-          </select>
         </div>
         <button onClick={openNew} className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white cursor-pointer hover:opacity-90" style={{ backgroundColor: 'var(--color-accent)' }}>
           <Plus size={13} /> Nuevo valor
@@ -416,7 +408,7 @@ function ValoresTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Ret
         <p className="text-xs text-center py-8" style={{ color: 'var(--color-ink-muted)' }}>Cargando...</p>
       ) : valores.length === 0 ? (
         <div className="text-center py-12 rounded-xl" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
-          <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>No hay valores asignados para este período</p>
+          <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>No hay valores asignados para este año</p>
         </div>
       ) : (
         <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
@@ -425,8 +417,7 @@ function ValoresTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Ret
               <tr style={{ backgroundColor: 'oklch(100% 0 0 / 3%)' }}>
                 <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--color-ink-muted)' }}>Usuario</th>
                 <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--color-ink-muted)' }}>Nombre</th>
-                <th className="text-right px-4 py-3 font-semibold" style={{ color: 'var(--color-ink-muted)' }}>Valor</th>
-                <th className="text-center px-4 py-3 font-semibold" style={{ color: 'var(--color-ink-muted)' }}>Vigencia hasta</th>
+                <th className="text-right px-4 py-3 font-semibold" style={{ color: 'var(--color-ink-muted)' }}>Valor anual</th>
                 <th className="text-center px-4 py-3 font-semibold" style={{ color: 'var(--color-ink-muted)' }}>Estado</th>
                 <th className="text-right px-4 py-3 font-semibold" style={{ color: 'var(--color-ink-muted)' }}>Acciones</th>
               </tr>
@@ -437,7 +428,6 @@ function ValoresTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Ret
                   <td className="px-4 py-2.5 font-medium" style={{ color: 'var(--color-ink)' }}>{v.usuario?.usuario}</td>
                   <td className="px-4 py-2.5" style={{ color: 'var(--color-ink-muted)' }}>{v.usuario?.nombre}</td>
                   <td className="px-4 py-2.5 text-right font-semibold" style={{ color: 'var(--color-ink)' }}>{fmtMoney(v.valor)}</td>
-                  <td className="px-4 py-2.5 text-center" style={{ color: 'var(--color-ink-muted)' }}>{v.vigencia_hasta ?? 'Indefinida'}</td>
                   <td className="px-4 py-2.5 text-center"><Badge variant={v.activo ? 'success' : 'danger'}>{v.activo ? 'Activo' : 'Inactivo'}</Badge></td>
                   <td className="px-4 py-2.5 text-right">
                     <div className="flex justify-end gap-1">
@@ -470,27 +460,13 @@ function ValoresTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Ret
                 </select>
               </div>
               <div>
-                <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Valor ($)</label>
+                <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Valor anual ($)</label>
                 <input type="number" min="0" step="1000" value={form.valor} onChange={(e) => setForm({ ...form, valor: e.target.value })}
-                  className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} placeholder="500000" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Año</label>
-                  <input type="number" min="2000" value={form.periodo_anio} onChange={(e) => setForm({ ...form, periodo_anio: e.target.value })}
-                    className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} />
-                </div>
-                <div>
-                  <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Mes</label>
-                  <select value={form.periodo_mes} onChange={(e) => setForm({ ...form, periodo_mes: e.target.value })}
-                    className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
-                    {MESES.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
-                  </select>
-                </div>
+                  className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} placeholder="6000000" />
               </div>
               <div>
-                <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Vigencia hasta (opcional)</label>
-                <input type="date" value={form.vigencia_hasta} onChange={(e) => setForm({ ...form, vigencia_hasta: e.target.value })}
+                <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Año</label>
+                <input type="number" min="2000" value={form.periodo_anio} onChange={(e) => setForm({ ...form, periodo_anio: e.target.value })}
                   className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} />
               </div>
             </div>
@@ -547,26 +523,17 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
     queryKey: ['usuarios'],
     queryFn: async () => { const { data } = await api.get<Usuario[]>('/usuarios'); return data },
   })
-  const { data: configComponentes = [] } = useQuery<{ descripcion: string; metrica: string }[]>({
-    queryKey: ['sv-config-componentes'],
-    queryFn: async () => {
-      const { data } = await api.get<Array<{ conceptos: { descripcion: string }; metrica: string }>>('/salario-variable-admin/config?metrica=not.is.null')
-      const seen = new Set<string>()
-      return data
-        .filter((c) => { const k = c.metrica + '-' + c.conceptos.descripcion; if (seen.has(k)) return false; seen.add(k); return true })
-        .map((c) => ({ descripcion: c.conceptos.descripcion, metrica: c.metrica }))
-    },
-  })
 
   const [showModal, setShowModal] = useState(false)
   const [editRow, setEditRow] = useState<CasoRow | null>(null)
   const [form, setForm] = useState<{
     usuario_id: string; descripcion: string;
-    usuariosFuente: number[]; componentesExcluidos: string[];
-  }>({ usuario_id: '', descripcion: '', usuariosFuente: [], componentesExcluidos: [] })
+    usuariosFuente: number[];
+    componentes: { metrica: string; nombre: string; peso: string }[];
+  }>({ usuario_id: '', descripcion: '', usuariosFuente: [], componentes: [] })
 
-  // Componentes únicos por métrica (evita duplicados en checkboxes)
-  const componentesUnicos = [...new Map(configComponentes.map((c) => [c.metrica, c])).values()]
+  const pesoTotal = form.componentes.reduce((s, c) => s + (Number(c.peso) || 0), 0)
+  const pesosValidos = form.componentes.length === 0 || pesoTotal === 100
 
   const save = useMutation({
     mutationFn: async () => {
@@ -574,7 +541,10 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
         usuario_id: Number(form.usuario_id),
         descripcion: form.descripcion,
         tipo_regla: 'consolidado',
-        configuracion: { usuarios_fuente: form.usuariosFuente, componentes_excluidos: form.componentesExcluidos },
+        configuracion: {
+          usuarios_fuente: form.usuariosFuente,
+          componentes: form.componentes.map((c) => ({ metrica: c.metrica, nombre: c.nombre, peso: Number(c.peso) || 0 })),
+        },
       }
       if (editRow) await api.patch(`/salario-variable-admin/casos/${editRow.id}`, payload)
       else await api.post('/salario-variable-admin/casos', payload)
@@ -591,17 +561,18 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
 
   function openNew() {
     setEditRow(null)
-    setForm({ usuario_id: '', descripcion: '', usuariosFuente: [], componentesExcluidos: [] })
+    setForm({ usuario_id: '', descripcion: '', usuariosFuente: [], componentes: [] })
     setShowModal(true)
   }
   function openEdit(r: CasoRow) {
     setEditRow(r)
     const cfg = r.configuracion ?? {}
+    const comps = (cfg.componentes as Array<{ metrica?: string; nombre?: string; peso?: number }>) ?? []
     setForm({
       usuario_id: String(r.usuario_id),
       descripcion: r.descripcion,
       usuariosFuente: (cfg.usuarios_fuente as number[]) ?? [],
-      componentesExcluidos: (cfg.componentes_excluidos as string[]) ?? [],
+      componentes: comps.map((c) => ({ metrica: c.metrica ?? 'plan', nombre: c.nombre ?? '', peso: String(c.peso ?? '') })),
     })
     setShowModal(true)
   }
@@ -610,8 +581,14 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
     setForm((f) => ({ ...f, usuariosFuente: f.usuariosFuente.includes(id) ? f.usuariosFuente.filter((x) => x !== id) : [...f.usuariosFuente, id] }))
   }
 
-  function toggleComponente(metrica: string) {
-    setForm((f) => ({ ...f, componentesExcluidos: f.componentesExcluidos.includes(metrica) ? f.componentesExcluidos.filter((x) => x !== metrica) : [...f.componentesExcluidos, metrica] }))
+  function updateComponente(i: number, patch: Partial<{ metrica: string; nombre: string; peso: string }>) {
+    setForm((f) => ({ ...f, componentes: f.componentes.map((c, idx) => (idx === i ? { ...c, ...patch } : c)) }))
+  }
+  function addComponente() {
+    setForm((f) => ({ ...f, componentes: [...f.componentes, { metrica: 'plan', nombre: '', peso: '' }] }))
+  }
+  function removeComponente(i: number) {
+    setForm((f) => ({ ...f, componentes: f.componentes.filter((_, idx) => idx !== i) }))
   }
 
   return (
@@ -637,7 +614,7 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
           {casos.map((c) => {
             const cfg = c.configuracion ?? {}
             const fuentes = (cfg.usuarios_fuente as number[]) ?? []
-            const excluidos = (cfg.componentes_excluidos as string[]) ?? []
+            const comps = (cfg.componentes as Array<{ metrica?: string; nombre?: string; peso?: number }>) ?? []
             const fuenteNombres = usuarios.filter((u) => fuentes.includes(u.id)).map((u) => u.nombre)
             return (
               <div key={c.id} className="rounded-xl p-4" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
@@ -653,9 +630,9 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
                         <strong>Usuarios fuente:</strong> {fuenteNombres.join(', ')}
                       </p>
                     )}
-                    {excluidos.length > 0 && (
+                    {comps.length > 0 && (
                       <p className="text-[10px]" style={{ color: 'var(--color-ink-muted)' }}>
-                        <strong>Excluidos:</strong> {excluidos.map((m) => componentesUnicos.find((cc) => cc.metrica === m)?.descripcion ?? m).join(', ')}
+                        <strong>Componentes:</strong> {comps.map((cc) => `${cc.nombre ?? cc.metrica} ${cc.peso ?? 0}%`).join(' · ')}
                       </p>
                     )}
                   </div>
@@ -707,17 +684,43 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
                 </div>
               </div>
               <div>
-                <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Componentes a excluir</label>
-                <div className="mt-1.5 space-y-1.5 p-2 rounded-lg" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)' }}>
-                  {componentesUnicos.map((c) => {
-                    const checked = form.componentesExcluidos.includes(c.metrica)
-                    return (
-                      <label key={c.metrica} className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: 'var(--color-ink)' }}>
-                        <input type="checkbox" checked={checked} className="w-3.5 h-3.5 rounded" style={{ accentColor: 'var(--color-accent)' }} onChange={() => toggleComponente(c.metrica)} />
-                        <span>{c.descripcion}</span>
-                      </label>
-                    )
-                  })}
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Componentes del caso</label>
+                  <button type="button" onClick={addComponente} className="flex items-center gap-1 text-[10px] font-medium cursor-pointer hover:opacity-80" style={{ color: 'var(--color-accent)' }}>
+                    <Plus size={11} /> Agregar
+                  </button>
+                </div>
+                <div className="mt-1.5 space-y-2 p-2 rounded-lg" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)' }}>
+                  {form.componentes.length === 0 && (
+                    <p className="text-[10px]" style={{ color: 'var(--color-ink-muted)' }}>
+                      Sin componentes propios: se usará la configuración del perfil del usuario.
+                    </p>
+                  )}
+                  {form.componentes.map((c, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <select value={c.metrica} onChange={(e) => updateComponente(i, { metrica: e.target.value })}
+                        className="w-32 px-2 py-1.5 rounded-md text-xs outline-none cursor-pointer" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
+                        <option value="plan">Plan de Entregables</option>
+                        <option value="exactitud">Exactitud de Cálculos</option>
+                        <option value="quejas">Quejas</option>
+                      </select>
+                      <input type="text" value={c.nombre} onChange={(e) => updateComponente(i, { nombre: e.target.value })} placeholder="Nombre del componente"
+                        className="flex-1 min-w-0 px-2 py-1.5 rounded-md text-xs outline-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} />
+                      <div className="relative">
+                        <input type="number" min="0" max="100" value={c.peso} onChange={(e) => updateComponente(i, { peso: e.target.value })} placeholder="50"
+                          className="w-20 px-2 py-1.5 pr-5 rounded-md text-xs outline-none text-right" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} />
+                        <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px]" style={{ color: 'var(--color-ink-muted)' }}>%</span>
+                      </div>
+                      <button type="button" onClick={() => removeComponente(i)} className="p-1.5 rounded-md cursor-pointer hover:bg-white/10 shrink-0" style={{ color: 'var(--color-accent)' }} title="Quitar"><Trash2 size={12} /></button>
+                    </div>
+                  ))}
+                  {form.componentes.length > 0 && (
+                    <div className="flex justify-end pt-1">
+                      <span className="text-[10px] font-semibold" style={{ color: pesosValidos ? 'oklch(56% 0.18 145)' : 'oklch(52% 0.22 15)' }}>
+                        Suma de pesos: {pesoTotal}% {pesosValidos ? '✓' : '(debe ser 100%)'}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -725,7 +728,7 @@ function CasosTab({ toast, qc }: { toast: ReturnType<typeof useToast>; qc: Retur
               <button onClick={() => setShowModal(false)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', color: 'var(--color-ink-muted)' }}>
                 <X size={12} /> Cancelar
               </button>
-              <button onClick={() => save.mutate()} disabled={save.isPending || !form.usuario_id || !form.descripcion || form.usuariosFuente.length === 0}
+              <button onClick={() => save.mutate()} disabled={save.isPending || !form.usuario_id || !form.descripcion || form.usuariosFuente.length === 0 || !pesosValidos || form.componentes.some((c) => !c.nombre.trim())}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-white cursor-pointer disabled:opacity-50" style={{ backgroundColor: 'var(--color-accent)' }}>
                 <Save size={12} /> Guardar
               </button>
@@ -742,8 +745,8 @@ interface ComponentePago {
 }
 interface ConsolidadoGlobal {
   plan: { asignados: number; evaluados: number; cumplidos: number; incumplidos: number; pendientes: number; pct: number | null; meta: number | null }
-  exactitud: { asignados: number; evaluados: number; pendientes: number; compromiso_total: number; correctos_total: number; pct: number | null; meta: number | null }
-  errores_internos: number; errores_cliente: number; quejas: number
+  exactitud: { asignados: number; evaluados: number; pendientes: number; compromiso_total: number; correctos_total: number; procesados_total?: number; pct: number | null; meta: number | null }
+  error_interno: number; error_cliente: number; quejas: number
 }
 interface FilaResultado {
   usuario: { id: number; nombre: string; usuario: string; rol: string }
@@ -789,7 +792,7 @@ function ResultadosTab() {
 
   function exportCSV() {
     // Formato para nómina: Nombre, Variable, Porcentaje cumplimiento, Valor a pagar
-    const headers = ['Nombre', 'Variable', 'Porcentaje cumplimiento', 'Valor a pagar']
+    const headers = ['Nombre', 'Variable anual', 'Porcentaje cumplimiento', 'Valor a pagar']
     const rows = resultados.map((r) => [
       r.usuario.nombre,
       r.valor_base != null ? Math.round(r.valor_base) : '',
@@ -838,7 +841,7 @@ function ResultadosTab() {
     ws.getRow(3).height = 8
 
     // Fila 4: Encabezados
-    const encabezados = ['Nombre', 'Variable', '% Cumplimiento', 'Valor a Pagar']
+    const encabezados = ['Nombre', 'Variable anual', '% Cumplimiento', 'Valor a Pagar']
     encabezados.forEach((h, i) => {
       const cell = ws.getCell(4, i + 1)
       cell.value = h
@@ -1071,7 +1074,7 @@ function ResultadosTab() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] uppercase font-semibold tracking-wider block" style={{ color: 'var(--color-ink-muted)' }}>Variable base</span>
+                  <span className="text-[10px] uppercase font-semibold tracking-wider block" style={{ color: 'var(--color-ink-muted)' }}>Variable base (anual)</span>
                   <span className="text-sm font-bold" style={{ color: 'var(--color-ink)' }}>{fmtMoney(r.valor_base)}</span>
                 </div>
               </div>

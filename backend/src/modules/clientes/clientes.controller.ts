@@ -18,15 +18,31 @@ export class ClientesController extends BaseController<Cliente> {
   }
 
   @Get('mis-clientes')
-  findMisClientes(@CurrentUser() usuario: { sub: number; rol?: string }) {
-    return this.clientesService.findMisClientes(usuario.sub, usuario.rol ?? 'Analista');
+  findMisClientes(
+    @CurrentUser() usuario: { sub: number; rol?: string },
+    @Query('anio') anio?: string,
+    @Query('mes') mes?: string,
+  ) {
+    const hoy = new Date();
+    return this.clientesService.findMisClientes(
+      usuario.sub, usuario.rol ?? 'Analista',
+      anio ? Number(anio) : hoy.getFullYear(),
+      mes ? Number(mes) : hoy.getMonth() + 1,
+    );
   }
 
   @Get('mis-clientes/resumen')
   getResumenCliente(
     @CurrentUser() usuario: { sub: number; rol?: string },
     @Query('cliente_id') clienteId: string,
+    @Query('anio') anio?: string,
+    @Query('mes') mes?: string,
   ) {
-    return this.clientesService.getResumenCliente(Number(clienteId), usuario.sub, usuario.rol ?? 'Analista');
+    const hoy = new Date();
+    return this.clientesService.getResumenCliente(
+      Number(clienteId), usuario.sub, usuario.rol ?? 'Analista',
+      anio ? Number(anio) : hoy.getFullYear(),
+      mes ? Number(mes) : hoy.getMonth() + 1,
+    );
   }
 }

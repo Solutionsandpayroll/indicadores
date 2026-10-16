@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import DataTable, { type Column } from '@/components/ui/DataTable'
@@ -8,6 +9,7 @@ import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import ModalActions from '@/components/ui/ModalActions'
 import { useToast } from '@/context/ToastContext'
+import { useAuth } from '@/context/AuthContext'
 
 interface Cargo { id: number; descripcion: string }
 interface Concepto { id: number; descripcion: string }
@@ -124,7 +126,16 @@ const TABS: { key: Tab; label: string }[] = [
 ]
 
 export default function OtrasVariablesPage() {
+  const { usuario: currentUser } = useAuth()
+  const router = useRouter()
   const [tab, setTab] = useState<Tab>('cargos')
+
+  useEffect(() => {
+    if (currentUser && currentUser.rol !== 'Admin') router.replace('/dashboard')
+  }, [currentUser, router])
+
+  if (currentUser && currentUser.rol !== 'Admin') return null
+
   return (
     <div className="max-w-5xl">
       <div

@@ -5,7 +5,7 @@ import { EntregablesService, Entregable } from './entregables.service';
 import type { UsuarioCtx } from './entregables.service';
 import { FiltrarEntregablesDto } from './dto/filtrar-entregables.dto';
 import { SeguimientoEntregableDto } from './dto/seguimiento.dto';
-import { CrearAvanceDto } from './dto/avance.dto';
+import { CrearErrorDto } from './dto/error.dto';
 import { UsuariosService } from '../usuarios/usuarios.service';
 
 @Controller('entregables')
@@ -84,28 +84,37 @@ export class EntregablesController extends BaseController<Entregable> {
     return this.entregablesService.historial(id);
   }
 
-  // ── Bitácora de avances ──
+  // ── Errores del entregable (tabla hija) ──
 
-  @Get(':id/avances')
-  avances(@Param('id', ParseIntPipe) id: number) {
-    return this.entregablesService.avances(id);
+  @Get(':id/errores')
+  listarErrores(@Param('id', ParseIntPipe) id: number) {
+    return this.entregablesService.listarErrores(id);
   }
 
-  @Post(':id/avances')
-  crearAvance(
+  @Post(':id/errores')
+  crearError(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: CrearAvanceDto,
-    @CurrentUser() usuario?: { sub: number },
+    @Body() dto: CrearErrorDto,
+    @CurrentUser() usuario?: { sub: number; rol?: string },
   ) {
-    return this.entregablesService.crearAvance(id, dto, usuario?.sub);
+    return this.entregablesService.crearError(id, dto, usuario);
   }
 
-  @Delete(':id/avances/:avanceId')
-  eliminarAvance(
-    @Param('id', ParseIntPipe) id: number,
-    @Param('avanceId', ParseIntPipe) avanceId: number,
+  @Patch('errores/:errorId')
+  actualizarError(
+    @Param('errorId', ParseIntPipe) errorId: number,
+    @Body() dto: Partial<CrearErrorDto>,
+    @CurrentUser() usuario?: { sub: number; rol?: string },
   ) {
-    return this.entregablesService.eliminarAvance(id, avanceId);
+    return this.entregablesService.actualizarError(errorId, dto, usuario);
+  }
+
+  @Delete('errores/:errorId')
+  eliminarError(
+    @Param('errorId', ParseIntPipe) errorId: number,
+    @CurrentUser() usuario?: { sub: number; rol?: string },
+  ) {
+    return this.entregablesService.eliminarError(errorId, usuario);
   }
 
   @Get(':id/detalle')

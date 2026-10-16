@@ -8,11 +8,9 @@ const PAGE_TITLES: Record<string, string> = {
   '/dashboard/grupos': 'Grupos',
   '/dashboard/entregables': 'Entregables',
   '/dashboard/indicadores': 'Indicadores',
-  '/dashboard/rca': 'RCA',
   '/dashboard/otras-variables': 'Otras Variables',
   '/dashboard/usuarios': 'Usuarios',
   '/dashboard/estatus': 'Estatus',
-  '/dashboard/tipo-rca': 'Tipo RCA',
 }
 
 export default function Topbar() {

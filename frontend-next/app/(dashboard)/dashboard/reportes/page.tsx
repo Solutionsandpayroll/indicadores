@@ -23,13 +23,13 @@ interface ReporteData {
     meta: number; resultado: number | null; unidad: string;
     estado: 'cumple' | 'no_cumple' | 'sin_datos';
     total_entregables: number; evaluados: number;
-    compromiso_total: number; correctos_total: number;
+    compromiso_total: number; procesados_total: number;
     errores_internos: number; errores_cliente: number;
   };
   errores: {
-    entregable_id: number; cliente: string; periodo: string;
+    id: number; entregable_id: number; cliente: string; periodo: string;
     tipo_entregable: string; lider: string; responsable: string;
-    error_interno: number; error_cliente: number; accion_tomada: string | null;
+    tipo: 'interno' | 'cliente'; descripcion: string; correccion: string | null;
   }[];
 }
 
@@ -241,7 +241,7 @@ export default function ReportesPage() {
                   <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: 'var(--color-ink-muted)' }} axisLine={false} tickLine={false} />
                   <Tooltip
                     contentStyle={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 11 }}
-                    formatter={(v: number) => `${v}%`}
+                    formatter={(v) => `${v as number}%`}
                   />
                   <Legend
                     wrapperStyle={{ fontSize: 11, display: 'flex', justifyContent: 'center', gap: 20 }}
@@ -290,15 +290,21 @@ export default function ReportesPage() {
                 </thead>
                 <tbody>
                   {reporte.errores.map((e) => (
-                    <tr key={e.entregable_id} className="border-t" style={{ borderColor: 'var(--color-ink-muted)' }}>
+                    <tr key={e.id} className="border-t" style={{ borderColor: 'var(--color-border)' }}>
                       <td className="px-5 py-2.5" style={{ color: 'var(--color-ink)' }}>
-                        <p className="font-medium">{e.tipo_entregable} — {e.periodo}</p>
-                        <p className="text-[10px]" style={{ color: 'var(--color-ink-muted)' }}>
-                          Err. interno: {e.error_interno} · Err. cliente: {e.error_cliente} · Líder: {e.lider} · Responsable: {e.responsable}
+                        <div className="flex items-center gap-2">
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold text-white shrink-0"
+                            style={{ backgroundColor: e.tipo === 'interno' ? 'oklch(70% 0.16 65)' : 'oklch(52% 0.22 15)' }}>
+                            {e.tipo === 'interno' ? 'Interno' : 'Cliente'}
+                          </span>
+                          <span className="font-medium">{e.descripcion}</span>
+                        </div>
+                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                          {e.tipo_entregable} · {e.periodo} · Responsable: {e.responsable} · Líder: {e.lider}
                         </p>
                       </td>
                       <td className="px-5 py-2.5" style={{ color: 'var(--color-ink-muted)' }}>
-                        {e.accion_tomada ?? <span className="italic" style={{ color: 'oklch(70% 0.16 65)' }}>Pendiente de registrar</span>}
+                        {e.correccion ?? <span className="italic" style={{ color: 'oklch(70% 0.16 65)' }}>Pendiente de registrar</span>}
                       </td>
                     </tr>
                   ))}

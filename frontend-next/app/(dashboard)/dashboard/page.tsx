@@ -271,14 +271,14 @@ export default function HomePage() {
               Gestiona tus indicadores operacionales
             </h3>
             <p className="text-sm" style={{ color: 'oklch(100% 0 0 / 50%)', maxWidth: 'unset' }}>
-              Navega a cualquier módulo desde el menú lateral para registrar clientes, entregables, RCAs e indicadores de desempeño.
+              Navega a cualquier módulo desde el menú lateral para registrar clientes, entregables e indicadores de desempeño.
             </p>
           </div>
           <div className="flex gap-3 mt-5 flex-wrap">
             {[
               { label: 'Ver clientes', href: '/dashboard/clientes', color: 'var(--color-primary-mid)' },
               { label: 'Entregables', href: '/dashboard/entregables', color: 'var(--color-blue-mid)' },
-              { label: 'RCA', href: '/dashboard/rca', color: 'var(--color-accent)' },
+              { label: 'Salario Variable', href: '/dashboard/salario-variable', color: 'var(--color-accent)' },
             ].map(({ label, href, color }) => (
               <motion.a
                 key={href}

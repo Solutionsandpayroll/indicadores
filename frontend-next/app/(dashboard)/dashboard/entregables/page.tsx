@@ -19,7 +19,6 @@ import Modal from '@/components/ui/Modal'
 import FormField from '@/components/ui/FormField'
 import Badge from '@/components/ui/Badge'
 import ModalActions from '@/components/ui/ModalActions'
-import PanelAvances from '@/components/entregables/PanelAvances'
 import { useToast } from '@/context/ToastContext'
 import { useAuth } from '@/context/AuthContext'
 
@@ -29,10 +28,16 @@ interface Indicador { id: number; nombre: string; es_sistema: boolean }
 interface EntregableTipo { id: number; nombre: string; indicador_id: number; orden: number; cliente_id: number | null; mostrar: boolean; activo: boolean }
 interface Usuario { id: number; nombre: string; usuario: string; rol: string }
 
+interface EntregableError {
+  id: number; tipo: 'interno' | 'cliente'; descripcion: string
+  correccion: string | null; entregable_id: number
+  autor?: { id: number; nombre: string } | null
+}
+
 interface Entregable {
   id: number; mes: number; anio: number; cliente_id: number
   lider_id: number | null; estatus_id: number; usuario_id: number | null
-  pct_avance: number | null; comentarios: string | null
+  comentarios: string | null
   indicador_id: number; tipo: string | null
   entregable_tipo_id: number
   fecha_compromiso: string | null
@@ -57,7 +62,7 @@ interface Resumen {
 }
 
 interface HistorialRow {
-  id: number; creado_en: string; pct_avance: number | null
+  id: number; creado_en: string
   anterior: { descripcion: string } | null
   nuevo: { descripcion: string } | null
 }
@@ -72,14 +77,14 @@ function finDeMes(mes: number, anio: number) {
 
 const empty = {
   mes: String(AHORA.getMonth() + 1), anio: String(AHORA.getFullYear()),
-  cliente_id: '', lider_id: '', estatus_id: '', usuario_id: '',
+  cliente_id: '', lider_id: '', usuario_id: '',
   comentarios: '', indicador_id: '', entregable_tipo_id: '',
   fecha_compromiso: '',
   cantidad_compromiso: '',
 }
 
 const emptySeguimiento = {
-  resultado: '', fecha_compromiso: '', error_interno: '0', error_cliente: '0',
+  resultado: '', fecha_compromiso: '',
   aprobado: false, comentarios: '', cantidad_compromiso: '', resultado_cantidad: '',
 }
 
@@ -164,6 +169,10 @@ export default function EntregablesPage() {
   const [segForm, setSegForm] = useState(emptySeguimiento)
   const [segError, setSegError] = useState('')
 
+  // Errores del entregable (tabla hija)
+  const [newError, setNewError] = useState<{ tipo: 'interno' | 'cliente'; descripcion: string; correccion: string }>({ tipo: 'interno', descripcion: '', correccion: '' })
+  const [editErrorId, setEditErrorId] = useState<number | null>(null)
+
   // Historial
   const [histId, setHistId] = useState<number | null>(null)
 
@@ -211,6 +220,33 @@ export default function EntregablesPage() {
     queryKey: ['entregable-historial', histId],
     enabled: histId !== null,
     queryFn: async () => { const { data } = await api.get<HistorialRow[]>(`/entregables/${histId}/historial`); return data },
+  })
+
+  const { data: errores = [], refetch: refetchErrores } = useQuery<EntregableError[]>({
+    queryKey: ['entregable-errores', segModal.row?.id],
+    enabled: !!segModal.row,
+    queryFn: async () => { const { data } = await api.get<EntregableError[]>(`/entregables/${segModal.row!.id}/errores`); return data },
+  })
+
+  const crearError = useMutation({
+    mutationFn: async () => api.post(`/entregables/${segModal.row!.id}/errores`, {
+      tipo: newError.tipo, descripcion: newError.descripcion.trim(), correccion: newError.correccion.trim() || null,
+    }),
+    onSuccess: () => { setNewError({ tipo: 'interno', descripcion: '', correccion: '' }); refetchErrores(); invalidar(); toast.success('Error registrado') },
+    onError: () => toast.error('No se pudo registrar el error'),
+  })
+
+  const actualizarError = useMutation({
+    mutationFn: async (payload: { id: number; tipo: 'interno' | 'cliente'; descripcion: string; correccion: string | null }) =>
+      api.patch(`/entregables/errores/${payload.id}`, { tipo: payload.tipo, descripcion: payload.descripcion, correccion: payload.correccion }),
+    onSuccess: () => { setEditErrorId(null); refetchErrores(); invalidar(); toast.success('Error actualizado') },
+    onError: () => toast.error('No se pudo actualizar el error'),
+  })
+
+  const eliminarError = useMutation({
+    mutationFn: (id: number) => api.delete(`/entregables/errores/${id}`),
+    onSuccess: () => { refetchErrores(); invalidar(); toast.success('Error eliminado') },
+    onError: () => toast.error('Solo el administrador puede eliminar errores'),
   })
 
   // Catálogo completo de tipos: alimenta el filtro y el select del modal.
@@ -288,17 +324,15 @@ export default function EntregablesPage() {
     value: entregables.filter((en) => en.estatus_id === e.id).length,
   })).filter((e) => e.value > 0)
 
-  // Area: avance promedio por mes
-  const avancePorMes = MESES_CORTO.map((m, i) => {
+  // Cumplimiento promedio por mes
+  const cumplimientoPorMes = MESES_CORTO.map((m, i) => {
     const del = entregables.filter((e) => e.mes === i + 1)
-    const avg = del.length ? del.reduce((s, e) => s + (e.pct_avance ?? 0), 0) / del.length : null
     const evaluados = del.filter((e) => e.pct_cumple !== null)
     const cumple = evaluados.length
       ? evaluados.reduce((s, e) => s + (e.pct_cumple ?? 0), 0) / evaluados.length
       : null
     return {
       mes: m,
-      avance: avg !== null ? Math.round(avg) : null,
       cumple: cumple !== null ? Math.round(cumple) : null,
       total: del.length,
     }
@@ -394,20 +428,6 @@ export default function EntregablesPage() {
       },
     },
     {
-      key: 'pct_avance', label: 'Avance',
-      render: (r) => {
-        const v = r.pct_avance ?? 0
-        return (
-          <div className="flex items-center gap-2">
-            <div className="flex-1 h-1.5 rounded-full" style={{ backgroundColor: 'var(--color-border)', minWidth: 52 }}>
-              <div className="h-1.5 rounded-full transition-[width] duration-500" style={{ width: `${v}%`, backgroundColor: v >= 80 ? 'var(--color-success)' : v >= 50 ? 'oklch(48% 0.13 240)' : 'var(--color-accent)' }} />
-            </div>
-            <span className="text-xs font-medium tabular-nums" style={{ color: 'var(--color-ink-muted)' }}>{v}%</span>
-          </div>
-        )
-      },
-    },
-    {
       key: 'acciones_seg', label: 'Seguimiento',
       render: (r) => (
         <div className="flex items-center gap-1">
@@ -443,7 +463,6 @@ export default function EntregablesPage() {
       const payload = {
         mes: Number(form.mes), anio: Number(form.anio), cliente_id: Number(form.cliente_id),
         lider_id: form.lider_id ? Number(form.lider_id) : null,
-        estatus_id: Number(form.estatus_id),
         usuario_id: form.usuario_id ? Number(form.usuario_id) : null,
         comentarios: form.comentarios || null,
         indicador_id: Number(form.indicador_id),
@@ -464,17 +483,14 @@ export default function EntregablesPage() {
   const guardarSeguimiento = useMutation({
     mutationFn: async () => {
       if (!segModal.row) return
-      const payload: Record<string, unknown> = {
-        error_interno: Number(segForm.error_interno) || 0,
-        error_cliente: Number(segForm.error_cliente) || 0,
-      }
+      const payload: Record<string, unknown> = {}
       // Los analistas no envían el campo de aprobación (backend lo bloquea).
       if (!isAnalista) payload.aprobado = segForm.aprobado
       if (segForm.resultado) payload.resultado = segForm.resultado
-    if (segForm.fecha_compromiso) payload.fecha_compromiso = segForm.fecha_compromiso
-    if (segForm.cantidad_compromiso) payload.cantidad_compromiso = Number(segForm.cantidad_compromiso)
-    if (segForm.resultado_cantidad) payload.resultado_cantidad = Number(segForm.resultado_cantidad)
-    if (segForm.comentarios) payload.comentarios = segForm.comentarios
+      if (segForm.fecha_compromiso) payload.fecha_compromiso = segForm.fecha_compromiso
+      if (segForm.cantidad_compromiso) payload.cantidad_compromiso = Number(segForm.cantidad_compromiso)
+      if (segForm.resultado_cantidad) payload.resultado_cantidad = Number(segForm.resultado_cantidad)
+      if (segForm.comentarios) payload.comentarios = segForm.comentarios
       await api.patch(`/entregables/${segModal.row.id}/seguimiento`, payload)
     },
     onSuccess: () => {
@@ -499,7 +515,7 @@ export default function EntregablesPage() {
     setModal({ open: true, row: row ?? null })
     setForm(row ? {
       mes: String(row.mes), anio: String(row.anio), cliente_id: String(row.cliente_id),
-      lider_id: row.lider_id ? String(row.lider_id) : '', estatus_id: String(row.estatus_id),
+      lider_id: row.lider_id ? String(row.lider_id) : '',
       usuario_id: row.usuario_id ? String(row.usuario_id) : '',
       comentarios: row.comentarios ?? '', indicador_id: String(row.indicador_id),
       entregable_tipo_id: row.entregable_tipo_id ? String(row.entregable_tipo_id) : '',
@@ -516,8 +532,6 @@ export default function EntregablesPage() {
     setSegForm({
       resultado: esCantidad ? '' : (row.resultado ?? new Date().toISOString().slice(0, 10)),
       fecha_compromiso: esCantidad ? '' : (row.fecha_compromiso ?? finDeMes(row.mes, row.anio)),
-      error_interno: String(row.error_interno ?? 0),
-      error_cliente: String(row.error_cliente ?? 0),
       aprobado: row.aprobado ?? false,
       comentarios: row.comentarios ?? '',
       cantidad_compromiso: row.cantidad_compromiso != null ? String(row.cantidad_compromiso) : '',
@@ -565,7 +579,7 @@ export default function EntregablesPage() {
       return next
     })
 
-  const canSave = form.mes && form.anio && form.cliente_id && form.estatus_id
+  const canSave = form.mes && form.anio && form.cliente_id
     && form.indicador_id && form.entregable_tipo_id
     && (form.fecha_compromiso || form.cantidad_compromiso)
 
@@ -596,9 +610,12 @@ export default function EntregablesPage() {
     // Nuevo modelo: cada indicador mide una sola cosa.
     if (nuevoModelo) {
       if (esCantidad) {
-        // Exactitud de Cálculos: correctos / compromiso.
-        const exactitud = Math.max(0, Math.min(100,
-          (Number(segForm.resultado_cantidad) / Number(segForm.cantidad_compromiso)) * 100))
+        // Exactitud: correctos = procesados - errores_internos - errores_cliente (analista).
+        const procesados = Number(segForm.resultado_cantidad) || 0
+        const ei = segModal.row?.error_interno ?? 0
+        const ec = segModal.row?.error_cliente ?? 0
+        const correctos = Math.max(0, procesados - ei - ec)
+        const exactitud = Math.max(0, Math.min(100, (correctos / Number(segForm.cantidad_compromiso)) * 100))
         return {
           difLabel, exactitud: Math.round(exactitud * 100) / 100,
           puntualidad: null as number | null,
@@ -613,11 +630,13 @@ export default function EntregablesPage() {
       }
     }
 
-    // Modelo histórico: fórmula mixta original.
-    const exactitud = Math.max(0, Math.min(100, 100 - Number(segForm.error_interno) * 2 - Number(segForm.error_cliente) * 5))
+    // Modelo histórico: puntualidad y exactitud simples (sin penalizaciones fijas).
     const puntualidad = Math.max(0, Math.min(100, 100 - Math.max(0, dif) * 10))
-    return { difLabel, exactitud, puntualidad, cumple: Math.round(((puntualidad + exactitud) / 2) * 100) / 100 }
-  }, [segModal.row, segForm.resultado, segForm.fecha_compromiso, segForm.error_interno, segForm.error_cliente, segForm.cantidad_compromiso, segForm.resultado_cantidad])
+    const exactitud = esCantidad
+      ? Math.max(0, Math.min(100, ((Number(segForm.resultado_cantidad) || 0) / (Number(segForm.cantidad_compromiso) || 1)) * 100))
+      : 100
+    return { difLabel, exactitud, puntualidad, cumple: esCantidad ? exactitud : puntualidad }
+  }, [segModal.row, segForm.resultado, segForm.fecha_compromiso, segForm.cantidad_compromiso, segForm.resultado_cantidad])
 
   return (
     <div className="max-w-7xl space-y-6">
@@ -698,15 +717,12 @@ export default function EntregablesPage() {
           </div>
 
           <div className="lg:col-span-3">
-            <ChartCard title="Avance y cumplimiento por mes" icon={BarChart2}>
-              {avancePorMes.length > 0 ? (
+            <ChartCard title="Cumplimiento promedio por mes" icon={BarChart2}>
+              {cumplimientoPorMes.length > 0 ? (
                 <ResponsiveContainer width="100%" height={220}>
-                  <AreaChart data={avancePorMes} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                  <AreaChart data={cumplimientoPorMes} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
                     <defs>
-                      <linearGradient id="avance-grad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="oklch(48% 0.13 240)" stopOpacity={0.4} />
-                        <stop offset="100%" stopColor="oklch(48% 0.13 240)" stopOpacity={0} />
-                      </linearGradient>
+                      
                       <linearGradient id="cumple-grad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="oklch(56% 0.18 145)" stopOpacity={0.35} />
                         <stop offset="100%" stopColor="oklch(56% 0.18 145)" stopOpacity={0} />
@@ -717,11 +733,9 @@ export default function EntregablesPage() {
                     <YAxis tick={{ fontSize: 11, fill: 'var(--color-ink-subtle)' }} tickLine={false} axisLine={false} unit="%" domain={[0, 100]} />
                     <Tooltip
                       contentStyle={{ backgroundColor: 'var(--color-primary)', border: 'none', borderRadius: 12, color: 'white', fontSize: 12 }}
-                      formatter={(v, n) => [`${v}%`, n === 'avance' ? 'Avance promedio' : '% Cumple promedio']}
+                      formatter={(v) => [`${v}%`, '% Cumple promedio']}
                     />
-                    <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, color: 'var(--color-ink-muted)' }}
-                      formatter={(v) => (v === 'avance' ? 'Avance' : '% Cumple')} />
-                    <Area type="monotone" dataKey="avance" stroke="oklch(48% 0.13 240)" strokeWidth={2.5} fill="url(#avance-grad)" dot={{ fill: 'oklch(48% 0.13 240)', r: 3.5, strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 0 }} isAnimationActive animationDuration={800} animationEasing="ease-out" connectNulls />
+                    
                     <Area type="monotone" dataKey="cumple" stroke="oklch(56% 0.18 145)" strokeWidth={2.5} fill="url(#cumple-grad)" dot={{ fill: 'oklch(56% 0.18 145)', r: 3.5, strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 0 }} isAnimationActive animationDuration={800} animationEasing="ease-out" connectNulls />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -735,8 +749,7 @@ export default function EntregablesPage() {
 
       <DataTable data={entregables} columns={COLS} loading={isLoading} searchKeys={['tipo', 'comentarios']}
         onAdd={isAnalista ? undefined : () => open()} onEdit={isAnalista ? undefined : open} onDelete={isAnalista ? undefined : (row) => del.mutate(row.id)} addLabel="Nuevo entregable"
-        expandLabel="Ver avances"
-        renderExpanded={(row) => <PanelAvances entregableId={row.id} />} />
+ />
 
       {/* ── Modal: crear / editar ── */}
       <Modal open={modal.open} onClose={close} title={modal.row ? 'Editar entregable' : 'Nuevo entregable'} size="lg">
@@ -793,18 +806,6 @@ export default function EntregablesPage() {
                 : esNuevoFlujo && modoExactitud
                   ? 'Exactitud de Cálculos: el cumplimiento se mide por cantidad de resultados correctos.'
                   : 'Llena al menos uno de los dos. La fecha es para puntualidad; la cantidad es para compromisos numéricos.'}
-            </p>
-          </div>
-          <FormField as="select" label="Estatus" required value={form.estatus_id} onChange={set('estatus_id')}>
-            <option value="">Selecciona…</option>
-            {estatusList.map((e) => <option key={e.id} value={e.id}>{e.descripcion}</option>)}
-          </FormField>
-          {/* El % de avance ya no se escribe a mano: sale de la bitácora de
-              avances, que es la única fuente de verdad. */}
-          <div className="flex flex-col justify-end pb-1">
-            <p className="text-xs" style={{ color: 'var(--color-ink-subtle)' }}>
-              El <strong style={{ color: 'var(--color-ink-muted)' }}>% de avance</strong> se registra
-              desplegando el entregable en la tabla.
             </p>
           </div>
           <FormField as="select" label="Líder" value={form.lider_id} onChange={set('lider_id')}>
@@ -879,15 +880,94 @@ export default function EntregablesPage() {
               <option value="true">Aprobado</option>
             </FormField>
           )}
+          {/* Errores del entregable (tabla hija). Solo Exactitud de Cálculos. */}
           {(() => {
-            // Los errores se registran en cualquier modo del nuevo modelo;
-            // solo los líderes/admin pueden editarlos.
-            if (isAnalista) return null
+            const esExactitud = segModal.row?.indicador_id === 36
+            if (!esExactitud) return null
+            const puedeGestionar = !isAnalista
             return (
-              <>
-                <FormField label="Error interno" type="number" min="0" value={segForm.error_interno} onChange={setSeg('error_interno')} />
-                <FormField label="Error cliente" type="number" min="0" value={segForm.error_cliente} onChange={setSeg('error_cliente')} />
-              </>
+              <div className="col-span-2 rounded-xl p-4" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)' }}>
+                <p className="text-xs font-semibold mb-2" style={{ color: 'var(--color-ink)' }}>
+                  Errores registrados ({errores.length})
+                </p>
+
+                {errores.length === 0 && (
+                  <p className="text-[11px] mb-2" style={{ color: 'var(--color-ink-muted)' }}>Sin errores registrados.</p>
+                )}
+
+                <div className="space-y-2 mb-3">
+                  {errores.map((er) => {
+                    const editing = editErrorId === er.id
+                    return (
+                      <div key={er.id} className="rounded-lg p-2.5" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                        {editing ? (
+                          <div className="space-y-2">
+                            <select value={newError.tipo} onChange={(e) => setNewError((f) => ({ ...f, tipo: e.target.value as 'interno' | 'cliente' }))}
+                              className="w-full px-2 py-1.5 rounded-md text-xs outline-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
+                              <option value="interno">Interno (corregido antes del cliente)</option>
+                              <option value="cliente">Cliente (llegó al cliente)</option>
+                            </select>
+                            <textarea rows={2} value={newError.descripcion} onChange={(e) => setNewError((f) => ({ ...f, descripcion: e.target.value }))}
+                              placeholder="Error identificado" className="w-full px-2 py-1.5 rounded-md text-xs outline-none resize-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} />
+                            <textarea rows={2} value={newError.correccion} onChange={(e) => setNewError((f) => ({ ...f, correccion: e.target.value }))}
+                              placeholder="Corrección / acción tomada" className="w-full px-2 py-1.5 rounded-md text-xs outline-none resize-none" style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} />
+                            <div className="flex gap-2">
+                              <button onClick={() => actualizarError.mutate({ id: er.id, tipo: newError.tipo, descripcion: newError.descripcion.trim(), correccion: newError.correccion.trim() || null })}
+                                disabled={!newError.descripcion.trim()} className="px-2 py-1 rounded-md text-[10px] font-medium text-white cursor-pointer disabled:opacity-50" style={{ backgroundColor: 'var(--color-accent)' }}>Guardar</button>
+                              <button onClick={() => setEditErrorId(null)} className="px-2 py-1 rounded-md text-[10px] cursor-pointer" style={{ color: 'var(--color-ink-muted)' }}>Cancelar</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold text-white"
+                                  style={{ backgroundColor: er.tipo === 'interno' ? 'oklch(70% 0.16 65)' : 'oklch(52% 0.22 15)' }}>
+                                  {er.tipo === 'interno' ? 'Interno' : 'Cliente'}
+                                </span>
+                                <span className="text-xs font-medium truncate" style={{ color: 'var(--color-ink)' }}>{er.descripcion}</span>
+                              </div>
+                              {er.correccion
+                                ? <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>Corrección: {er.correccion}</p>
+                                : <p className="text-[10px] mt-0.5 italic" style={{ color: 'oklch(70% 0.16 65)' }}>Sin corrección registrada</p>}
+                              {er.autor?.nombre && <p className="text-[9px]" style={{ color: 'var(--color-ink-subtle)' }}>Registrado por {er.autor.nombre}</p>}
+                            </div>
+                            {puedeGestionar && (
+                              <div className="flex gap-1 shrink-0">
+                                <button onClick={() => { setEditErrorId(er.id); setNewError({ tipo: er.tipo, descripcion: er.descripcion, correccion: er.correccion ?? '' }) }}
+                                  className="p-1 rounded cursor-pointer hover:bg-white/10" style={{ color: 'var(--color-ink-muted)' }}><ClipboardCheck size={11} /></button>
+                                {currentUser?.rol === 'Admin' && (
+                                  <button onClick={() => eliminarError.mutate(er.id)} className="p-1 rounded cursor-pointer hover:bg-white/10" style={{ color: 'var(--color-accent)' }}><AlertTriangle size={11} /></button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {puedeGestionar && editErrorId === null && (
+                  <div className="space-y-2 pt-2" style={{ borderTop: '1px solid var(--color-border)' }}>
+                    <div className="flex gap-2">
+                      <select value={newError.tipo} onChange={(e) => setNewError((f) => ({ ...f, tipo: e.target.value as 'interno' | 'cliente' }))}
+                        className="flex-1 px-2 py-1.5 rounded-md text-xs outline-none" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
+                        <option value="interno">Interno (corregido antes del cliente)</option>
+                        <option value="cliente">Cliente (llegó al cliente)</option>
+                      </select>
+                    </div>
+                    <input value={newError.descripcion} onChange={(e) => setNewError((f) => ({ ...f, descripcion: e.target.value }))}
+                      placeholder="Error identificado" className="w-full px-2 py-1.5 rounded-md text-xs outline-none" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} />
+                    <input value={newError.correccion} onChange={(e) => setNewError((f) => ({ ...f, correccion: e.target.value }))}
+                      placeholder="Corrección / acción tomada (opcional)" className="w-full px-2 py-1.5 rounded-md text-xs outline-none" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }} />
+                    <button onClick={() => crearError.mutate()} disabled={!newError.descripcion.trim() || crearError.isPending}
+                      className="px-2.5 py-1.5 rounded-md text-[11px] font-medium text-white cursor-pointer disabled:opacity-50" style={{ backgroundColor: 'var(--color-primary)' }}>
+                      + Agregar error
+                    </button>
+                  </div>
+                )}
+              </div>
             )
           })()}
 
@@ -940,7 +1020,7 @@ export default function EntregablesPage() {
                   </span>
                   <span className="text-xs tabular-nums" style={{ color: 'var(--color-ink-subtle)' }}>
                     {new Date(h.creado_en).toLocaleString('es-CO')}
-                    {h.pct_avance !== null && ` · ${h.pct_avance}% avance`}
+                    
                   </span>
                 </div>
               </li>

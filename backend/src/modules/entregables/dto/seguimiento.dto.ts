@@ -1,14 +1,12 @@
 import { Type } from 'class-transformer';
-import {
-  IsBoolean, IsDateString, IsInt, IsNumber, IsOptional, IsString, Max, Min,
-} from 'class-validator';
+import { IsBoolean, IsDateString, IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 /**
- * Datos que se capturan al hacer seguimiento a un entregable
- * (típicamente al pasarlo a "Terminado").
+ * Datos que se capturan al hacer seguimiento a un entregable.
+ * Los errores NO se capturan aquí: viven en la tabla hija entregable_errores.
  */
 export class SeguimientoEntregableDto {
-  /** Fecha real de entrega. Dispara el cálculo de cumplimiento. */
+  /** Fecha real de entrega. Dispara el cálculo de puntualidad. */
   @IsOptional() @IsDateString()
   resultado?: string;
 
@@ -16,28 +14,19 @@ export class SeguimientoEntregableDto {
   @IsOptional() @IsDateString()
   fecha_compromiso?: string;
 
-  /** Cantidad pactada (ej: 3 meses, 5 entregas). Alternativa a fecha. */
+  /** Cantidad pactada. Alternativa a fecha. */
   @IsOptional() @Type(() => Number) @IsInt() @Min(1)
   cantidad_compromiso?: number;
 
-  /** Cantidad real entregada para entregables por cantidad. */
+  /** Cantidad PROCESADA para entregables por cantidad. */
   @IsOptional() @Type(() => Number) @IsInt() @Min(0)
   resultado_cantidad?: number;
-
-  @IsOptional() @Type(() => Number) @IsInt() @Min(0)
-  error_interno?: number;
-
-  @IsOptional() @Type(() => Number) @IsInt() @Min(0)
-  error_cliente?: number;
 
   @IsOptional() @IsBoolean()
   aprobado?: boolean;
 
   @IsOptional() @Type(() => Number) @IsInt()
   estatus_id?: number;
-
-  @IsOptional() @Type(() => Number) @IsNumber() @Min(0) @Max(100)
-  pct_avance?: number;
 
   @IsOptional() @IsString()
   comentarios?: string;

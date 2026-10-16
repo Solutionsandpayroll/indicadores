@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 
 export interface SalarioVariableConfig {
@@ -9,7 +9,6 @@ export interface SalarioVariableConfig {
 
 export interface SalarioVariableValor {
   id: number; usuario_id: number; valor: number; periodo_anio: number;
-  periodo_mes: number; vigencia_desde: string; vigencia_hasta: string | null;
   activo: boolean; creado_en: string; actualizado_en: string;
   usuario?: { nombre: string; usuario: string };
 }
@@ -71,16 +70,14 @@ export class SalarioVariableAdminService {
     return { message: `Configuración ${id} eliminada` };
   }
 
-  // ---- SECCIÓN 2: Valores de Variable ----
-  async getValores(anio?: number, mes?: number) {
+  // ---- SECCIÓN 2: Valores de Variable (ANUAL: usuario + año) ----
+  async getValores(anio?: number) {
     let query = this.supabase.db
       .from('salario_variable_valores')
       .select('*, usuario:usuarios(nombre, usuario)')
-      .order('periodo_anio', { ascending: false })
-      .order('periodo_mes', { ascending: false });
+      .order('periodo_anio', { ascending: false });
 
     if (anio) query = query.eq('periodo_anio', anio);
-    if (mes) query = query.eq('periodo_mes', mes);
 
     const { data, error } = await query;
     if (error) throw new InternalServerErrorException(error.message);
@@ -139,6 +136,17 @@ export class SalarioVariableAdminService {
   }
 
   // ---- SECCIÓN 3: Casos Especiales ----
+
+  /** Si el caso trae componentes propios, sus pesos deben sumar exactamente 100. */
+  private validarComponentesCaso(config: Record<string, unknown> | undefined) {
+    const comps = (config?.componentes as Array<{ peso?: number }>) ?? [];
+    if (comps.length === 0) return;
+    const total = comps.reduce((s, c) => s + (Number(c.peso) || 0), 0);
+    if (total !== 100) {
+      throw new BadRequestException(`La suma de los componentes del caso debe ser 100% (actual: ${total}%)`);
+    }
+  }
+
   async getCasos() {
     const { data, error } = await this.supabase.db
       .from('salario_variable_casos')
@@ -149,6 +157,7 @@ export class SalarioVariableAdminService {
   }
 
   async createCaso(dto: Partial<SalarioVariableCaso>) {
+    this.validarComponentesCaso(dto.configuracion);
     const { data, error } = await this.supabase.db
       .from('salario_variable_casos')
       .insert(dto as never)
@@ -159,6 +168,7 @@ export class SalarioVariableAdminService {
   }
 
   async updateCaso(id: number, dto: Partial<SalarioVariableCaso>) {
+    this.validarComponentesCaso(dto.configuracion);
     const { data, error } = await this.supabase.db
       .from('salario_variable_casos')
       .update({ ...dto, actualizado_en: new Date().toISOString() } as never)

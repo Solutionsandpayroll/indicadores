@@ -17,15 +17,16 @@ export interface IndicadorResumen {
 }
 
 export interface ErrorReporte {
+  id: number;
   entregable_id: number;
   cliente: string;
   periodo: string;
   tipo_entregable: string;
   lider: string;
   responsable: string;
-  error_interno: number;
-  error_cliente: number;
-  accion_tomada: string | null;
+  tipo: 'interno' | 'cliente';
+  descripcion: string;
+  correccion: string | null;
 }
 
 export interface ReporteCliente {
@@ -42,11 +43,16 @@ export interface ReporteCliente {
     total_entregables: number;
     evaluados: number;
     compromiso_total: number;
-    correctos_total: number;
+    procesados_total: number;
     errores_internos: number;
     errores_cliente: number;
   };
   errores: ErrorReporte[];
+}
+
+function unwrap<T>(v: T | T[] | null | undefined): T | null {
+  if (v == null) return null;
+  return Array.isArray(v) ? (v[0] ?? null) : v;
 }
 
 @Injectable()
@@ -75,10 +81,11 @@ export class ReportesService {
       .from('entregables')
       .select(`
         id, mes, anio, indicador_id, resultado, resultado_cantidad,
-        fecha_compromiso, cantidad_compromiso, error_interno, error_cliente,
+        fecha_compromiso, cantidad_compromiso,
         entregable_tipos(nombre),
         lider:usuarios!lider_id(nombre),
-        responsable:usuarios!usuario_id(nombre, usuario)
+        responsable:usuarios!usuario_id(nombre, usuario),
+        entregable_errores(id, tipo, descripcion, correccion)
       `)
       .eq('cliente_id', f.cliente_id)
       .eq('es_nuevo_modelo', true);
@@ -101,35 +108,42 @@ export class ReportesService {
       ? Math.round((planCumplidos.length / planEvaluados.length) * 10000) / 100
       : null;
 
-    // ── Exactitud (indicador Exactitud = 36) ──
+    // ── Exactitud (indicador Exactitud = 36), perspectiva CLIENTE ──
+    // El indicador del cliente solo descuenta errores que LLEGARON al cliente.
     const exact = enPeriodo.filter((e) => e.indicador_id === 36);
     const exactEvaluados = exact.filter((e) => e.resultado_cantidad != null);
     const compTotal = exactEvaluados.reduce((s, e) => s + (e.cantidad_compromiso ?? 0), 0);
-    const correctTotal = exactEvaluados.reduce((s, e) => s + (e.resultado_cantidad ?? 0), 0);
-    const errInt = exactEvaluados.reduce((s, e) => s + (e.error_interno ?? 0), 0);
-    const errCli = exactEvaluados.reduce((s, e) => s + (e.error_cliente ?? 0), 0);
-    const exactPct = compTotal > 0 ? Math.round((correctTotal / compTotal) * 10000) / 100 : null;
+    const procTotal = exactEvaluados.reduce((s, e) => s + (e.resultado_cantidad ?? 0), 0);
+    let errInt = 0;
+    let errCli = 0;
+    for (const e of exact) {
+      for (const er of (e.entregable_errores ?? []) as { tipo: string }[]) {
+        if (er.tipo === 'interno') errInt++; else errCli++;
+      }
+    }
+    const correctosCliente = Math.max(0, procTotal - errCli);
+    const exactPct = compTotal > 0 ? Math.round((correctosCliente / compTotal) * 10000) / 100 : null;
 
-    // ── Lista de errores ──
-    const errores: ErrorReporte[] = enPeriodo
-      .filter((e) => (e.error_interno ?? 0) > 0 || (e.error_cliente ?? 0) > 0)
-      .map((e) => ({
-        entregable_id: e.id,
-        cliente: cliente.cliente,
-        periodo: `${String(e.mes).padStart(2, '0')}-${e.anio}`,
-        tipo_entregable: Array.isArray(e.entregable_tipos)
-          ? (e.entregable_tipos as { nombre: string }[])[0]?.nombre ?? '—'
-          : (e.entregable_tipos as { nombre: string } | null)?.nombre ?? '—',
-        lider: Array.isArray(e.lider)
-          ? (e.lider as { nombre: string }[])[0]?.nombre ?? '—'
-          : (e.lider as { nombre: string } | null)?.nombre ?? '—',
-        responsable: Array.isArray(e.responsable)
-          ? (e.responsable as { nombre: string; usuario: string }[])[0]?.nombre ?? '—'
-          : (e.responsable as { nombre: string; usuario: string } | null)?.nombre ?? '—',
-        error_interno: e.error_interno ?? 0,
-        error_cliente: e.error_cliente ?? 0,
-        accion_tomada: null,
-      }));
+    // ── Lista de errores (filas individuales) ──
+    const errores: ErrorReporte[] = [];
+    for (const e of enPeriodo) {
+      for (const er of (e.entregable_errores ?? []) as {
+        id: number; tipo: string; descripcion: string; correccion: string | null;
+      }[]) {
+        errores.push({
+          id: er.id,
+          entregable_id: e.id,
+          cliente: cliente.cliente,
+          periodo: `${String(e.mes).padStart(2, '0')}-${e.anio}`,
+          tipo_entregable: unwrap(e.entregable_tipos as { nombre: string } | { nombre: string }[] | null)?.nombre ?? '—',
+          lider: unwrap(e.lider as { nombre: string } | { nombre: string }[] | null)?.nombre ?? '—',
+          responsable: unwrap(e.responsable as { nombre: string } | { nombre: string }[] | null)?.nombre ?? '—',
+          tipo: er.tipo === 'interno' ? 'interno' : 'cliente',
+          descripcion: er.descripcion,
+          correccion: er.correccion ?? null,
+        });
+      }
+    }
 
     const redondo = (x: number | null) => (x != null ? Math.round(x * 100) / 100 : null);
 
@@ -137,9 +151,7 @@ export class ReportesService {
       cliente: {
         id: cliente.id,
         cliente: cliente.cliente,
-        grupo: Array.isArray(cliente.grupos)
-          ? (cliente.grupos as { nombre: string }[])[0]?.nombre ?? null
-          : (cliente.grupos as { nombre: string } | null)?.nombre ?? null,
+        grupo: unwrap(cliente.grupos as { nombre: string } | { nombre: string }[] | null)?.nombre ?? null,
       },
       periodo: {
         desde: `${String(f.mes_desde).padStart(2, '0')}-${f.anio_desde}`,
@@ -164,7 +176,7 @@ export class ReportesService {
         total_entregables: exact.length,
         evaluados: exactEvaluados.length,
         compromiso_total: compTotal,
-        correctos_total: correctTotal,
+        procesados_total: procTotal,
         errores_internos: errInt,
         errores_cliente: errCli,
       },
