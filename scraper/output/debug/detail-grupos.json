@@ -1,0 +1,56 @@
+[
+  {
+    "indicador": "PLAN DE ENTREGABLES",
+    "filas": [
+      {
+        "id": "42.642",
+        "entregable": "INFORME DE COBRO Y RADICACION DE INCAPACIDADES",
+        "meta_number": "1",
+        "meta_date": "28/02/2026",
+        "meta_result": "05/03/26",
+        "meta_formula": "CUMPLE",
+        "diference": "0",
+        "responsable": "asuarez",
+        "user_id": "jcervantes-L",
+        "verified_user": "jcervantes-L",
+        "verified_date": "12/03/2026 21:24:23"
+      }
+    ]
+  },
+  {
+    "indicador": "EXACTITUD EN REPORTE DE NOVEDADES A NOMINA DE LOS CLIENTES",
+    "filas": [
+      {
+        "id": "42.643",
+        "entregable": "MENSUAL",
+        "meta_number": "1",
+        "meta_date": "28/02/2026",
+        "meta_result": "1",
+        "meta_formula": "100",
+        "diference": "0",
+        "responsable": "asuarez",
+        "user_id": "jcervantes-L",
+        "verified_user": "jcervantes-L",
+        "verified_date": "12/03/2026 21:24:23"
+      }
+    ]
+  },
+  {
+    "indicador": "OPORTUNIDAD EN LA RADICACION DE INCAPACIDADES",
+    "filas": [
+      {
+        "id": "42.641",
+        "entregable": "MENSUAL",
+        "meta_number": "1",
+        "meta_date": "28/02/2026",
+        "meta_result": "1",
+        "meta_formula": "100",
+        "diference": "0",
+        "responsable": "asuarez",
+        "user_id": "jcervantes-L",
+        "verified_user": "jcervantes-L",
+        "verified_date": "12/03/2026 21:24:23"
+      }
+    ]
+  }
+]

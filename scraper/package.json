@@ -1,0 +1,13 @@
+{
+  "name": "scraper-entregables",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Prueba de concepto: extrae entregables de la herramienta legada",
+  "main": "scrape.js",
+  "scripts": {
+    "start": "node scrape.js"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

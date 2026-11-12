@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { easeOut } from '@/lib/easing'
@@ -121,7 +122,13 @@ export default function IndicadoresPage() {
   const qc = useQueryClient()
   const toast = useToast()
   const { usuario: currentUser } = useAuth()
+  const router = useRouter()
   const isAdmin = currentUser?.rol === 'Admin'
+
+  useEffect(() => {
+    if (currentUser && currentUser.rol !== 'Admin') router.replace('/dashboard')
+  }, [currentUser, router])
+
   const [modal, setModal] = useState<{ open: boolean; row: Indicador | null }>({ open: false, row: null })
   const [form, setForm] = useState({ nombre: '' })
 
@@ -167,6 +174,8 @@ export default function IndicadoresPage() {
     setModal({ open: true, row: row ?? null })
     setForm({ nombre: row?.nombre ?? '' })
   }
+
+  if (currentUser && currentUser.rol !== 'Admin') return null
 
   return (
     <div className="max-w-6xl">

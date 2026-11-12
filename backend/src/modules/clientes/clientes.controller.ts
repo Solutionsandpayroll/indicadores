@@ -33,9 +33,21 @@ export class ClientesController extends BaseController<Cliente> {
     return this.clientesService.findAllWithGrupo();
   }
 
+  /** Clientes accesibles por el usuario (para filtros). Admin → todos. */
+  @Get('accesibles')
+  findAccesibles(@CurrentUser() usuario: { sub: number; rol?: string }) {
+    return this.clientesService.findAccesibles(usuario.sub, usuario.rol ?? 'Analista');
+  }
+
   @Get('asignados')
   findAsignados(@CurrentUser() usuario: { sub: number }) {
     return this.clientesService.findByUsuario(usuario.sub);
+  }
+
+  /** Clientes asignados al usuario (usuario_clientes) — alimenta el formulario del líder. */
+  @Get('asignados-lider')
+  findAsignadosLider(@CurrentUser() usuario: { sub: number }) {
+    return this.clientesService.findAsignadosPorLider(usuario.sub);
   }
 
   @Get('mis-clientes')

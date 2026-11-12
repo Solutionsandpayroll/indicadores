@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://app.solutionsandpayroll.com/menu/",
+    "titulo": "menu",
+    "filasTotal": 0,
+    "filasDetalle": 0,
+    "modales": []
+  },
+  {
+    "url": "https://app.solutionsandpayroll.com/dashboard_admin/dashboard_admin.php?nm_run_menu=1&nm_apl_menu=menu&script_case_init=1",
+    "titulo": "DASHBOARD ADMINISTRADOR",
+    "filasTotal": 0,
+    "filasDetalle": 0,
+    "modales": []
+  },
+  {
+    "url": "https://app.solutionsandpayroll.com/grid_entregables_client_details/",
+    "titulo": "Entregables CERRADOS para Cliente: <span style='color:#f9da25;font-size:1.2em;'>BOOKING COM COLOMBIA S.A.S</span> Mes:<span style='color:#f9da25;font-size:1.1em;font-weight:bold'>Febrero</span> Año:2026",
+    "filasTotal": 3,
+    "filasDetalle": 3,
+    "modales": [
+      {
+        "tag": "DIV",
+        "id": "id_debug_window",
+        "cls": "scDebugWindow",
+        "display": "none",
+        "visible": false,
+        "html": "<div id=\"id_debug_window\" style=\"display: none;\" class=\"scDebugWindow\"><table class=\"scFormMessageTable\">\n<tbody><tr><td class=\"scFormMessageTitle\"><a onclick=\"nmAjaxHideDebug(); return false;\" class="
+      }
+    ]
+  }
+]

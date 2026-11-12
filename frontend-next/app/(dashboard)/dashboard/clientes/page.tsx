@@ -70,10 +70,9 @@ export default function ClientesPage() {
   const [form, setForm] = useState(empty)
   const [error, setError] = useState('')
 
-  // Modal de asignaciones cliente ↔ usuario
+  // Modal de asignación de líderes a cliente (varios permitidos)
   const [asigModal, setAsigModal] = useState<{ open: boolean; cliente: Cliente | null }>({ open: false, cliente: null })
-  const [asigLider, setAsigLider] = useState('')
-  const [asigAnalistas, setAsigAnalistas] = useState<number[]>([])
+  const [asigLideres, setAsigLideres] = useState<number[]>([])
 
   const { data: clientes = [], isLoading } = useQuery<Cliente[]>({
     queryKey: ['clientes'],
@@ -90,34 +89,29 @@ export default function ClientesPage() {
 
   const grupoMap = Object.fromEntries(grupos.map((g) => [g.id, g.nombre]))
   const lideres = usuarios.filter((u) => u.rol === 'Lider')
-  const analistas = usuarios.filter((u) => u.rol === 'Analista')
 
-  // Cargar asignaciones actuales al abrir el modal
+  // Cargar líderes asignados al abrir el modal
   async function openAsig(cliente: Cliente) {
     setAsigModal({ open: true, cliente })
-    setAsigLider('')
-    setAsigAnalistas([])
+    setAsigLideres([])
     try {
       const { data } = await api.get<{ usuario_id: number; rol: string }[]>(`/usuario-clientes?cliente_id=${cliente.id}`)
-      const l = data.find((a) => a.rol === 'Lider')
-      setAsigLider(l ? String(l.usuario_id) : '')
-      setAsigAnalistas(data.filter((a) => a.rol === 'Analista').map((a) => a.usuario_id))
+      setAsigLideres(data.filter((a) => a.rol === 'Lider').map((a) => a.usuario_id))
     } catch { /* sin asignaciones */ }
   }
 
   const saveAsig = useMutation({
     mutationFn: async () => {
-      const asignaciones: { usuario_id: number; rol: string }[] = []
-      if (asigLider) asignaciones.push({ usuario_id: Number(asigLider), rol: 'Lider' })
-      asigAnalistas.forEach((id) => asignaciones.push({ usuario_id: id, rol: 'Analista' }))
+      const asignaciones: { usuario_id: number; rol: string }[] =
+        asigLideres.map((id) => ({ usuario_id: id, rol: 'Lider' }))
       await api.put('/usuario-clientes/sync', { cliente_id: asigModal.cliente!.id, asignaciones })
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['mis-clientes'] })
       setAsigModal({ open: false, cliente: null })
-      toast.success('Asignaciones guardadas')
+      toast.success('Líderes asignados')
     },
-    onError: () => toast.error('Error al guardar las asignaciones'),
+    onError: () => toast.error('Error al asignar los líderes'),
   })
 
   const COLS: Column<Cliente>[] = [
@@ -128,14 +122,14 @@ export default function ClientesPage() {
     { key: 'pct_exactitud', label: 'Exactitud %', render: (r) => r.pct_exactitud != null ? `${r.pct_exactitud}%` : '—' },
     { key: 'fecha', label: 'Fecha', render: (r) => r.fecha ?? '—' },
     {
-      key: 'asignaciones', label: 'Equipo',
+      key: 'asignaciones', label: 'Líderes',
       render: (r) => (
         <button
           onClick={() => openAsig(r)}
           className="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium cursor-pointer transition-colors"
           style={{ backgroundColor: 'var(--color-primary-muted)', color: 'var(--color-primary)' }}
         >
-          <Users size={11} /> Asignar
+          <Users size={11} /> Asignar líderes
         </button>
       ),
     },
@@ -305,37 +299,30 @@ export default function ClientesPage() {
         </div>
       </Modal>
 
-      {/* Modal de asignaciones */}
-      <Modal open={asigModal.open} onClose={() => setAsigModal({ open: false, cliente: null })} title={`Equipo · ${asigModal.cliente?.cliente ?? ''}`} size="lg">
+      {/* Modal de asignación de líderes */}
+      <Modal open={asigModal.open} onClose={() => setAsigModal({ open: false, cliente: null })} title={`Líderes · ${asigModal.cliente?.cliente ?? ''}`} size="lg">
         <div className="space-y-4">
           <div>
-            <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Líder del cliente</label>
-            <select value={asigLider} onChange={(e) => setAsigLider(e.target.value)}
-              className="w-full mt-1 px-3 py-2 rounded-lg text-xs outline-none"
-              style={{ backgroundColor: 'oklch(100% 0 0 / 5%)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
-              <option value="">Sin líder</option>
-              {lideres.map((u) => <option key={u.id} value={u.id}>{u.nombre}</option>)}
-            </select>
-          </div>
-
-          <div>
             <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>
-              Analistas asignados ({asigAnalistas.length})
+              Líderes del cliente ({asigLideres.length})
             </label>
-            <div className="mt-2 grid grid-cols-2 gap-1.5 max-h-56 overflow-y-auto p-2 rounded-lg" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)' }}>
-              {analistas.map((u) => {
-                const checked = asigAnalistas.includes(u.id)
+            <div className="mt-2 grid grid-cols-2 gap-1.5 max-h-64 overflow-y-auto p-2 rounded-lg" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)' }}>
+              {lideres.map((u) => {
+                const checked = asigLideres.includes(u.id)
                 return (
                   <label key={u.id} className="flex items-center gap-2 text-xs cursor-pointer select-none px-2 py-1.5 rounded-md" style={{ color: 'var(--color-ink)' }}>
                     <input type="checkbox" checked={checked} className="w-3.5 h-3.5 rounded"
                       style={{ accentColor: 'var(--color-accent)' }}
-                      onChange={() => setAsigAnalistas((xs) => checked ? xs.filter((x) => x !== u.id) : [...xs, u.id])} />
+                      onChange={() => setAsigLideres((xs) => checked ? xs.filter((x) => x !== u.id) : [...xs, u.id])} />
                     <span className="truncate">{u.nombre}</span>
                   </label>
                 )
               })}
-              {analistas.length === 0 && <p className="text-xs col-span-2" style={{ color: 'var(--color-ink-muted)' }}>No hay usuarios con rol Analista</p>}
+              {lideres.length === 0 && <p className="text-xs col-span-2" style={{ color: 'var(--color-ink-muted)' }}>No hay usuarios con rol Líder</p>}
             </div>
+            <p className="text-[10px] mt-1.5" style={{ color: 'var(--color-ink-subtle)' }}>
+              Cada líder ve únicamente los entregables donde es el líder responsable. Los analistas se relacionan automáticamente con el cliente cuando tienen entregables asignados.
+            </p>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
@@ -347,7 +334,7 @@ export default function ClientesPage() {
             <button onClick={() => saveAsig.mutate()} disabled={saveAsig.isPending}
               className="px-3 py-2 rounded-lg text-xs font-medium text-white cursor-pointer disabled:opacity-50"
               style={{ backgroundColor: 'var(--color-accent)' }}>
-              Guardar asignaciones
+              Guardar
             </button>
           </div>
         </div>

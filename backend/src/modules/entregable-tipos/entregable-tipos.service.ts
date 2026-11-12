@@ -23,7 +23,8 @@ export class EntregableTiposService extends BaseService<EntregableTipo> {
       .from('entregable_tipos')
       .select('*, indicadores(id, nombre, es_sistema), clientes(id, cliente)')
       .order('indicador_id')
-      .order('orden');
+      .order('orden')
+      .limit(100000);
     if (error) throw new InternalServerErrorException(error.message);
     return data ?? [];
   }

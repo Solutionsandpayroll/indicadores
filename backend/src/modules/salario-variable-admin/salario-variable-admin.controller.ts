@@ -105,7 +105,7 @@ export class SalarioVariableAdminController {
   // ---- SECCIÓN 4: Resultados de pago ----
   // Calculados en vivo desde Cumplimiento + configuración. No se persisten.
   @Get('resultados-pago')
-  @Roles('Admin', 'Lider')
+  @Roles('Admin', 'Lider', 'Analista')
   getResultadosPago(
     @Query('anio') anio: string,
     @Query('mes') mes: string,

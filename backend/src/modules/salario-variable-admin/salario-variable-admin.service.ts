@@ -20,15 +20,6 @@ export interface SalarioVariableCaso {
   usuario?: { nombre: string; usuario: string };
 }
 
-export interface SalarioVariableResultado {
-  id: number; usuario_id: number; periodo_anio: number; periodo_mes: number;
-  pct_cumplimiento: number | null; errores_internos: number;
-  errores_cliente: number; quejas: number; pct_final: number | null;
-  valor_asignado: number | null; valor_a_pagar: number | null;
-  calculado_en: string;
-  usuario?: { nombre: string; usuario: string };
-}
-
 @Injectable()
 export class SalarioVariableAdminService {
   constructor(private supabase: SupabaseService) {}

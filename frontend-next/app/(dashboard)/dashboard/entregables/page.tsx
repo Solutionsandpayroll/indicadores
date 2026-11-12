@@ -47,12 +47,13 @@ interface Entregable {
   resultado: string | null; error_interno: number | null; error_cliente: number | null
   aprobado: boolean; terminado_en: string | null; aprobado_en: string | null
   es_nuevo_modelo: boolean
+  codigo: string | null
   // Cumplimiento (calculado por el backend)
   diferencia: number | null; puntualidad: number | null; exactitud: number | null
   pct_cumple: number | null; cumple_meta: boolean | null
   impacto_variable: 'sin_afectacion' | 'afecta' | 'pendiente' | null
   clientes?: { cliente: string } | null
-  responsable?: { nombre: string; rol?: string } | null
+  responsable?: { id: number; nombre: string; rol?: string } | null
 }
 
 interface Resumen {
@@ -184,7 +185,7 @@ export default function EntregablesPage() {
   // Filtros iniciales desde la URL (redirecciones desde "Mis Clientes" u otros módulos)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    const claves = ['cliente_id', 'indicador_id', 'estatus_id', 'entregable_tipo_id', 'lider_id', 'usuario_id', 'aprobado', 'anio', 'mes', 'anio_desde', 'mes_desde', 'anio_hasta', 'mes_hasta', 'q']
+    const claves = ['cliente_id', 'indicador_id', 'estatus_id', 'entregable_tipo_id', 'lider_id', 'usuario_id', 'aprobado', 'anio', 'mes', 'q']
     const iniciales: Record<string, string> = {}
     claves.forEach((k) => { const v = params.get(k); if (v) iniciales[k] = v })
     if (Object.keys(iniciales).length) setFiltros((f) => ({ ...f, ...iniciales }))
@@ -213,9 +214,37 @@ export default function EntregablesPage() {
     },
   })
 
+  const isLider = currentUser?.rol === 'Lider'
+  const isAdmin = currentUser?.rol === 'Admin'
+
   const { data: clientes = [] } = useQuery<Cliente[]>({ queryKey: ['clientes'], queryFn: async () => { const { data } = await api.get<Cliente[]>('/clientes'); return data } })
+  const { data: clientesAccesibles = [] } = useQuery<Cliente[]>({
+    queryKey: ['clientes-accesibles'],
+    enabled: !isAdmin,
+    queryFn: async () => { const { data } = await api.get<Cliente[]>('/clientes/accesibles'); return data },
+  })
+  const clientesFiltro = isAdmin ? clientes : clientesAccesibles
+
+  // Clientes asignados al líder (usuario_clientes) — para el modal de crear/editar.
+  const { data: clientesAsignados = [] } = useQuery<Cliente[]>({
+    queryKey: ['clientes-asignados-lider'],
+    enabled: isLider,
+    queryFn: async () => { const { data } = await api.get<Cliente[]>('/clientes/asignados-lider'); return data },
+  })
+  const clientesForm = isLider ? clientesAsignados : clientes
+
   const { data: estatusList = [] } = useQuery<Estatus[]>({ queryKey: ['estatus'], queryFn: async () => { const { data } = await api.get<Estatus[]>('/estatus'); return data } })
   const { data: indicadores = [] } = useQuery<Indicador[]>({ queryKey: ['indicadores'], queryFn: async () => { const { data } = await api.get<Indicador[]>('/indicadores'); return data } })
+
+  // Indicadores del sistema (exactamente 2 opciones para el filtro)
+  const indicadoresFiltro = indicadores.filter((i) =>
+    ['PLAN DE ENTREGABLES', 'EXACTITUD DE CÁLCULOS'].includes(i.nombre.trim().toUpperCase()),
+  )
+
+  // Estatus fijos: Asignado, Terminado, Aprobado
+  const ESTATUS_FIJOS = ['ASIGNADO', 'TERMINADO', 'APROBADO']
+  const estatusFiltro = estatusList.filter((e) => ESTATUS_FIJOS.includes(e.descripcion.trim().toUpperCase()))
+
   const { data: usuarios = [] } = useQuery<Usuario[]>({ queryKey: ['usuarios-dropdown'], queryFn: async () => { const { data } = await api.get<Usuario[]>('/entregables/usuarios-dropdown'); return data } })
 
   const { data: historial = [] } = useQuery<HistorialRow[]>({
@@ -290,30 +319,42 @@ export default function EntregablesPage() {
         .filter((t) => t.indicador_id === Number(form.indicador_id))
         .sort((a, b) => a.orden - b.orden)
 
-  const anios = Array.from(
-    new Set([AHORA.getFullYear(), AHORA.getFullYear() - 1, ...entregables.map((e) => e.anio)]),
-  ).sort((a, b) => b - a)
+  // Años: desde 2021 hasta el año actual, más los de los datos cargados
+  const aniosSet = new Set(entregables.map((e) => e.anio))
+  for (let y = 2021; y <= AHORA.getFullYear(); y++) aniosSet.add(y)
+  const anios = [...aniosSet].sort((a, b) => b - a)
+
+  // Responsables según rol: Admin → todos, Líder → analistas del cliente seleccionado.
+  const responsablesFiltro = useMemo(() => {
+    if (isAdmin) return usuarios
+    if (!filtros.cliente_id) return usuarios
+    const cid = Number(filtros.cliente_id)
+    const ids = new Set<number>()
+    entregables.forEach((e) => { if (e.cliente_id === cid && e.responsable) ids.add(e.responsable.id) })
+    if (ids.size === 0) return usuarios
+    return usuarios.filter((u) => ids.has(u.id))
+  }, [usuarios, entregables, filtros.cliente_id, isAdmin])
+
+  const tiposFiltro = useMemo(() => {
+    if (!filtros.cliente_id) return []
+    const cid = Number(filtros.cliente_id)
+    return tipos.filter((t) => t.cliente_id === cid)
+  }, [tipos, filtros.cliente_id])
 
   const FILTROS: FilterDef[] = [
-    { key: 'cliente_id', label: 'Cliente', options: clientes.map((c) => ({ value: String(c.id), label: c.cliente })) },
-    { key: 'indicador_id', label: 'Indicador', options: indicadores.map((i) => ({ value: String(i.id), label: i.nombre })) },
-    { key: 'estatus_id', label: 'Estatus', options: estatusList.map((e) => ({ value: String(e.id), label: e.descripcion })) },
+    { key: 'cliente_id', label: 'Cliente', options: clientesFiltro.map((c) => ({ value: String(c.id), label: c.cliente })) },
+    { key: 'indicador_id', label: 'Indicador', options: indicadoresFiltro.map((i) => ({ value: String(i.id), label: i.nombre })) },
+    { key: 'estatus_id', label: 'Estatus', options: estatusFiltro.map((e) => ({ value: String(e.id), label: e.descripcion })) },
     {
       key: 'entregable_tipo_id', label: 'Tipo',
-      // Si ya se filtró por indicador, solo se ofrecen los tipos de ese indicador.
-      options: tipos
+      options: tiposFiltro
         .filter((t) => !filtros.indicador_id || t.indicador_id === Number(filtros.indicador_id))
-        .map((t) => ({
-          value: String(t.id),
-          label: filtros.indicador_id ? t.nombre : `${t.nombre} · ${indicadorMap[t.indicador_id] ?? ''}`,
-        })),
+        .map((t) => ({ value: String(t.id), label: t.nombre })),
     },
-    { key: 'anio_desde', label: 'Año desde', options: anios.map((a) => ({ value: String(a), label: String(a) })) },
-    { key: 'mes_desde', label: 'Mes desde', options: MESES_CORTO.map((m, i) => ({ value: String(i + 1), label: m })) },
-    { key: 'anio_hasta', label: 'Año hasta', options: anios.map((a) => ({ value: String(a), label: String(a) })) },
-    { key: 'mes_hasta', label: 'Mes hasta', options: MESES_CORTO.map((m, i) => ({ value: String(i + 1), label: m })) },
-    { key: 'lider_id', label: 'Líder', options: usuarios.map((u) => ({ value: String(u.id), label: u.nombre })) },
-    { key: 'usuario_id', label: 'Responsable', options: usuarios.map((u) => ({ value: String(u.id), label: u.nombre })) },
+    { key: 'anio', label: 'Año', options: anios.map((a) => ({ value: String(a), label: String(a) })) },
+    { key: 'mes', label: 'Mes', options: MESES_CORTO.map((m, i) => ({ value: String(i + 1), label: m })) },
+    ...(!isLider ? [{ key: 'lider_id', label: 'Líder', options: usuarios.map((u) => ({ value: String(u.id), label: u.nombre })) }] : []),
+    ...(!isAnalista ? [{ key: 'usuario_id', label: 'Responsable', options: responsablesFiltro.map((u) => ({ value: String(u.id), label: u.nombre })) }] : []),
     { key: 'aprobado', label: 'Aprobación', options: [{ value: 'true', label: 'Aprobados' }, { value: 'false', label: 'No aprobados' }] },
     { key: 'q', label: 'Buscar en comentarios', placeholder: 'Texto libre…' },
   ]
@@ -341,7 +382,7 @@ export default function EntregablesPage() {
   }).filter((m) => m.total > 0)
 
   const COLS: Column<Entregable>[] = [
-    { key: 'id', label: 'ID' },
+    { key: 'codigo', label: 'Código', render: (r) => <span className="text-xs font-medium tabular-nums" style={{ color: 'var(--color-ink)' }}>{r.codigo ?? `E${r.id}`}</span> },
     { key: 'mes', label: 'Período', render: (r) => `${MESES_CORTO[r.mes - 1]} ${r.anio}` },
     { key: 'cliente_id', label: 'Cliente', render: (r) => clienteMap[r.cliente_id] ?? r.cliente_id },
     { key: 'indicador_id', label: 'Indicador', render: (r) => indicadorMap[r.indicador_id] ?? r.indicador_id },
@@ -553,7 +594,7 @@ export default function EntregablesPage() {
       entregable_tipo_id: row.entregable_tipo_id ? String(row.entregable_tipo_id) : '',
       fecha_compromiso: row.fecha_compromiso ?? '',
       cantidad_compromiso: row.cantidad_compromiso != null ? String(row.cantidad_compromiso) : '',
-    } : empty)
+    } : { ...empty, lider_id: isLider && currentUser ? String(currentUser.id) : '' })
     setError('')
   }
   function close() { setModal({ open: false, row: null }) }
@@ -792,7 +833,7 @@ export default function EntregablesPage() {
           <FormField label="Año" required type="number" min="2000" value={form.anio} onChange={setPeriodo('anio')} />
           <FormField as="select" label="Cliente" required value={form.cliente_id} onChange={(e) => handleClienteChange(e.target.value)}>
             <option value="">Selecciona…</option>
-            {clientes.map((c) => <option key={c.id} value={c.id}>{c.cliente}</option>)}
+            {clientesForm.map((c) => <option key={c.id} value={c.id}>{c.cliente}</option>)}
           </FormField>
           <FormField as="select" label="Indicador" required value={form.indicador_id} onChange={(e) => handleIndicadorChange(e.target.value)}
             disabled={!esEdicionLegacy && !form.cliente_id}>
@@ -841,12 +882,15 @@ export default function EntregablesPage() {
             </p>
           </div>
           <FormField as="select" label="Líder" value={form.lider_id} onChange={set('lider_id')}>
-            <option value="">Sin líder</option>
-            {usuarios.filter((u) => u.rol === 'Lider').map((u) => <option key={u.id} value={u.id}>{u.nombre}</option>)}
+            {!isLider && <option value="">Sin líder</option>}
+            {(isLider
+              ? usuarios.filter((u) => u.id === currentUser?.id)
+              : usuarios.filter((u) => u.rol === 'Lider')
+            ).map((u) => <option key={u.id} value={u.id}>{u.nombre}</option>)}
           </FormField>
           <FormField as="select" label="Usuario asignado" value={form.usuario_id} onChange={set('usuario_id')}>
             <option value="">Sin asignar</option>
-            {usuarios.filter((u) => u.rol === 'Analista').map((u) => <option key={u.id} value={u.id}>{u.usuario}</option>)}
+            {usuarios.filter((u) => u.rol === 'Analista').map((u) => <option key={u.id} value={u.id}>{u.nombre}</option>)}
           </FormField>
           <FormField
             as="select" label="Tipo" required

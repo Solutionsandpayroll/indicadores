@@ -41,7 +41,7 @@ const TABS = [
   { key: 'valores', label: 'Valores de Variable', icon: DollarSign, roles: ['Admin'] },
   { key: 'casos', label: 'Casos Especiales', icon: Users, roles: ['Admin'] },
   { key: 'cumplimiento', label: 'Cumplimiento', icon: CheckCircle2, roles: ['Admin', 'Lider', 'Analista'] },
-  { key: 'resultados', label: 'Resultados', icon: BarChart3, roles: ['Admin', 'Lider'] },
+  { key: 'resultados', label: 'Resultados', icon: BarChart3, roles: ['Admin', 'Lider', 'Analista'] },
 ] as const
 
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
@@ -1008,11 +1008,13 @@ function ResultadosTab() {
           <option value="">Todos los clientes</option>
           {clientes.map((c) => <option key={c.id} value={c.id}>{c.cliente}</option>)}
         </select>
-        <select value={rolFiltro} onChange={(e) => setRolFiltro(e.target.value)} className="px-3 py-2 rounded-lg text-xs outline-none cursor-pointer" style={selectStyle}>
-          <option value="">Todos los roles</option>
-          <option value="Analista">Analista</option>
-          <option value="Lider">Líder</option>
-        </select>
+        {isAdmin && (
+          <select value={rolFiltro} onChange={(e) => setRolFiltro(e.target.value)} className="px-3 py-2 rounded-lg text-xs outline-none cursor-pointer" style={selectStyle}>
+            <option value="">Todos los roles</option>
+            <option value="Analista">Analista</option>
+            <option value="Lider">Líder</option>
+          </select>
+        )}
         {isAdmin && (
           <div className="flex items-center gap-2 ml-auto">
             <button onClick={exportCSV} className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer" style={selectStyle}>
@@ -1290,11 +1292,13 @@ function CumplimientoTab() {
           <option value="">Todos los clientes</option>
           {clientes.map((c) => <option key={c.id} value={c.id}>{c.cliente}</option>)}
         </select>
-        <select value={rolFiltro} onChange={(e) => setRolFiltro(e.target.value)} className="px-3 py-2 rounded-lg text-xs outline-none cursor-pointer" style={selectStyle}>
-          <option value="">Todos los roles</option>
-          <option value="Analista">Analista</option>
-          <option value="Lider">Líder</option>
-        </select>
+        {isAdmin && (
+          <select value={rolFiltro} onChange={(e) => setRolFiltro(e.target.value)} className="px-3 py-2 rounded-lg text-xs outline-none cursor-pointer" style={selectStyle}>
+            <option value="">Todos los roles</option>
+            <option value="Analista">Analista</option>
+            <option value="Lider">Líder</option>
+          </select>
+        )}
         <select value={aprobado} onChange={(e) => setAprobado(e.target.value)} className="px-3 py-2 rounded-lg text-xs outline-none cursor-pointer" style={selectStyle}>
           <option value="">Con y sin aprobar</option>
           <option value="true">Solo aprobados</option>

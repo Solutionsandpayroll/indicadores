@@ -40,7 +40,7 @@ export interface FilaCumplimiento {
 }
 
 interface FilaEntregable {
-  usuario_id: number; cliente_id: number;
+  usuario_id: number; cliente_id: number; lider_id: number | null;
   resultado: string | null; resultado_cantidad: number | null;
   fecha_compromiso: string | null; cantidad_compromiso: number | null;
   indicadores?: { nombre: string } | null;
@@ -77,13 +77,10 @@ export class CumplimientoService {
   async getResumen(f: FiltrosCumplimiento, usuario: { sub: number; rol?: string }): Promise<FilaCumplimiento[]> {
     const rol = usuario.rol ?? 'Analista';
 
-    let liderClienteIds: number[] = [];
-    if (rol === 'Lider') liderClienteIds = await this.clientesDeLider(usuario.sub);
-
     let query = this.supabase.db
       .from('entregables')
       .select(`
-        usuario_id, cliente_id, resultado, resultado_cantidad,
+        usuario_id, cliente_id, lider_id, resultado, resultado_cantidad,
         fecha_compromiso, cantidad_compromiso,
         indicadores(nombre),
         clientes(id, cliente, pct_puntualidad, pct_exactitud),
@@ -97,14 +94,13 @@ export class CumplimientoService {
     if (rol === 'Analista') {
       query = query.eq('usuario_id', usuario.sub);
     } else if (rol === 'Lider') {
+      // El líder solo ve entregables que ÉL lidera o ejecuta (no todo el portafolio del cliente).
       if (f.usuarioId && f.usuarioId !== usuario.sub) {
-        query = query.eq('usuario_id', f.usuarioId).in('cliente_id', liderClienteIds.length ? liderClienteIds : [-1]);
+        query = query.eq('usuario_id', f.usuarioId).eq('lider_id', usuario.sub);
       } else if (f.usuarioId === usuario.sub) {
         query = query.eq('usuario_id', usuario.sub);
-      } else if (liderClienteIds.length > 0) {
-        query = query.or(`usuario_id.eq.${usuario.sub},cliente_id.in.(${liderClienteIds.join(',')})`);
       } else {
-        query = query.eq('usuario_id', usuario.sub);
+        query = query.or(`usuario_id.eq.${usuario.sub},lider_id.eq.${usuario.sub}`);
       }
     } else if (f.usuarioId) {
       query = query.eq('usuario_id', f.usuarioId);
@@ -124,6 +120,41 @@ export class CumplimientoService {
     };
     const porClave = new Map<string, Acc>();
 
+    const acumular = (t: { plan: BloquePlan; exactitud: BloqueExactitud }, e: FilaEntregable, interno: number, errCli: number) => {
+      const modo = esIndicadorSistema(e.indicadores?.nombre);
+      if (modo === 'plan') {
+        t.plan.asignados++;
+        if (e.resultado != null) {
+          t.plan.evaluados++;
+          const aTiempo = e.fecha_compromiso != null && e.resultado <= e.fecha_compromiso;
+          if (aTiempo) t.plan.cumplidos++; else t.plan.incumplidos++;
+        }
+      } else if (modo === 'exactitud') {
+        t.exactitud.asignados++;
+        if (e.resultado_cantidad != null) {
+          // Los errores solo penalizan cuando la fila ya tiene resultado definitivo.
+          // Un pendiente excepcional con errores registrados no debe afectar el
+          // consolidado hasta que el analista registre su resultado (regla William).
+          t.exactitud.evaluados++;
+          t.exactitud.compromiso_total += e.cantidad_compromiso ?? 0;
+          t.exactitud.procesados_total += e.resultado_cantidad;
+          t.exactitud.error_interno += interno;
+          t.exactitud.error_cliente += errCli;
+        }
+      }
+    };
+
+    // Acumulador del consolidado PROPIO del líder (solo lo que lidera o ejecuta).
+    const propio = rol === 'Lider'
+      ? {
+          plan: { ...PLAN_VACIO },
+          exactitud: { ...EXACTITUD_VACIA },
+          claves: new Set<string>(),
+          maxMetaPlan: null as number | null,
+          maxMetaExact: null as number | null,
+        }
+      : null;
+
     for (const e of (filas ?? []) as unknown as FilaEntregable[]) {
       const clave = `${e.usuario_id}-${e.cliente_id}`;
       const cliente = e.clientes ?? { id: e.cliente_id, cliente: `#${e.cliente_id}`, pct_puntualidad: null, pct_exactitud: null };
@@ -139,27 +170,14 @@ export class CumplimientoService {
       }
 
       const { interno, cliente: errCli } = contarErrores(e.entregable_errores);
-      const modo = esIndicadorSistema(e.indicadores?.nombre);
+      acumular(acc, e, interno, errCli);
 
-      if (modo === 'plan') {
-        acc.plan.asignados++;
-        if (e.resultado != null) {
-          acc.plan.evaluados++;
-          const aTiempo = e.fecha_compromiso != null && e.resultado <= e.fecha_compromiso;
-          if (aTiempo) acc.plan.cumplidos++; else acc.plan.incumplidos++;
-        }
-      } else if (modo === 'exactitud') {
-        acc.exactitud.asignados++;
-        if (e.resultado_cantidad != null) {
-          // Los errores solo penalizan cuando la fila ya tiene resultado definitivo.
-          // Un pendiente excepcional con errores registrados no debe afectar el
-          // consolidado hasta que el analista registre su resultado (regla William).
-          acc.exactitud.evaluados++;
-          acc.exactitud.compromiso_total += e.cantidad_compromiso ?? 0;
-          acc.exactitud.procesados_total += e.resultado_cantidad;
-          acc.exactitud.error_interno += interno;
-          acc.exactitud.error_cliente += errCli;
-        }
+      // Para el consolidado PROPIO del líder: solo lo que lidera o ejecuta.
+      if (propio && (e.lider_id === usuario.sub || e.usuario_id === usuario.sub)) {
+        propio.claves.add(clave);
+        if (cliente.pct_puntualidad != null) propio.maxMetaPlan = propio.maxMetaPlan == null ? cliente.pct_puntualidad : Math.max(propio.maxMetaPlan, cliente.pct_puntualidad);
+        if (cliente.pct_exactitud != null) propio.maxMetaExact = propio.maxMetaExact == null ? cliente.pct_exactitud : Math.max(propio.maxMetaExact, cliente.pct_exactitud);
+        acumular(propio, e, interno, errCli);
       }
     }
 
@@ -200,41 +218,25 @@ export class CumplimientoService {
       resultado.push(cerrar(acc, perspectiva));
     }
 
-    // ── Líder: fila consolidada de TODOS sus clientes (perspectiva líder) ──
-    if (rol === 'Lider') {
+    // ── Líder: fila consolidada de SUS entregables (lo que lidera o ejecuta) ──
+    if (rol === 'Lider' && propio) {
       const { data: liderInfo } = await this.supabase.db
         .from('usuarios').select('id, nombre, usuario, rol').eq('id', usuario.sub).single();
 
       const agg: Acc = {
         usuario: (liderInfo as FilaCumplimiento['usuario']) ?? { id: usuario.sub, nombre: `#${usuario.sub}`, usuario: '', rol: 'Lider' },
         cliente: { id: 0, cliente: 'Todos sus clientes' },
-        plan: { ...PLAN_VACIO },
-        exactitud: { ...EXACTITUD_VACIA },
+        plan: propio.plan,
+        exactitud: propio.exactitud,
       };
-      let maxMetaPlan: number | null = null;
-      let maxMetaExact: number | null = null;
 
-      for (const acc of porClave.values()) {
-        agg.plan.asignados += acc.plan.asignados;
-        agg.plan.evaluados += acc.plan.evaluados;
-        agg.plan.cumplidos += acc.plan.cumplidos;
-        agg.plan.incumplidos += acc.plan.incumplidos;
-        agg.exactitud.asignados += acc.exactitud.asignados;
-        agg.exactitud.evaluados += acc.exactitud.evaluados;
-        agg.exactitud.compromiso_total += acc.exactitud.compromiso_total;
-        agg.exactitud.procesados_total += acc.exactitud.procesados_total;
-        agg.exactitud.error_interno += acc.exactitud.error_interno;
-        agg.exactitud.error_cliente += acc.exactitud.error_cliente;
-        if (acc.plan.meta != null) maxMetaPlan = maxMetaPlan == null ? acc.plan.meta : Math.max(maxMetaPlan, acc.plan.meta);
-        if (acc.exactitud.meta != null) maxMetaExact = maxMetaExact == null ? acc.exactitud.meta : Math.max(maxMetaExact, acc.exactitud.meta);
-      }
-      // quejas del líder = suma de quejas de todas sus filas
+      // Quejas del líder = las de los pares (responsable-cliente) donde tiene entregables propios.
       let quejasLider = 0;
-      for (const acc of porClave.values()) quejasLider += (quejas.get(`${acc.usuario.id}-${acc.cliente.id}`) ?? 0);
+      for (const k of propio.claves) quejasLider += (quejas.get(k) ?? 0);
 
       if (agg.plan.asignados > 0 || agg.exactitud.asignados > 0) {
-        agg.plan.meta = maxMetaPlan;
-        agg.exactitud.meta = maxMetaExact;
+        agg.plan.meta = propio.maxMetaPlan;
+        agg.exactitud.meta = propio.maxMetaExact;
         const fila = cerrar(agg, 'lider');
         fila.quejas = quejasLider;
         resultado.push(fila);
@@ -245,17 +247,6 @@ export class CumplimientoService {
       a.usuario.nombre.localeCompare(b.usuario.nombre) || a.cliente.cliente.localeCompare(b.cliente.cliente),
     );
     return resultado;
-  }
-
-  private async clientesDeLider(usuarioId: number): Promise<number[]> {
-    const ids = new Set<number>();
-    const { data: asignaciones } = await this.supabase.db
-      .from('usuario_clientes').select('cliente_id').eq('usuario_id', usuarioId);
-    (asignaciones ?? []).forEach((a) => ids.add(a.cliente_id));
-    const { data: ents } = await this.supabase.db
-      .from('entregables').select('cliente_id').or(`usuario_id.eq.${usuarioId},lider_id.eq.${usuarioId}`);
-    (ents ?? []).forEach((e) => ids.add(e.cliente_id));
-    return [...ids];
   }
 
   private async contarQuejas(f: FiltrosCumplimiento): Promise<Map<string, number>> {

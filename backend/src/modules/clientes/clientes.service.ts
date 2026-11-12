@@ -46,7 +46,7 @@ export class ClientesService extends BaseService<Cliente> {
   constructor(supabase: SupabaseService) { super(supabase, 'clientes'); }
 
   findAllWithGrupo() {
-    return this.supabase.db.from('clientes').select('*, grupos(nombre)').order('id');
+    return this.supabase.db.from('clientes').select('*, grupos(nombre)').order('id').limit(100000);
   }
 
   /** Clientes donde el usuario es responsable (usado por /clientes/asignados). */
@@ -57,6 +57,19 @@ export class ClientesService extends BaseService<Cliente> {
     if (clienteIds.length === 0) return [] as unknown as Cliente[];
     const { data, error } = await this.supabase.db
       .from('clientes').select('*, grupos(nombre)').in('id', clienteIds).order('id');
+    if (error) throw new InternalServerErrorException(error.message);
+    return data as unknown as Cliente[];
+  }
+
+  /** Clientes donde el usuario está asignado (usuario_clientes) — para el formulario del líder. */
+  async findAsignadosPorLider(usuarioId: number) {
+    const { data: asigs, error: eA } = await this.supabase.db
+      .from('usuario_clientes').select('cliente_id').eq('usuario_id', usuarioId);
+    if (eA) throw new InternalServerErrorException(eA.message);
+    const ids = [...new Set((asigs ?? []).map((a) => a.cliente_id))];
+    if (ids.length === 0) return [] as unknown as Cliente[];
+    const { data, error } = await this.supabase.db
+      .from('clientes').select('id, cliente').in('id', ids).order('cliente');
     if (error) throw new InternalServerErrorException(error.message);
     return data as unknown as Cliente[];
   }
@@ -89,6 +102,22 @@ export class ClientesService extends BaseService<Cliente> {
     return ids;
   }
 
+  /** Lista ligera de clientes accesibles (id + nombre) para filtros. */
+  async findAccesibles(usuarioId: number, rol: string) {
+    if (rol === 'Admin') {
+      const { data, error } = await this.supabase.db
+        .from('clientes').select('id, cliente').order('cliente');
+      if (error) throw new InternalServerErrorException(error.message);
+      return data ?? [];
+    }
+    const ids = await this.clientesAccesibles(usuarioId, rol);
+    if (!ids || ids.size === 0) return [];
+    const { data, error } = await this.supabase.db
+      .from('clientes').select('id, cliente').in('id', [...ids]).order('cliente');
+    if (error) throw new InternalServerErrorException(error.message);
+    return data ?? [];
+  }
+
   /** Lanza 403 si el usuario no tiene acceso al cliente. */
   private async assertAccesoCliente(usuarioId: number, rol: string, clienteId: number) {
     const accesibles = await this.clientesAccesibles(usuarioId, rol);
@@ -100,7 +129,7 @@ export class ClientesService extends BaseService<Cliente> {
 
   /**
    * Clientes accesibles + métricas por cliente en un PERIODO dado.
-   * Analista → solo sus entregables; Líder/Admin → todos los del cliente.
+   * Analista → solo sus entregables; Líder → los suyos (lidera o es responsable); Admin → todos los del cliente.
    */
   async findMisClientes(usuarioId: number, rol: string, anio: number, mes: number) {
     // Lista de clientes accesibles (asignaciones ∪ entregables). Admin → todos los clientes.
@@ -121,10 +150,11 @@ export class ClientesService extends BaseService<Cliente> {
       .in('id', listaIds).order('cliente');
     if (eC) throw new InternalServerErrorException(eC.message);
 
-    // Entregables SOLO del período. Analista → solo los suyos.
+    // Entregables SOLO del período. Analista → solo los suyos. Líder → los que lidera o donde es responsable.
     let q = this.supabase.db.from('entregables').select(SEL_ERRORES)
       .in('cliente_id', listaIds).eq('anio', anio).eq('mes', mes);
     if (rol === 'Analista') q = q.eq('usuario_id', usuarioId);
+    else if (rol === 'Lider') q = q.or(`usuario_id.eq.${usuarioId},lider_id.eq.${usuarioId}`);
     const { data: filas, error: eF } = await q;
     if (eF) throw new InternalServerErrorException(eF.message);
 
@@ -182,7 +212,7 @@ export class ClientesService extends BaseService<Cliente> {
 
   /**
    * Detalle de un cliente en un PERIODO, con validación de acceso (403) y quejas.
-   * Analista → solo sus entregables/resultados. Líder/Admin → consolidado del cliente.
+   * Analista → solo sus entregables/resultados. Líder → los suyos (lidera o es responsable). Admin → consolidado del cliente.
    */
   async getResumenCliente(clienteId: number, usuarioId: number, rol: string, anio: number, mes: number) {
     const { data: existe } = await this.supabase.db.from('clientes').select('id').eq('id', clienteId).maybeSingle();
@@ -205,6 +235,7 @@ export class ClientesService extends BaseService<Cliente> {
       .order('id');
 
     if (rol === 'Analista') query = query.eq('usuario_id', usuarioId);
+    else if (rol === 'Lider') query = query.or(`usuario_id.eq.${usuarioId},lider_id.eq.${usuarioId}`);
 
     const { data: filas, error } = await query;
     if (error) throw new InternalServerErrorException(error.message);

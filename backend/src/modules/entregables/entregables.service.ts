@@ -13,19 +13,20 @@ import { SeguimientoEntregableDto } from './dto/seguimiento.dto';
 import { CrearErrorDto } from './dto/error.dto';
 
 export interface Entregable {
-  id: number; mes: number; anio: number; cliente_id: number; lider_id: number;
-  estatus_id: number; usuario_id: number; comentarios: string;
-  indicador_id: number; creado_en: string;
-  entregable_tipo_id: number;
-  tipo: string | null;
-  fecha_compromiso: string | null;
-  cantidad_compromiso: number | null;
+  id: number; mes: number; anio: number; cliente_id: number
+  lider_id: number | null; estatus_id: number; usuario_id: number | null
+  comentarios: string | null
+  indicador_id: number; tipo: string | null
+  entregable_tipo_id: number
+  fecha_compromiso: string | null
+  cantidad_compromiso: number | null
   /** Cantidad PROCESADA (semántica nueva; antes era "correctos"). */
-  resultado_cantidad: number | null;
-  resultado: string | null;
-  aprobado: boolean; terminado_en: string | null; aprobado_en: string | null;
-  aprobado_por_id: number | null; actualizado_en: string;
-  es_nuevo_modelo: boolean;
+  resultado_cantidad: number | null
+  resultado: string | null
+  aprobado: boolean; terminado_en: string | null; aprobado_en: string | null
+  aprobado_por_id: number | null; actualizado_en: string
+  es_nuevo_modelo: boolean
+  codigo: string | null
 }
 
 /** Conteos derivados de la tabla hija entregable_errores. */
@@ -44,7 +45,7 @@ const ESTATUS_TERMINADO = 'terminado';
 const ESTATUS_APROBADO = 'aprobado';
 
 const SELECT_RELACIONES = `
-  id, mes, anio, cliente_id, indicador_id, entregable_tipo_id, tipo,
+  id, codigo, mes, anio, cliente_id, indicador_id, entregable_tipo_id, tipo,
   lider_id, usuario_id, estatus_id, comentarios,
   fecha_compromiso, cantidad_compromiso, resultado, resultado_cantidad,
   aprobado, terminado_en, aprobado_en, aprobado_por_id,
@@ -194,6 +195,7 @@ export class EntregablesService extends BaseService<Entregable> {
       default: query = query.order('id', { ascending: asc });
     }
 
+    query = query.limit(100000);
     const { data, error } = await query;
     if (error) throw new InternalServerErrorException(error.message);
 
@@ -284,6 +286,10 @@ export class EntregablesService extends BaseService<Entregable> {
         dto = { ...dto, es_nuevo_modelo: true };
       }
     }
+
+    // Código de visualización consecutivo (orden cronológico, independiente del id).
+    const { data: codigo, error: errCod } = await this.supabase.db.rpc('next_entregable_codigo');
+    if (!errCod && codigo) dto = { ...dto, codigo };
 
     return super.create(await this.conNombreDeTipo(dto));
   }
@@ -495,7 +501,7 @@ export class EntregablesService extends BaseService<Entregable> {
 
   async findAllWithRelations(usuario?: UsuarioCtx) {
     const { data, error } = await this.supabase.db
-      .from('entregables').select(SELECT_RELACIONES).order('id');
+      .from('entregables').select(SELECT_RELACIONES).order('id').limit(100000);
     if (error) throw new InternalServerErrorException(error.message);
     return this.restringir((data ?? []) as unknown as Entregable[], usuario);
   }

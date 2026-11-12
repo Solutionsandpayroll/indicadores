@@ -1,0 +1,26 @@
+const fs = require('fs');
+const path = require('path');
+const { createClient } = require(path.join(__dirname, '..', 'backend', 'node_modules', '@supabase', 'supabase-js'));
+function loadEnv() {
+  const c = fs.readFileSync(path.join(__dirname, '..', 'backend', '.env'), 'utf8');
+  for (const l of c.split(/\r?\n/)) {
+    const m = l.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+    if (!m) continue;
+    let v = m[2].trim();
+    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
+    process.env[m[1]] = v;
+  }
+}
+loadEnv();
+const s = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+(async () => {
+  const [a, b, c] = await Promise.all([
+    s.from('entregables').select('*', { count: 'exact', head: true }).lt('id', 5874),
+    s.from('entregables').select('*', { count: 'exact', head: true }).gte('id', 5874).lte('id', 5876),
+    s.from('entregables').select('*', { count: 'exact', head: true }).gte('id', 5877),
+  ]);
+  console.log(`id < 5874: ${a.count}`);
+  console.log(`id 5874-5876 (manuales): ${b.count}`);
+  console.log(`id >= 5877 (del script): ${c.count}`);
+  console.log(`Total: ${a.count + b.count + c.count}`);
+})();

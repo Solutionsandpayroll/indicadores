@@ -1,0 +1,142 @@
+[
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Cerrar",
+    "href": "",
+    "onclick": "nmAjaxHideDebug(); return false;"
+  },
+  {
+    "tag": "A",
+    "id": "selcmp_top",
+    "text": "Campos",
+    "href": "",
+    "onclick": "scBtnSelCamposShow('/grid_entregables_client_details/grid_entregables_client_details_sel_campos.php?path_img=/_lib/img&p"
+  },
+  {
+    "tag": "A",
+    "id": "ordcmp_top",
+    "text": "Ordenar por",
+    "href": "",
+    "onclick": "scBtnOrderCamposShow('/grid_entregables_client_details/grid_entregables_client_details_order_campos.php?path_img=/_lib/i"
+  },
+  {
+    "tag": "A",
+    "id": "pdf_top",
+    "text": "PDF",
+    "href": "",
+    "onclick": "tb_show('', '/grid_entregables_client_details/grid_entregables_client_details_config_pdf.php?nm_opc=pdf&nm_target=0&nm_c"
+  },
+  {
+    "tag": "A",
+    "id": "print_top",
+    "text": "Imprimir",
+    "href": "",
+    "onclick": "tb_show('', '/grid_entregables_client_details/grid_entregables_client_details_config_print.php?script_case_init=6037&sum"
+  },
+  {
+    "tag": "A",
+    "id": "xls_top",
+    "text": "Excel",
+    "href": "",
+    "onclick": "tb_show('', '/grid_entregables_client_details/grid_entregables_client_details_config_xls.php?script_case_init=6037&app_n"
+  },
+  {
+    "tag": "A",
+    "id": "sai_top",
+    "text": "Volver",
+    "href": "",
+    "onclick": "document.F5.action='grid_entregables_client_details_fim.php'; document.F5.submit();; return false;"
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Id",
+    "href": "javascript:nm_gp_submit2('id')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Entregable",
+    "href": "javascript:nm_gp_submit2('id_entregable')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Meta F",
+    "href": "javascript:nm_gp_submit2('meta_date')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Responsable",
+    "href": "javascript:nm_gp_submit2('responsable')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Id",
+    "href": "javascript:nm_gp_submit2('id')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Entregable",
+    "href": "javascript:nm_gp_submit2('id_entregable')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Meta F",
+    "href": "javascript:nm_gp_submit2('meta_date')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Responsable",
+    "href": "javascript:nm_gp_submit2('responsable')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Id",
+    "href": "javascript:nm_gp_submit2('id')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Entregable",
+    "href": "javascript:nm_gp_submit2('id_entregable')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Meta F",
+    "href": "javascript:nm_gp_submit2('meta_date')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "",
+    "text": "Responsable",
+    "href": "javascript:nm_gp_submit2('responsable')",
+    "onclick": ""
+  },
+  {
+    "tag": "A",
+    "id": "brec_bot",
+    "text": "Ir a",
+    "href": "",
+    "onclick": "var rec_nav = ((document.getElementById('rec_f0_bot').value - 1) * 10) + 1; nm_gp_submit_ajax('muda_rec_linhas', rec_nav"
+  }
+]

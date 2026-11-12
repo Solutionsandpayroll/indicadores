@@ -21,7 +21,7 @@ interface ClienteCard {
 }
 
 interface EntregableRow {
-  id: number; mes: number; anio: number;
+  id: number; codigo: string | null; mes: number; anio: number;
   pct_cumple: number | null; resultado: string | null
   resultado_cantidad: number | null; aprobado: boolean
   error_interno: number | null; error_cliente: number | null
@@ -52,6 +52,12 @@ interface ResumenCliente {
 }
 
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
+
+// Años: desde 2021 hasta el año actual (descendente)
+const ANIOS = Array.from(
+  { length: new Date().getFullYear() - 2021 + 1 },
+  (_, i) => new Date().getFullYear() - i,
+)
 
 function Bar({ pct }: { pct: number | null }) {
   const v = pct ?? 0
@@ -102,6 +108,11 @@ export default function MisClientesPage() {
 
   if (!usuario || (!isLider && !isAnalista)) return null
 
+  // Clientes con entregables en el período primero; los de 0 al final.
+  const ordenados = [...clientes].sort(
+    (a, b) => (Number(b.total > 0) - Number(a.total > 0)) || a.cliente.localeCompare(b.cliente),
+  )
+
   // ============ VISTA LISTA DE CLIENTES ============
   if (!selected) {
     return (
@@ -119,7 +130,7 @@ export default function MisClientesPage() {
             </select>
             <select value={anio} onChange={(e) => setAnio(Number(e.target.value))}
               className="px-2.5 py-1.5 rounded-lg text-xs outline-none cursor-pointer" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
-              {[2025, 2026, 2027].map((y) => <option key={y} value={y}>{y}</option>)}
+              {ANIOS.map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
         </div>
@@ -136,11 +147,11 @@ export default function MisClientesPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {clientes.map((c, i) => (
+            {ordenados.map((c, i) => (
               <motion.button
                 key={c.id}
                 initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
+                animate={{ opacity: c.total === 0 ? 0.55 : 1, y: 0 }}
                 transition={{ duration: 0.3, delay: i * 0.04, ease: easeOut }}
                 onClick={() => { setSelected(c); setEntPage(1) }}
                 className="text-left rounded-xl p-4 cursor-pointer transition-all duration-200 hover:-translate-y-0.5"
@@ -156,7 +167,12 @@ export default function MisClientesPage() {
                 <p className="text-xs font-semibold mt-3 leading-snug" style={{ color: 'var(--color-ink)' }}>{c.cliente}</p>
                 <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>{c.grupos?.nombre ?? '—'}</p>
 
-                {/* Métricas resumidas */}
+                {/* Métricas resumidas (o aviso si no hay entregables en el período) */}
+                {c.total === 0 ? (
+                  <p className="text-[10px] mt-3 pt-3 italic" style={{ borderTop: '1px solid var(--color-border)', color: 'var(--color-ink-muted)' }}>
+                    Sin entregables en este período
+                  </p>
+                ) : (
                 <div className="mt-3 space-y-1.5 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
                   <div className="flex items-center justify-between text-[10px]">
                     <span style={{ color: 'var(--color-ink-muted)' }}>Puntualidad</span>
@@ -181,6 +197,7 @@ export default function MisClientesPage() {
                     <span className="font-semibold" style={{ color: c.quejas > 0 ? 'oklch(52% 0.22 15)' : 'var(--color-ink)' }}>{c.quejas}</span>
                   </div>
                 </div>
+                )}
               </motion.button>
             ))}
           </div>
@@ -192,7 +209,7 @@ export default function MisClientesPage() {
   // ============ VISTA DETALLE DE CLIENTE ============
   const r = detalle?.resumen
   const irAEntregables = (extra: Record<string, string> = {}) => {
-    const p = new URLSearchParams({ cliente_id: String(selected.id), ...extra })
+    const p = new URLSearchParams({ cliente_id: String(selected.id), anio: String(anio), mes: String(mes), ...extra })
     router.push(`/dashboard/entregables?${p.toString()}`)
   }
 

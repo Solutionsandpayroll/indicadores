@@ -20,7 +20,7 @@ const NAV_BASE = [
   { to: '/dashboard/entregables',     label: 'Entregables',     icon: Package },
   { to: '/dashboard/reportes',        label: 'Reportes',        icon: FileText,       roles: ['Admin', 'Lider'] },
   { to: '/dashboard/entregable-tipos', label: 'Catálogo Entregables', icon: Tags, roles: ['Admin', 'Lider'] },
-  { to: '/dashboard/indicadores',     label: 'Indicadores',     icon: BarChart2,    roles: ['Admin', 'Lider'] },
+  { to: '/dashboard/indicadores',     label: 'Indicadores',     icon: BarChart2,    roles: ['Admin'] },
   { to: '/dashboard/quejas',          label: 'Quejas',          icon: MessageSquareWarning, roles: ['Admin'] },
   { to: '/dashboard/otras-variables', label: 'Otras Variables', icon: SlidersHorizontal, roles: ['Admin'] },
   { to: '/dashboard/salario-variable', label: 'Salario Variable', icon: DollarSign },

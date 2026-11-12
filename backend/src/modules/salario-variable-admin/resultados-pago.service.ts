@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { CumplimientoService, FilaCumplimiento } from './cumplimiento.service';
 import { correctosExactitud } from '../entregables/cumplimiento';
@@ -111,7 +111,7 @@ export class ResultadosPagoService {
     }
 
     const filas = await this.cumplimiento.getResumen(
-      { anio: f.anio, mes: f.mes, usuarioId: f.usuarioId, rol: f.rol },
+      { anio: f.anio, mes: f.mes, usuarioId: f.usuarioId, clienteId: f.clienteId, rol: f.rol },
       usuario,
     );
 
@@ -165,12 +165,12 @@ export class ResultadosPagoService {
       .eq('activo', true);
     const configRows = (config ?? []) as unknown as ConfigRow[];
 
-    const { data: valores } = await this.supabase.db
+    const { data: valores, error: errValores } = await this.supabase.db
       .from('salario_variable_valores')
       .select('usuario_id, valor')
       .eq('periodo_anio', f.anio)
-      .eq('periodo_mes', f.mes)
       .eq('activo', true);
+    if (errValores) throw new InternalServerErrorException(errValores.message);
     const valorMap = new Map<number, number>(
       (valores ?? []).map((v) => [v.usuario_id as number, Number(v.valor)]),
     );
@@ -318,7 +318,9 @@ export class ResultadosPagoService {
       const valorBase = valorMap.get(acc.usuario.id) ?? null;
       const valorAPagar = valorBase != null ? Math.round((valorBase * pctFinal) / 100) : null;
 
-      if (f.clienteId && !acc.clientes.has(f.clienteId)) continue;
+      // El filtro por cliente no debe eliminar la fila sintética del líder (cliente id 0):
+      // getResumen ya trae solo los entregables de ese cliente cuando f.clienteId está activo.
+      if (f.clienteId && !acc.clientes.has(f.clienteId) && !acc.clientes.has(0)) continue;
 
       resultado.push({
         usuario: acc.usuario,

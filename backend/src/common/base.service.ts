@@ -9,7 +9,7 @@ export class BaseService<T> {
   ) {}
 
   async findAll(filters?: Record<string, unknown>): Promise<T[]> {
-    let query = this.supabase.db.from(this.table).select('*').order('id');
+    let query = this.supabase.db.from(this.table).select('*').order('id').limit(100000);
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined) query = query.eq(key, value as string);
