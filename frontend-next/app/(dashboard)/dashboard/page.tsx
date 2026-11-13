@@ -1,300 +1,355 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Building2, Package, BarChart3, TrendingUp, Activity, Zap } from 'lucide-react'
 import {
-  AreaChart, Area, ResponsiveContainer, Tooltip,
-  RadialBarChart, RadialBar, PolarAngleAxis,
-} from 'recharts'
+  ClipboardList, Clock, CheckCircle2, Package, ChevronRight, AlertTriangle,
+} from 'lucide-react'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { api } from '@/lib/api'
 import { easeOut } from '@/lib/easing'
 import { useAuth } from '@/context/AuthContext'
 
-interface Overview { clientes: number; entregables: number; indicadores: number }
-
-interface Trends {
-  clientes: number[]
-  entregables: number[]
-  indicadores: number[]
-  crecimiento: { clientes: number; entregables: number; indicadores: number }
+interface Resumen {
+  total: number; terminados: number; aprobados: number; pendientes: number
+  a_tiempo: number; con_retraso: number
+  pct_cumple_promedio: number | null
+  puntualidad_promedio: number | null
+  exactitud_promedio: number | null
 }
 
-const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
+interface ResumenCliente {
+  cliente_id: number; cliente: string
+  total: number; pendientes: number; terminados: number; aprobados: number
+}
+
+interface ResumenResponsable {
+  usuario_id: number; responsable: string
+  total: number; pendientes: number; aprobados: number
+}
+
+interface Pendiente {
+  id: number; cliente_id: number; fecha_compromiso: string | null
+  clientes?: { cliente: string } | null
+  entregable_tipos?: { id: number; nombre: string } | null
+}
+
+interface Estatus { id: number; descripcion: string }
+
+const AHORA = new Date()
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+const ANIOS = Array.from({ length: AHORA.getFullYear() - 2021 + 1 }, (_, i) => AHORA.getFullYear() - i)
+
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } }
 const cardAnim = {
-  hidden: { opacity: 0, y: 20 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.45, ease: easeOut } },
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: easeOut } },
 }
 
-function AnimatedNumber({ value, loading }: { value: number; loading: boolean }) {
-  return loading ? (
-    <div className="h-10 w-20 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--color-border)' }} />
-  ) : (
-    <motion.span
-      key={value}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: easeOut }}
-      className="text-4xl font-bold tracking-tight"
-      style={{ letterSpacing: '-0.06em' }}
-    >
-      {value}
-    </motion.span>
-  )
-}
-
-function Sparkline({ data, color }: { data: number[]; color: string }) {
-  const formatted = data.map((v, i) => ({ v, i }))
-  return (
-    <ResponsiveContainer width="100%" height={56}>
-      <AreaChart data={formatted} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
-        <defs>
-          <linearGradient id={`sg-${color.replace('#','')}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity={0.3} />
-            <stop offset="100%" stopColor={color} stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <Area
-          type="monotone"
-          dataKey="v"
-          stroke={color}
-          strokeWidth={2}
-          fill={`url(#sg-${color.replace('#','')})`}
-          dot={false}
-          isAnimationActive
-          animationDuration={800}
-          animationEasing="ease-out"
-        />
-        <Tooltip
-          content={({ active, payload }) =>
-            active && payload?.length ? (
-              <div className="text-xs px-2 py-1 rounded-lg shadow-lg" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
-                {payload[0].value}
-              </div>
-            ) : null
-          }
-        />
-      </AreaChart>
-    </ResponsiveContainer>
-  )
-}
-
-function GrowthBadge({ value }: { value: number }) {
-  const positivo = value >= 0
-  return (
-    <div
-      className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg"
-      style={{
-        backgroundColor: positivo ? 'var(--color-success-muted)' : 'var(--color-accent-muted)',
-        color: positivo ? 'var(--color-success)' : 'var(--color-accent)',
-      }}
-    >
-      <TrendingUp size={10} style={positivo ? undefined : { transform: 'rotate(180deg)' }} />
-      <span>{positivo ? '+' : ''}{value}%</span>
-    </div>
-  )
-}
-
-function KpiCard({
-  label, value, subtext, icon: Icon, spark, color, accent, growth, loading,
+function StatCard({
+  label, value, sub, icon: Icon, color, onClick, loading,
 }: {
-  label: string; value: number; subtext: string; icon: React.ElementType
-  spark: number[]; color: string; accent?: boolean; growth: number; loading: boolean
+  label: string; value: number; sub: string; icon: React.ElementType
+  color: string; onClick: () => void; loading: boolean
 }) {
   return (
-    <motion.div
+    <motion.button
       variants={cardAnim}
-      className="relative rounded-2xl overflow-hidden flex flex-col"
+      onClick={onClick}
+      className="text-left rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:-translate-y-0.5"
       style={{
-        backgroundColor: 'var(--color-surface)',
-        border: '1px solid var(--color-border)',
+        backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)',
         boxShadow: '0 1px 3px oklch(0% 0 0 / 6%)',
       }}
-      whileHover={{ y: -2, boxShadow: '0 8px 32px oklch(0% 0 0 / 10%)' }}
-      transition={{ duration: 0.2, ease: easeOut }}
     >
-      {/* Top */}
-      <div className="px-5 pt-5 pb-3">
-        <div className="flex items-start justify-between mb-3">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-            style={{ backgroundColor: accent ? 'var(--color-accent-muted)' : 'var(--color-primary-muted)', color: accent ? 'var(--color-accent)' : 'var(--color-primary)' }}
-          >
-            <Icon size={18} />
-          </div>
-          <GrowthBadge value={growth} />
+      <div className="flex items-center justify-between mb-3">
+        <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}22`, color }}>
+          <Icon size={16} />
         </div>
-
-        <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-ink-muted)' }}>{label}</p>
-        <AnimatedNumber value={value} loading={loading} />
-        <p className="text-xs mt-1" style={{ color: 'var(--color-ink-subtle)' }}>{subtext}</p>
+        <ChevronRight size={14} style={{ color: 'var(--color-ink-subtle)' }} />
       </div>
-
-      {/* Sparkline al fondo */}
-      <div className="mt-auto">
-        <Sparkline data={spark} color={color} />
-      </div>
-    </motion.div>
-  )
-}
-
-function ActivityRing({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
-  const pct = Math.round((value / Math.max(max, 1)) * 100)
-  const data = [{ value: pct, fill: color }]
-  return (
-    <div className="flex flex-col items-center gap-1">
-      <div className="relative w-20 h-20">
-        <RadialBarChart
-          width={80} height={80}
-          innerRadius={28} outerRadius={38}
-          data={data}
-          startAngle={90} endAngle={-270}
-        >
-          <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-          <RadialBar dataKey="value" cornerRadius={4} background={{ fill: 'var(--color-border)' }} />
-        </RadialBarChart>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-sm font-bold" style={{ color: 'var(--color-ink)' }}>{pct}%</span>
-        </div>
-      </div>
-      <span className="text-xs font-medium text-center" style={{ color: 'var(--color-ink-muted)' }}>{label}</span>
-    </div>
+      {loading ? (
+        <div className="h-9 w-16 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--color-border)' }} />
+      ) : (
+        <p className="text-3xl font-bold tracking-tight" style={{ color: 'var(--color-ink)', letterSpacing: '-0.05em' }}>{value}</p>
+      )}
+      <p className="text-xs font-medium mt-1" style={{ color: 'var(--color-ink-muted)' }}>{label}</p>
+      <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-ink-subtle)' }}>{sub}</p>
+    </motion.button>
   )
 }
 
 export default function HomePage() {
   const { usuario } = useAuth()
-  const { data, isLoading } = useQuery<Overview>({
-    queryKey: ['stats-overview'],
-    queryFn: async () => { const { data } = await api.get<Overview>('/stats/overview'); return data },
-    staleTime: 60_000,
+  const router = useRouter()
+  const isAnalista = usuario?.rol === 'Analista'
+
+  const [anio, setAnio] = useState(AHORA.getFullYear())
+  const [mes, setMes] = useState('')
+
+  const qs = mes ? `anio=${anio}&mes=${mes}` : `anio=${anio}`
+  const periodoLabel = mes ? `${MESES[Number(mes) - 1]} ${anio}` : `Año ${anio}`
+
+  const { data: resumen, isLoading } = useQuery<Resumen>({
+    queryKey: ['home-resumen', qs],
+    queryFn: async () => { const { data } = await api.get<Resumen>(`/entregables/resumen?${qs}`); return data },
   })
 
-  const { data: trends } = useQuery<Trends>({
-    queryKey: ['stats-trends'],
-    queryFn: async () => { const { data } = await api.get<Trends>('/stats/trends'); return data },
-    staleTime: 5 * 60_000,
+  const { data: porCliente = [] } = useQuery<ResumenCliente[]>({
+    queryKey: ['home-resumen-cliente', qs],
+    queryFn: async () => { const { data } = await api.get<ResumenCliente[]>(`/entregables/resumen-por-cliente?${qs}`); return data },
   })
 
-  const [greeting, setGreeting] = useState('Buenos días')
-  useEffect(() => {
-    const hour = new Date().getHours()
-    setGreeting(hour < 12 ? 'Buenos días' : hour < 19 ? 'Buenas tardes' : 'Buenas noches')
-  }, [])
+  const { data: estatusList = [] } = useQuery<Estatus[]>({
+    queryKey: ['estatus'],
+    queryFn: async () => { const { data } = await api.get<Estatus[]>('/estatus'); return data },
+  })
+  const idEstatus = (nombre: string) =>
+    estatusList.find((e) => e.descripcion.trim().toUpperCase() === nombre)?.id
+
+  const isLider = usuario?.rol === 'Lider'
+  const idAsignado = idEstatus('ASIGNADO')
+
+  const { data: pendientesRaw = [] } = useQuery<Pendiente[]>({
+    queryKey: ['home-pendientes', qs, idAsignado],
+    enabled: !!idAsignado,
+    queryFn: async () => { const { data } = await api.get<Pendiente[]>(`/entregables/buscar?${qs}&estatus_id=${idAsignado}`); return data },
+  })
+
+  const { data: porResponsable = [] } = useQuery<ResumenResponsable[]>({
+    queryKey: ['home-resumen-responsable', qs],
+    enabled: isLider,
+    queryFn: async () => { const { data } = await api.get<ResumenResponsable[]>(`/entregables/resumen-por-responsable?${qs}`); return data },
+  })
+
+  const r = resumen ?? { total: 0, terminados: 0, aprobados: 0, pendientes: 0, a_tiempo: 0, con_retraso: 0, pct_cumple_promedio: null, puntualidad_promedio: null, exactitud_promedio: null }
+  const terminadosSinAprobar = Math.max(0, r.terminados - r.aprobados)
+  const pctAvance = r.total > 0 ? Math.round((r.aprobados / r.total) * 100) : 0
+
+  const HOY = new Date().toISOString().slice(0, 10)
+  const listaPendientes = [...pendientesRaw].sort((a, b) => {
+    if (!a.fecha_compromiso && !b.fecha_compromiso) return 0
+    if (!a.fecha_compromiso) return 1
+    if (!b.fecha_compromiso) return -1
+    return a.fecha_compromiso.localeCompare(b.fecha_compromiso)
+  }).slice(0, 8)
+
+  const irA = (extra: Record<string, string> = {}) => {
+    const p = new URLSearchParams({ anio: String(anio), ...(mes ? { mes } : {}), ...extra })
+    router.push(`/dashboard/entregables?${p.toString()}`)
+  }
+
+  const cards: {
+    label: string; value: number; sub: string; icon: React.ElementType
+    color: string; extra: Record<string, string>
+  }[] = [
+    { label: 'Pendientes', value: r.pendientes, sub: 'sin resultado registrado', icon: Clock, color: 'oklch(70% 0.16 65)', extra: idEstatus('ASIGNADO') ? { estatus_id: String(idEstatus('ASIGNADO')) } : {} },
+    { label: 'Terminados', value: r.terminados, sub: `a tiempo: ${r.a_tiempo} · con retraso: ${r.con_retraso}`, icon: CheckCircle2, color: 'oklch(48% 0.13 240)', extra: idEstatus('TERMINADO') ? { estatus_id: String(idEstatus('TERMINADO')) } : {} },
+    { label: 'Aprobados', value: r.aprobados, sub: 'verificados por el líder', icon: ClipboardList, color: 'oklch(56% 0.18 145)', extra: { aprobado: 'true' } },
+    { label: 'Total del período', value: r.total, sub: periodoLabel, icon: Package, color: 'var(--color-primary)', extra: {} },
+  ]
+  const ordenCards = isAnalista
+    ? [cards[0], cards[1], cards[2], cards[3]]
+    : [cards[3], cards[0], cards[1], cards[2]]
+
+  const donutData = [
+    { name: 'Pendientes', value: r.pendientes, fill: 'oklch(70% 0.16 65)' },
+    { name: 'Terminados', value: terminadosSinAprobar, fill: 'oklch(48% 0.13 240)' },
+    { name: 'Aprobados', value: r.aprobados, fill: 'oklch(56% 0.18 145)' },
+  ].filter((d) => d.value > 0)
+
+  const topClientes = porCliente.slice(0, 10)
+  const maxTotal = Math.max(1, ...topClientes.map((c) => c.total))
+
   const firstName = usuario?.nombre?.split(' ')[0] ?? 'Usuario'
 
-  const clientes   = data?.clientes   ?? 0
-  const entregables = data?.entregables ?? 0
-  const indicadores = data?.indicadores ?? 0
-
-  const sparkClientes   = trends?.clientes     ?? [0,0,0,0,0,0,0,0,0,0,0,0]
-  const sparkEntregables = trends?.entregables   ?? [0,0,0,0,0,0,0,0,0,0,0,0]
-  const sparkIndicadores = trends?.indicadores   ?? [0,0,0,0,0,0,0,0,0,0,0,0]
-  const growthClientes    = trends?.crecimiento?.clientes     ?? 0
-  const growthEntregables = trends?.crecimiento?.entregables  ?? 0
-  const growthIndicadores = trends?.crecimiento?.indicadores  ?? 0
-
   return (
-    <div className="max-w-6xl space-y-8">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: easeOut }}
-      >
-        <div className="flex items-center gap-2 mb-1">
-          <Activity size={14} style={{ color: 'var(--color-accent)' }} />
-          <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--color-accent)', letterSpacing: '0.1em' }}>
-            Panel de control
-          </span>
+    <div className="max-w-6xl space-y-6">
+      {/* Header + selector de período */}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold" style={{ color: 'var(--color-ink)', letterSpacing: '-0.05em' }}>{firstName}</h1>
+          <p className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>
+            Resumen de entregables · {periodoLabel}
+          </p>
         </div>
-        <h1 className="text-3xl font-bold" style={{ color: 'var(--color-ink)', letterSpacing: '-0.05em' }}>
-          {greeting}, {firstName}
-        </h1>
-        <p className="mt-1 text-sm" style={{ color: 'var(--color-ink-muted)', maxWidth: 'unset' }}>
-          Aquí está el resumen operacional al día de hoy.
-        </p>
+        <div className="flex items-center gap-2">
+          <select value={anio} onChange={(e) => setAnio(Number(e.target.value))}
+            className="px-3 py-1.5 rounded-lg text-xs outline-none cursor-pointer"
+            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
+            {ANIOS.map((y) => <option key={y} value={y}>{y}</option>)}
+          </select>
+          <select value={mes} onChange={(e) => setMes(e.target.value)}
+            className="px-3 py-1.5 rounded-lg text-xs outline-none cursor-pointer"
+            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-ink)' }}>
+            <option value="">Todos los meses</option>
+            {MESES.map((m, i) => <option key={i} value={String(i + 1)}>{m}</option>)}
+          </select>
+        </div>
+      </div>
+
+      {/* KPI cards */}
+      <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {ordenCards.map((c) => (
+          <StatCard key={c.label} label={c.label} value={c.value} sub={c.sub} icon={c.icon} color={c.color} loading={isLoading}
+            onClick={() => irA(c.extra)} />
+        ))}
       </motion.div>
 
-      {/* KPI Cards */}
-      <motion.div
-        variants={stagger}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-1 sm:grid-cols-3 gap-5"
-      >
-        <KpiCard label="Clientes activos" value={clientes} subtext="registrados en el sistema"
-          icon={Building2} spark={sparkClientes} color="oklch(27% 0.09 252)" growth={growthClientes} loading={isLoading} />
-        <KpiCard label="Entregables" value={entregables} subtext="registrados este ciclo"
-          icon={Package} spark={sparkEntregables} color="oklch(48% 0.13 240)" growth={growthEntregables} loading={isLoading} />
-        <KpiCard label="Indicadores" value={indicadores} subtext="activos con seguimiento"
-          icon={BarChart3} spark={sparkIndicadores} color="oklch(52% 0.22 15)" accent growth={growthIndicadores} loading={isLoading} />
-      </motion.div>
-
-      {/* Panel de actividad */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.28, ease: easeOut }}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-5"
-      >
-        {/* Distribución visual */}
-        <div
-          className="lg:col-span-1 rounded-2xl p-6"
-          style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-        >
-          <div className="flex items-center gap-2 mb-5">
-            <Zap size={14} style={{ color: 'var(--color-accent)' }} />
-            <h2 className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>Distribución</h2>
-          </div>
-          <div className="flex justify-around items-end">
-            <ActivityRing label="Clientes" value={clientes} max={Math.max(clientes, entregables, indicadores)} color="oklch(27% 0.09 252)" />
-            <ActivityRing label="Entregables" value={entregables} max={Math.max(clientes, entregables, indicadores)} color="oklch(48% 0.13 240)" />
-            <ActivityRing label="Indicadores" value={indicadores} max={Math.max(clientes, entregables, indicadores)} color="oklch(52% 0.22 15)" />
-          </div>
+      {/* Barra de avance del período */}
+      <div className="rounded-2xl px-5 py-4 flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+        <span className="text-sm font-bold" style={{ color: 'var(--color-ink)' }}>{pctAvance}%</span>
+        <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-border)' }}>
+          <motion.div className="h-full rounded-full" initial={{ width: 0 }} animate={{ width: `${pctAvance}%` }}
+            transition={{ duration: 0.6, ease: easeOut }} style={{ backgroundColor: 'oklch(56% 0.18 145)' }} />
         </div>
+        <span className="text-[11px] whitespace-nowrap" style={{ color: 'var(--color-ink-muted)' }}>
+          aprobados ({r.aprobados}/{r.total}) · {periodoLabel}
+        </span>
+      </div>
 
-        {/* Bienvenida / guía rápida */}
-        <div
-          className="lg:col-span-2 rounded-2xl p-6 flex flex-col justify-between"
-          style={{
-            background: 'linear-gradient(135deg, oklch(20% 0.08 252) 0%, oklch(15% 0.06 252) 100%)',
-            border: '1px solid oklch(100% 0 0 / 6%)',
-          }}
-        >
-          <div>
-            <p className="text-xs font-semibold mb-2 uppercase tracking-widest" style={{ color: 'oklch(100% 0 0 / 40%)', letterSpacing: '0.1em' }}>
-              Acceso rápido
-            </p>
-            <h3 className="text-lg font-bold text-white mb-1" style={{ letterSpacing: '-0.04em' }}>
-              Gestiona tus indicadores operacionales
+      {/* Pendientes + equipo */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: easeOut }}
+          className={`rounded-2xl p-5 ${isLider ? 'lg:col-span-2' : 'lg:col-span-3'}`}
+          style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-ink-muted)' }}>
+            {isAnalista || isLider ? 'Tus pendientes' : 'Pendientes del período'} · ordenados por fecha límite
+          </h3>
+          {listaPendientes.length === 0 ? (
+            <p className="text-xs py-6 text-center" style={{ color: 'var(--color-ink-subtle)' }}>Sin pendientes en este período ✓</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+              {listaPendientes.map((p) => {
+                const vencida = !!p.fecha_compromiso && p.fecha_compromiso < HOY
+                const fecha = p.fecha_compromiso ? `${p.fecha_compromiso.slice(8, 10)}/${p.fecha_compromiso.slice(5, 7)}` : 'sin fecha'
+                return (
+                  <button key={p.id} onClick={() => irA({ cliente_id: String(p.cliente_id) })}
+                    className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-left cursor-pointer hover:bg-white/5 transition-colors">
+                    <span className="min-w-0">
+                      <span className="block text-[11px] font-medium truncate" style={{ color: 'var(--color-ink)' }}>
+                        {p.entregable_tipos?.nombre ?? 'Entregable'}
+                      </span>
+                      <span className="block text-[10px] truncate" style={{ color: 'var(--color-ink-subtle)' }}>{p.clientes?.cliente ?? ''}</span>
+                    </span>
+                    <span className="text-[10px] font-semibold whitespace-nowrap"
+                      style={{ color: vencida ? 'oklch(52% 0.22 15)' : 'var(--color-ink-muted)' }}>
+                      {vencida ? `Vencido · ${fecha}` : fecha}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </motion.div>
+
+        {isLider && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08, ease: easeOut }}
+            className="rounded-2xl p-5" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-ink-muted)' }}>
+              Pendientes por analista
             </h3>
-            <p className="text-sm" style={{ color: 'oklch(100% 0 0 / 50%)', maxWidth: 'unset' }}>
-              Navega a cualquier módulo desde el menú lateral para registrar clientes, entregables e indicadores de desempeño.
-            </p>
-          </div>
-          <div className="flex gap-3 mt-5 flex-wrap">
-            {[
-              { label: 'Ver clientes', href: '/dashboard/clientes', color: 'var(--color-primary-mid)' },
-              { label: 'Entregables', href: '/dashboard/entregables', color: 'var(--color-blue-mid)' },
-              { label: 'Salario Variable', href: '/dashboard/salario-variable', color: 'var(--color-accent)' },
-            ].map(({ label, href, color }) => (
-              <motion.a
-                key={href}
-                href={href}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="px-4 py-2 rounded-xl text-sm font-semibold text-white"
-                style={{ backgroundColor: color, boxShadow: `0 2px 8px ${color}40` }}
-                transition={{ duration: 0.15, ease: easeOut }}
-              >
-                {label}
-              </motion.a>
-            ))}
-          </div>
+            {porResponsable.filter((x) => x.pendientes > 0).length === 0 ? (
+              <p className="text-xs py-6 text-center" style={{ color: 'var(--color-ink-subtle)' }}>El equipo está al día ✓</p>
+            ) : (
+              <div className="space-y-1.5">
+                {porResponsable.filter((x) => x.pendientes > 0).slice(0, 8).map((x) => (
+                  <button key={x.usuario_id} onClick={() => irA({ usuario_id: String(x.usuario_id) })}
+                    className="w-full flex items-center justify-between rounded-lg px-3 py-2 text-left cursor-pointer hover:bg-white/5 transition-colors">
+                    <span className="text-[11px] font-medium truncate" style={{ color: 'var(--color-ink)' }}>{x.responsable}</span>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md"
+                      style={{ backgroundColor: 'oklch(70% 0.16 65 / 15%)', color: 'oklch(70% 0.16 65)' }}>
+                      {x.pendientes} pend.
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </div>
+
+      {r.total === 0 && !isLoading && (
+        <div className="rounded-2xl p-8 text-center" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+          <AlertTriangle size={24} className="mx-auto mb-2" style={{ color: 'var(--color-ink-muted)' }} />
+          <p className="text-sm font-medium" style={{ color: 'var(--color-ink)' }}>No hay entregables en este período</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>
+            Probá con otro año/mes o <button className="underline cursor-pointer" onClick={() => { setAnio(AHORA.getFullYear()); setMes('') }}>ver todo el año {AHORA.getFullYear()}</button>
+          </p>
         </div>
-      </motion.div>
+      )}
+
+      {/* Donut + promedios | clientes */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: easeOut }}
+          className="rounded-2xl p-5" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-ink-muted)' }}>Distribución del período</h3>
+          <div className="flex items-center gap-4">
+            <div className="w-40 h-40 shrink-0">
+              {donutData.length > 0 && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={donutData} dataKey="value" nameKey="name" innerRadius={45} outerRadius={70} paddingAngle={2} strokeWidth={0}>
+                      {donutData.map((d) => <Cell key={d.name} fill={d.fill} />)}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+            <div className="space-y-2 flex-1">
+              {donutData.map((d) => (
+                <div key={d.name} className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-2" style={{ color: 'var(--color-ink-muted)' }}>
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.fill }} />{d.name}
+                  </span>
+                  <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>{d.value}</span>
+                </div>
+              ))}
+              <div className="pt-2 mt-2 space-y-1" style={{ borderTop: '1px solid var(--color-border)' }}>
+                {([['Cumplimiento', r.pct_cumple_promedio], ['Puntualidad', r.puntualidad_promedio], ['Exactitud', r.exactitud_promedio]] as const).map(([label, v]) => (
+                  <div key={label} className="flex items-center justify-between text-[11px]">
+                    <span style={{ color: 'var(--color-ink-subtle)' }}>{label} promedio</span>
+                    <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>{v != null ? `${v}%` : '—'}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08, ease: easeOut }}
+          className="rounded-2xl p-5" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-ink-muted)' }}>
+            Entregables por cliente {isAnalista ? '(los tuyos)' : '(top 10)'}
+          </h3>
+          {topClientes.length === 0 ? (
+            <p className="text-xs py-8 text-center" style={{ color: 'var(--color-ink-subtle)' }}>Sin datos en este período</p>
+          ) : (
+            <div className="space-y-2.5">
+              {topClientes.map((c) => (
+                <button key={c.cliente_id} onClick={() => irA({ cliente_id: String(c.cliente_id) })}
+                  className="w-full text-left group">
+                  <div className="flex items-center justify-between text-[11px] mb-1">
+                    <span className="font-medium truncate group-hover:underline" style={{ color: 'var(--color-ink)' }}>{c.cliente}</span>
+                    <span style={{ color: 'var(--color-ink-muted)' }}>
+                      {c.total}
+                      {c.pendientes > 0 && <span className="ml-2 font-semibold" style={{ color: 'oklch(70% 0.16 65)' }}>{c.pendientes} pend.</span>}
+                    </span>
+                  </div>
+                  <div className="h-1.5 rounded-full overflow-hidden flex" style={{ backgroundColor: 'var(--color-border)' }}>
+                    <div className="h-full" style={{ width: `${(c.aprobados / maxTotal) * 100}%`, backgroundColor: 'oklch(56% 0.18 145)' }} />
+                    <div className="h-full" style={{ width: `${(Math.max(0, c.terminados - c.aprobados) / maxTotal) * 100}%`, backgroundColor: 'oklch(48% 0.13 240)' }} />
+                    <div className="h-full" style={{ width: `${(c.pendientes / maxTotal) * 100}%`, backgroundColor: 'oklch(70% 0.16 65)' }} />
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      </div>
     </div>
   )
 }

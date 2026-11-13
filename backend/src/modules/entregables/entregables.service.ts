@@ -510,6 +510,50 @@ export class EntregablesService extends BaseService<Entregable> {
     };
   }
 
+  /** Totales agregados agrupados por cliente (Home por período). Mismo scope por rol que buscar. */
+  async resumenPorCliente(f: FiltrarEntregablesDto, usuario?: UsuarioCtx) {
+    const filas = await this.buscar(f, usuario);
+    const porCliente = new Map<number, { cliente_id: number; cliente: string; total: number; pendientes: number; terminados: number; aprobados: number }>();
+    for (const e of filas) {
+      const cid = e.cliente_id;
+      if (!porCliente.has(cid)) {
+        porCliente.set(cid, {
+          cliente_id: cid,
+          cliente: (e as { clientes?: { cliente?: string } | null }).clientes?.cliente ?? `#${cid}`,
+          total: 0, pendientes: 0, terminados: 0, aprobados: 0,
+        });
+      }
+      const acc = porCliente.get(cid)!;
+      acc.total++;
+      if (!e.resultado && !e.resultado_cantidad) acc.pendientes++;
+      if (e.resultado || e.resultado_cantidad) acc.terminados++;
+      if (e.aprobado) acc.aprobados++;
+    }
+    return [...porCliente.values()].sort((a, b) => b.total - a.total || a.cliente.localeCompare(b.cliente));
+  }
+
+  /** Totales por responsable (analista) del conjunto filtrado — Home del líder. */
+  async resumenPorResponsable(f: FiltrarEntregablesDto, usuario?: UsuarioCtx) {
+    const filas = await this.buscar(f, usuario);
+    const porResp = new Map<number, { usuario_id: number; responsable: string; total: number; pendientes: number; aprobados: number }>();
+    for (const e of filas) {
+      const uid = e.usuario_id;
+      if (uid == null) continue;
+      if (!porResp.has(uid)) {
+        porResp.set(uid, {
+          usuario_id: uid,
+          responsable: (e as { responsable?: { nombre?: string } | null }).responsable?.nombre ?? `#${uid}`,
+          total: 0, pendientes: 0, aprobados: 0,
+        });
+      }
+      const acc = porResp.get(uid)!;
+      acc.total++;
+      if (!e.resultado && !e.resultado_cantidad) acc.pendientes++;
+      if (e.aprobado) acc.aprobados++;
+    }
+    return [...porResp.values()].sort((a, b) => b.pendientes - a.pendientes || b.total - a.total);
+  }
+
   async findAllWithRelations(usuario?: UsuarioCtx) {
     const { data, error } = await this.supabase.db
       .from('entregables').select(SELECT_RELACIONES).order('id').limit(100000);

@@ -69,6 +69,18 @@ export class EntregablesController extends BaseController<Entregable> {
     return this.entregablesService.resumen(filtros, usuario);
   }
 
+  /** Totales por cliente para el período (Home). */
+  @Get('resumen-por-cliente')
+  resumenPorCliente(@Query() filtros: FiltrarEntregablesDto, @CurrentUser() usuario?: UsuarioCtx) {
+    return this.entregablesService.resumenPorCliente(filtros, usuario);
+  }
+
+  /** Totales por responsable para el período (Home del líder). */
+  @Get('resumen-por-responsable')
+  resumenPorResponsable(@Query() filtros: FiltrarEntregablesDto, @CurrentUser() usuario?: UsuarioCtx) {
+    return this.entregablesService.resumenPorResponsable(filtros, usuario);
+  }
+
   @Get('con-relaciones')
   findAllWithRelations(@CurrentUser() usuario?: UsuarioCtx) {
     return this.entregablesService.findAllWithRelations(usuario);

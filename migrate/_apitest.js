@@ -12,23 +12,21 @@ function loadEnv() {
   }
 }
 loadEnv();
-const token = jwt.sign(
-  { sub: 16, usuario: 'dpreciado-L', nombre: 'Deissy Preciado', es_admin: false, cargo_id: null, grupo_id: null, rol: 'Lider' },
+const mk = (sub, rol, usuario) => jwt.sign(
+  { sub, usuario, nombre: usuario, es_admin: rol === 'Admin', cargo_id: null, grupo_id: null, rol },
   process.env.JWT_SECRET, { expiresIn: '5m' },
 );
 (async () => {
-  const casos = [
-    ['sin filtro', ''],
-    ['CONTINENTAL (id 8)', '&cliente_id=8'],
-    ['SAN JORGE (id 41)', '&cliente_id=41'],
-  ];
-  for (const [label, extra] of casos) {
-    const r = await fetch('http://localhost:3000/api/salario-variable-admin/resultados-pago?anio=2026&mes=8' + extra, {
+  for (const [label, token] of [
+    ['Admin', mk(1, 'Admin', 'admin')],
+    ['dpreciado-L', mk(16, 'Lider', 'dpreciado-L')],
+  ]) {
+    const r = await fetch('http://localhost:3000/api/entregables/resumen-por-cliente?anio=2026&mes=8', {
       headers: { Authorization: 'Bearer ' + token },
     });
     const j = await r.json();
-    const f = Array.isArray(j) ? j[0] : null;
-    if (!f) { console.log(label + ': (vacío)'); continue; }
-    console.log(`${label}: Plan ${f.consolidado.plan.cumplidos}/${f.consolidado.plan.evaluados} | Exact ${f.consolidado.exactitud.correctos_total || 0}/${f.consolidado.exactitud.compromiso_total || 0}`);
+    const total = j.reduce?.((s, x) => s + x.total, 0);
+    console.log(`${label}: ${r.status} | ${Array.isArray(j) ? j.length + ' clientes, total=' + total : JSON.stringify(j).slice(0, 100)}`);
+    if (Array.isArray(j)) console.log('  top3:', j.slice(0, 3).map((x) => `${x.cliente}(${x.total})`).join(', '));
   }
 })();
