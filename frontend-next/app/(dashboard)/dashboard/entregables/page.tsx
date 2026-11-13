@@ -180,7 +180,10 @@ export default function EntregablesPage() {
   const [histId, setHistId] = useState<number | null>(null)
 
   // ── Filtros dinámicos ──
-  const [filtros, setFiltros] = useState<Record<string, string>>({})
+  // El período arranca en el año actual (todos sus meses): consulta liviana y con contenido visible.
+  const [filtros, setFiltros] = useState<Record<string, string>>({
+    anio: String(AHORA.getFullYear()),
+  })
 
   // Filtros iniciales desde la URL (redirecciones desde "Mis Clientes" u otros módulos)
   useEffect(() => {
@@ -188,7 +191,14 @@ export default function EntregablesPage() {
     const claves = ['cliente_id', 'indicador_id', 'estatus_id', 'entregable_tipo_id', 'lider_id', 'usuario_id', 'aprobado', 'anio', 'mes', 'q']
     const iniciales: Record<string, string> = {}
     claves.forEach((k) => { const v = params.get(k); if (v) iniciales[k] = v })
-    if (Object.keys(iniciales).length) setFiltros((f) => ({ ...f, ...iniciales }))
+    if (Object.keys(iniciales).length) {
+      setFiltros((f) => {
+        const merged = { ...f, ...iniciales }
+        // Si la URL trae filtros sin período, no se impone el default: se muestra todo el histórico.
+        if (!iniciales.anio && !iniciales.mes) { merged.anio = ''; merged.mes = '' }
+        return merged
+      })
+    }
   }, [])
 
   // Se envían al backend solo los filtros con valor.

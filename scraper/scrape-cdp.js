@@ -12,6 +12,7 @@
  *
  * Variables de entorno:
  *   MAX_DETAILS   — máximo de filas a procesar con detalle (default: 5)
+ *   SKIP_IDS      — IDs de generales a saltar sin abrir detalle, separados por coma
  *   ANIO/MES      — para el nombre del archivo de salida
  */
 
@@ -24,6 +25,7 @@ const CONFIG = {
   outputDir: path.join(__dirname, 'output'),
   timeout: Number(process.env.TIMEOUT || 60000),
   maxDetails: Number(process.env.MAX_DETAILS || 5),
+  skipIds: (process.env.SKIP_IDS || '').split(',').map((s) => s.trim()).filter(Boolean),
 };
 
 const log = (msg) => console.log(`[scraper] ${msg}`);
@@ -411,6 +413,18 @@ async function extraerDetalleFila(rowIndex) {
       if (await getPageNumber(gf) !== p) gf = await goToPage(gf, p);
 
       const fila = todasLasFilas[idxGlobal];
+      if (fila && CONFIG.skipIds.includes(fila.id)) {
+        log(`[${idxGlobal + 1}] ${fila.id} · ${fila.cliente} → OMITIDO por SKIP_IDS`);
+        fila.sub_entregables = [];
+        fs.writeFileSync(outputFile, JSON.stringify({
+          generado_en: new Date().toISOString(),
+          total: todasLasFilas.length,
+          procesadas: idxGlobal + 1,
+          entregables: todasLasFilas,
+        }, null, 2), 'utf8');
+        procesadas = idxGlobal + 1;
+        continue;
+      }
       log(`[${idxGlobal + 1}] ${fila ? fila.id + ' · ' + fila.cliente : 'fila ' + i} → abriendo detalle...`);
       const grupos = await extraerDetalleFila(i);
       if (fila) fila.sub_entregables = grupos;

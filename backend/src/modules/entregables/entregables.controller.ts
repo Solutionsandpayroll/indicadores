@@ -139,10 +139,10 @@ export class EntregablesController extends BaseController<Entregable> {
     return this.entregablesService.registrarSeguimiento(id, dto, usuario);
   }
 
-  /** Eliminar: solo Admin. */
+  /** Eliminar: Admin o Líder (solo de clientes asignados, validado en servicio). */
   @Delete(':id')
-  @Roles('Admin')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return super.remove(id);
+  @Roles('Admin', 'Lider')
+  remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() usuario?: UsuarioCtx) {
+    return this.entregablesService.remove(id, usuario);
   }
 }

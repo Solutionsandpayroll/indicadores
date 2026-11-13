@@ -18,8 +18,8 @@ function loadEnv() {
 loadEnv();
 const s = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-const MAPEO_LIDERES = { 'tchavarro-L': 'jchavarro', 'nvaquiro-L': 'nvaquiro', 'mcastiblanco-L': 'mcastiblanco', 'ghincapie-L': 'ghincapie', 'L-rguacaneme': 'rguacaneme-L', 'eletrado-L': 'eletrado-L', 'smolina-LN': 'smolina-L', 'admin': 'dpreciado-L' };
-const MAPEO_RESPONSABLES = { 'jchavarro': 'jchavarro-A', 'nvaquiro': 'nvaquiro-A', 'ghincapie': 'ghincapie-A', 'mcastiblanco': 'mcastiblanco-A', 'gguio': 'gguio-A', 'smolina-L': 'smolina-A' };
+const MAPEO_LIDERES = { 'tchavarro-L': 'jchavarro', 'nvaquiro-L': 'nvaquiro', 'mcastiblanco-L': 'mcastiblanco', 'ghincapie-L': 'ghincapie', 'L-rguacaneme': 'rguacaneme-L', 'smolina-LN': 'smolina-L', 'lgarcia-A': 'lgarcia-L', 'lgarcias-a': 'lgarcia-L', 'acorredor': 'acorredor-L', 'wromero-A': 'wromero-L' };
+const MAPEO_RESPONSABLES = { 'jchavarro': 'jchavarro-A', 'nvaquiro': 'nvaquiro-A', 'ghincapie': 'ghincapie-A', 'mcastiblanco': 'mcastiblanco-A', 'gguio': 'gguio-A', 'smolina-L': 'smolina-A', 'wromero': 'wromero-A', 'jcervantes': 'jcervantes-A' };
 
 (async () => {
   const { data: usuarios } = await s.from('usuarios').select('id, usuario, nombre, rol');
@@ -46,7 +46,7 @@ const MAPEO_RESPONSABLES = { 'jchavarro': 'jchavarro-A', 'nvaquiro': 'nvaquiro-A
     console.log('Verificados (deben ser Líder):');
     for (const [login, n] of verif) {
       let real = login;
-      if (!userByLogin.has(login) && MAPEO_LIDERES[login]) real = MAPEO_LIDERES[login];
+      if (MAPEO_LIDERES[login]) real = MAPEO_LIDERES[login];
       const u = userByLogin.get(real);
       if (!u) { console.log(`  ✗ ${login} → NO EXISTE (${n} sub) [como líder]`); continue; }
       if (u.rol !== 'Lider') console.log(`  ⚠ ${login} → rol en BD: ${u.rol} (${n} sub) ← CONFLICTO como líder`);

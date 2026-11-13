@@ -26,11 +26,11 @@ const JSON_PATH = process.argv[2] || path.join(__dirname, '..', 'scraper', 'outp
 /** Mapeos (deben coincidir con import.js). */
 const MAPEO_LIDERES = {
   'tchavarro-L': 'jchavarro', 'nvaquiro-L': 'nvaquiro', 'mcastiblanco-L': 'mcastiblanco',
-  'ghincapie-L': 'ghincapie', 'L-rguacaneme': 'rguacaneme-L', 'smolina-LN': 'smolina-L',
+  'ghincapie-L': 'ghincapie', 'L-rguacaneme': 'rguacaneme-L', 'smolina-LN': 'smolina-L', 'lgarcia-A': 'lgarcia-L', 'lgarcias-a': 'lgarcia-L', 'acorredor': 'acorredor-L', 'wromero-A': 'wromero-L',
 };
 const MAPEO_RESPONSABLES = {
   'jchavarro': 'jchavarro-A', 'nvaquiro': 'nvaquiro-A', 'ghincapie': 'ghincapie-A',
-  'mcastiblanco': 'mcastiblanco-A', 'gguio': 'gguio-A', 'smolina-L': 'smolina-A',
+  'mcastiblanco': 'mcastiblanco-A', 'gguio': 'gguio-A', 'smolina-L': 'smolina-A', 'wromero': 'wromero-A', 'jcervantes': 'jcervantes-A',
 };
 /** Distancia de Levenshtein para sugerencias. */
 function levenshtein(a, b) {
@@ -133,6 +133,7 @@ function esNumerico(v) {
   };
   // Resuelve el login real del líder; si cae en la cuenta genérica Admin, usa el nombre del JSON.
   const resolverLiderLogin = (login, nombreLider) => {
+    const aplicarMapa = (u) => (u && MAPEO_LIDERES[u.usuario] && usuarioPorLogin.has(MAPEO_LIDERES[u.usuario])) ? usuarioPorLogin.get(MAPEO_LIDERES[u.usuario]) : u;
     let loginReal = login;
     let user = null;
     if (MAPEO_LIDERES[login] && usuarioPorLogin.has(MAPEO_LIDERES[login])) {
@@ -142,7 +143,11 @@ function esNumerico(v) {
       user = usuarioPorLogin.get(login);
     }
     if (user?.rol === 'Admin' && nombreLider) {
-      const porNom = buscarPorNombre(nombreLider);
+      const porNom = aplicarMapa(buscarPorNombre(nombreLider));
+      if (porNom) return porNom.usuario;
+    }
+    if (!user && !login && nombreLider) {
+      const porNom = aplicarMapa(buscarPorNombre(nombreLider));
       if (porNom) return porNom.usuario;
     }
     return loginReal;
@@ -182,7 +187,11 @@ function esNumerico(v) {
     for (const grupo of g.sub_entregables || []) {
       for (const s of grupo.filas) {
         reporte.subEntregables++;
-        const tipo = esFecha(s.meta_result) ? 'PLAN' : esNumerico(s.meta_result) ? 'EXACTITUD' : 'DESCONOCIDO';
+        let tipo = esFecha(s.meta_result) ? 'PLAN' : esNumerico(s.meta_result) ? 'EXACTITUD' : 'DESCONOCIDO';
+        if (tipo === 'DESCONOCIDO' && (s.meta_result || '').trim() === '') {
+          const indV = (grupo.indicador || '').trim().toUpperCase();
+          tipo = indV.startsWith('PLAN') ? 'PLAN' : 'EXACTITUD';
+        }
         if (tipo === 'PLAN') reporte.planes++;
         else if (tipo === 'EXACTITUD') reporte.exactitudes++;
         else reporte.errores.push({ id: s.id, motivo: `meta_result no reconocible: "${s.meta_result}"`, general: g.id });
@@ -190,7 +199,7 @@ function esNumerico(v) {
         // Fechas (solo aplica a PLAN; EXACTITUD usa cantidades)
         if (tipo === 'PLAN') {
           const metaDate = s.meta_date ? normalizarFecha(s.meta_date, Number(g.anio)) : { ok: true, valor: null };
-          const metaResult = normalizarFecha(s.meta_result, Number(g.anio));
+          const metaResult = s.meta_result ? normalizarFecha(s.meta_result, Number(g.anio)) : { ok: true, valor: null };
           if (!metaDate.ok) reporte.fechasRaras.push({ id: s.id, campo: 'meta_date', valor: s.meta_date, general: g.id });
           if (!metaResult.ok) reporte.fechasRaras.push({ id: s.id, campo: 'meta_result', valor: s.meta_result, general: g.id });
         }

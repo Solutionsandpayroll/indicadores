@@ -15,7 +15,7 @@ function loadEnv() {
 loadEnv();
 const s = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-const MAPEO_LIDERES = { 'tchavarro-L': 'jchavarro', 'nvaquiro-L': 'nvaquiro', 'mcastiblanco-L': 'mcastiblanco', 'ghincapie-L': 'ghincapie', 'L-rguacaneme': 'rguacaneme-L', 'smolina-LN': 'smolina-L' };
+const MAPEO_LIDERES = { 'tchavarro-L': 'jchavarro', 'nvaquiro-L': 'nvaquiro', 'mcastiblanco-L': 'mcastiblanco', 'ghincapie-L': 'ghincapie', 'L-rguacaneme': 'rguacaneme-L', 'smolina-LN': 'smolina-L', 'lgarcia-A': 'lgarcia-L', 'lgarcias-a': 'lgarcia-L', 'acorredor': 'acorredor-L', 'wromero-A': 'wromero-L' };
 const JSON_PATH = process.argv[2] || path.join(__dirname, '..', 'scraper', 'output', 'entregables-2026-junio.json');
 
 (async () => {
@@ -51,8 +51,13 @@ const JSON_PATH = process.argv[2] || path.join(__dirname, '..', 'scraper', 'outp
         let liderLogin = sub.verified_user;
         if (MAPEO_LIDERES[liderLogin] && usuarioPorLogin.has(MAPEO_LIDERES[liderLogin])) liderLogin = MAPEO_LIDERES[liderLogin];
         let lider = usuarioPorLogin.get(liderLogin);
+        const aplicarMapa = (u) => (u && MAPEO_LIDERES[u.usuario] && usuarioPorLogin.has(MAPEO_LIDERES[u.usuario])) ? usuarioPorLogin.get(MAPEO_LIDERES[u.usuario]) : u;
         if (lider?.rol === 'Admin' && g.lider) {
-          const porNom = buscarPorNombre(g.lider);
+          const porNom = aplicarMapa(buscarPorNombre(g.lider));
+          if (porNom) { lider = porNom; liderLogin = porNom.usuario; }
+        }
+        if (!lider && !liderLogin && g.lider) {
+          const porNom = aplicarMapa(buscarPorNombre(g.lider));
           if (porNom) { lider = porNom; liderLogin = porNom.usuario; }
         }
         if (!lider) continue;

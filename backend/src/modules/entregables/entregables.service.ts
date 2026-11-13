@@ -312,6 +312,17 @@ export class EntregablesService extends BaseService<Entregable> {
     return super.update(id, await this.conNombreDeTipo(dto));
   }
 
+  /** Eliminar: Admin o Líder solo de clientes asignados. */
+  async remove(id: number, usuario?: UsuarioCtx): Promise<{ message: string }> {
+    const { data: actual } = await this.supabase.db
+      .from('entregables').select('cliente_id').eq('id', id).single();
+    if (usuario?.rol === 'Lider' && actual?.cliente_id) {
+      const ok = await this.puedeOperarCliente(usuario, actual.cliente_id);
+      if (!ok) throw new ForbiddenException('Solo puedes eliminar entregables de tus clientes asignados');
+    }
+    return super.remove(id);
+  }
+
   /**
    * Registra el seguimiento (resultado del analista / aprobación del líder).
    * Los errores NO se manejan aquí: viven en la tabla hija entregable_errores.

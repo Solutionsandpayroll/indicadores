@@ -44,6 +44,10 @@ const MAPEO_LIDERES = {
   'ghincapie-L': 'ghincapie',
   'L-rguacaneme': 'rguacaneme-L',
   'smolina-LN': 'smolina-L',
+  'lgarcia-A': 'lgarcia-L',
+  'lgarcias-a': 'lgarcia-L',
+  'acorredor': 'acorredor-L',
+  'wromero-A': 'wromero-L',
   // 'wromero-L' ahora existe como Líder en la BD (renombrado de wromero-A)
 };
 
@@ -58,6 +62,8 @@ const MAPEO_RESPONSABLES = {
   'mcastiblanco': 'mcastiblanco-A',
   'gguio': 'gguio-A',
   'smolina-L': 'smolina-A',
+  'wromero': 'wromero-A',
+  'jcervantes': 'jcervantes-A',
 };
 
 const MES_NUM = {
@@ -193,6 +199,8 @@ async function cargarTiposPaginado() {
 
   // ── Resolver líder (con mapeo; si cae en la cuenta genérica Admin, usar el nombre del JSON) ──
   function resolverLider(login, nombreLider) {
+    // Usuario resuelto por nombre pasa además por el mapa de logins (lgarcias-a → lgarcia-L, etc.).
+    const aplicarMapa = (u) => (u && MAPEO_LIDERES[u.usuario] && usuarioPorLogin.has(MAPEO_LIDERES[u.usuario])) ? usuarioPorLogin.get(MAPEO_LIDERES[u.usuario]) : u;
     let user = null;
     let loginReal = login;
     if (MAPEO_LIDERES[login] && usuarioPorLogin.has(MAPEO_LIDERES[login])) {
@@ -201,9 +209,16 @@ async function cargarTiposPaginado() {
     } else if (usuarioPorLogin.has(login)) {
       user = usuarioPorLogin.get(login);
     }
-    if (!user) return null;
+    if (!user) {
+      // verified_user vacío en la legada: resolver por el nombre del líder del general.
+      if (!login && nombreLider) {
+        const porNombre = aplicarMapa(buscarPorNombre(nombreLider));
+        if (porNombre) return { id: porNombre.id, login: porNombre.usuario, mapeado: true };
+      }
+      return null;
+    }
     if (user.rol === 'Admin' && nombreLider) {
-      const porNombre = buscarPorNombre(nombreLider);
+      const porNombre = aplicarMapa(buscarPorNombre(nombreLider));
       if (porNombre) return { id: porNombre.id, login: porNombre.usuario, mapeado: true };
     }
     return { id: user.id, login: loginReal };
@@ -224,8 +239,13 @@ async function cargarTiposPaginado() {
 
     for (const grupo of g.sub_entregables || []) {
       for (const s of grupo.filas) {
-        const esPlan = esFecha(s.meta_result);
-        const esExact = esNumero(s.meta_result);
+        let esPlan = esFecha(s.meta_result);
+        let esExact = esNumero(s.meta_result);
+        // meta_result vacío en la legada: entregable sin resultado, clasificar por el indicador del grupo.
+        if (!esPlan && !esExact && (s.meta_result || '').trim() === '') {
+          const ind = (grupo.indicador || '').trim().toUpperCase();
+          if (ind.startsWith('PLAN')) esPlan = true; else esExact = true;
+        }
         if (!esPlan && !esExact) { omitidos.push({ general: g.id, sub: s.id, motivo: `meta_result no reconocible: "${s.meta_result}"` }); continue; }
         const tipo = esPlan ? 'PLAN' : 'EXACTITUD';
         const indId = esPlan ? IND_PLAN.id : IND_EXACT.id;

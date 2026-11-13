@@ -1,0 +1,5102 @@
+{
+  "generado_en": "2026-11-13T13:46:34.956Z",
+  "total": 31,
+  "procesadas": 31,
+  "entregables": [
+    {
+      "id": "249",
+      "cliente": "TC01",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:47:15",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:30",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.346",
+              "entregable": "MENSUAL",
+              "meta_number": "3",
+              "meta_date": "",
+              "meta_result": "3",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:47:56"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.347",
+              "entregable": "MENSUAL",
+              "meta_number": "3",
+              "meta_date": "",
+              "meta_result": "3",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:47:56"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.348",
+              "entregable": "PRENOMINA MENSUAL",
+              "meta_number": "0",
+              "meta_date": "18/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:47:56"
+            },
+            {
+              "id": "2.349",
+              "entregable": "COMPROBANTES  DE PAGO MENSUAL",
+              "meta_number": "0",
+              "meta_date": "24/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:47:56"
+            },
+            {
+              "id": "2.350",
+              "entregable": "ARCHIVO DE PAGO A TERCEROS (CLIENTE Y S&P)",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "14/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "6",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:47:56"
+            },
+            {
+              "id": "2.351",
+              "entregable": "INFORME DE RETENCION EN LA FUENTE",
+              "meta_number": "0",
+              "meta_date": "01/06/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:47:56"
+            },
+            {
+              "id": "2.352",
+              "entregable": "INFORMES MENSUALES DE PERSONAL",
+              "meta_number": "0",
+              "meta_date": "01/06/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:47:56"
+            },
+            {
+              "id": "2.353",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "10",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:47:56"
+            },
+            {
+              "id": "2.354",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "25/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:47:56"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "250",
+      "cliente": "TC06",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:47:25",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:30",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.361",
+              "entregable": "MENSUAL",
+              "meta_number": "14",
+              "meta_date": "",
+              "meta_result": "14",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:48:13"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.362",
+              "entregable": "MENSUAL",
+              "meta_number": "14",
+              "meta_date": "",
+              "meta_result": "14",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:48:13"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.355",
+              "entregable": "PRENOMINA MENSUAL",
+              "meta_number": "0",
+              "meta_date": "18/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:48:13"
+            },
+            {
+              "id": "2.356",
+              "entregable": "COMPROBANTES  DE PAGO MENSUAL",
+              "meta_number": "0",
+              "meta_date": "24/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:48:13"
+            },
+            {
+              "id": "2.357",
+              "entregable": "ARCHIVO DE PAGO A TERCEROS (CLIENTE Y S&P)",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "14/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "6",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:48:13"
+            },
+            {
+              "id": "2.358",
+              "entregable": "INFORME DE RETENCION EN LA FUENTE",
+              "meta_number": "0",
+              "meta_date": "01/06/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:48:13"
+            },
+            {
+              "id": "2.359",
+              "entregable": "INFORMES MENSUALES DE PERSONAL",
+              "meta_number": "0",
+              "meta_date": "01/06/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:48:13"
+            },
+            {
+              "id": "2.360",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "10",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:48:13"
+            },
+            {
+              "id": "2.363",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "25/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:48:13"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "251",
+      "cliente": "TC07",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:47:35",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:30",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.371",
+              "entregable": "MENSUAL",
+              "meta_number": "11",
+              "meta_date": "",
+              "meta_result": "11",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:49:30"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.372",
+              "entregable": "MENSUAL",
+              "meta_number": "11",
+              "meta_date": "",
+              "meta_result": "11",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:49:30"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.364",
+              "entregable": "PRE NOMINA MENSUAL",
+              "meta_number": "0",
+              "meta_date": "18/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:49:30"
+            },
+            {
+              "id": "2.365",
+              "entregable": "COMPROBANTES  DE PAGO MENSUAL",
+              "meta_number": "0",
+              "meta_date": "24/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:49:30"
+            },
+            {
+              "id": "2.366",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "25/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:49:30"
+            },
+            {
+              "id": "2.367",
+              "entregable": "ARCHIVO DE PAGO A TERCEROS (CLIENTE Y S&P)",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "14/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "6",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:49:30"
+            },
+            {
+              "id": "2.368",
+              "entregable": "INFORME DE RETENCION EN LA FUENTE",
+              "meta_number": "0",
+              "meta_date": "01/06/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:49:30"
+            },
+            {
+              "id": "2.369",
+              "entregable": "INFORMES MENSUALES DE PERSONAL",
+              "meta_number": "0",
+              "meta_date": "01/06/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:49:30"
+            },
+            {
+              "id": "2.370",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "7",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:49:30"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "252",
+      "cliente": "TC08",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:47:49",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:30",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.380",
+              "entregable": "MENSUAL",
+              "meta_number": "4",
+              "meta_date": "",
+              "meta_result": "4",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:56:41"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.381",
+              "entregable": "MENSUAL",
+              "meta_number": "4",
+              "meta_date": "",
+              "meta_result": "4",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:56:41"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.373",
+              "entregable": "PRE NOMINA MENSUAL",
+              "meta_number": "0",
+              "meta_date": "18/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:56:41"
+            },
+            {
+              "id": "2.374",
+              "entregable": "COMPROBANTES  DE PAGO MENSUAL",
+              "meta_number": "0",
+              "meta_date": "24/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:56:41"
+            },
+            {
+              "id": "2.375",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "25/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:56:41"
+            },
+            {
+              "id": "2.376",
+              "entregable": "ARCHIVO DE PAGO A TERCEROS (CLIENTE Y S&P)",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "14/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "6",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:56:41"
+            },
+            {
+              "id": "2.377",
+              "entregable": "INFORME DE RETENCION EN LA FUENTE",
+              "meta_number": "0",
+              "meta_date": "01/06/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:56:41"
+            },
+            {
+              "id": "2.378",
+              "entregable": "INFORMES MENSUALES DE PERSONAL",
+              "meta_number": "0",
+              "meta_date": "01/06/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:56:41"
+            },
+            {
+              "id": "2.379",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "10",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 15:56:41"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "253",
+      "cliente": "WESTCON",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:48:11",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:30",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.388",
+              "entregable": "MENSUAL",
+              "meta_number": "144",
+              "meta_date": "",
+              "meta_result": "143",
+              "meta_formula": "99",
+              "diference": "1",
+              "responsable": "alamaya",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 16:07:45"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.389",
+              "entregable": "MENSUAL",
+              "meta_number": "144",
+              "meta_date": "",
+              "meta_result": "144",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "alamaya",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 16:07:45"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.382",
+              "entregable": "PRENOMINA MENSUAL",
+              "meta_number": "0",
+              "meta_date": "12/05/2021",
+              "meta_result": "12/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "alamaya",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 16:07:45"
+            },
+            {
+              "id": "2.383",
+              "entregable": "GTN PARA CONTABILIZAR MENSUAL",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "alamaya",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 16:07:45"
+            },
+            {
+              "id": "2.384",
+              "entregable": "COMPROBANTES  DE PAGO MENSUAL",
+              "meta_number": "0",
+              "meta_date": "18/05/2021",
+              "meta_result": "18/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "alamaya",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 16:07:45"
+            },
+            {
+              "id": "2.385",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "alamaya",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 16:07:45"
+            },
+            {
+              "id": "2.386",
+              "entregable": "INFORMES MENSUALES DE PERSONAL",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "alamaya",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 16:07:45"
+            },
+            {
+              "id": "2.387",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "alamaya",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 16:07:45"
+            },
+            {
+              "id": "2.488",
+              "entregable": "PDF DE PRESTACIONES SOCIALES",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "alamaya",
+              "user_id": "ghincapie-L",
+              "verified_user": "ghincapie-L",
+              "verified_date": "16/06/2021 16:07:45"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "254",
+      "cliente": "SHERWIN",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:48:24",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:30",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.395",
+              "entregable": "QUINCENA 2",
+              "meta_number": "18",
+              "meta_date": "",
+              "meta_result": "17",
+              "meta_formula": "94",
+              "diference": "1",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:13:16"
+            },
+            {
+              "id": "2.394",
+              "entregable": "QUINCENA 1",
+              "meta_number": "18",
+              "meta_date": "",
+              "meta_result": "17",
+              "meta_formula": "94",
+              "diference": "1",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:13:16"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.396",
+              "entregable": "MENSUAL",
+              "meta_number": "18",
+              "meta_date": "",
+              "meta_result": "18",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:13:16"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.399",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "25/05/2021",
+              "meta_result": "25/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:13:16"
+            },
+            {
+              "id": "2.398",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:13:16"
+            },
+            {
+              "id": "2.397",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "27/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:13:16"
+            },
+            {
+              "id": "2.390",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "05/05/2021",
+              "meta_result": "05/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:13:16"
+            },
+            {
+              "id": "2.393",
+              "entregable": "REPORTE PAGOS A TERCEROS A ADMINISTRACION",
+              "meta_number": "0",
+              "meta_date": "25/05/2021",
+              "meta_result": "25/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:13:16"
+            },
+            {
+              "id": "2.392",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:13:16"
+            },
+            {
+              "id": "2.391",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "11/05/2021",
+              "meta_result": "06/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:13:16"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.487",
+              "entregable": "INFORMES MENSUALES",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "ghincapie-L",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:13:26"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "255",
+      "cliente": "HEADWAY",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:48:33",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:30",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.403",
+              "entregable": "MENSUAL",
+              "meta_number": "5",
+              "meta_date": "",
+              "meta_result": "5",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:22:54"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.404",
+              "entregable": "MENSUAL",
+              "meta_number": "5",
+              "meta_date": "",
+              "meta_result": "5",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:22:54"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.400",
+              "entregable": "COMPROBANTES  DE PAGO MENSUAL",
+              "meta_number": "0",
+              "meta_date": "18/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "5",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:22:54"
+            },
+            {
+              "id": "2.401",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "18/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:22:54"
+            },
+            {
+              "id": "2.402",
+              "entregable": "INFORMES MENSUALES",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "18/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:22:54"
+            },
+            {
+              "id": "2.405",
+              "entregable": "PRENOMINA MENSUAL",
+              "meta_number": "0",
+              "meta_date": "12/05/2021",
+              "meta_result": "12/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:22:54"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "257",
+      "cliente": "VIVRI",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:48:53",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:47",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.418",
+              "entregable": "QUINCENA 1",
+              "meta_number": "6",
+              "meta_date": "",
+              "meta_result": "6",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:23:29"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.419",
+              "entregable": "MENSUAL",
+              "meta_number": "6",
+              "meta_date": "",
+              "meta_result": "6",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:23:29"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.414",
+              "entregable": "ARCHIVOS DE NOMINA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:23:29"
+            },
+            {
+              "id": "2.415",
+              "entregable": "ARCHIVO DE PAGO Y COMPROBANTES",
+              "meta_number": "0",
+              "meta_date": "27/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "3",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:23:29"
+            },
+            {
+              "id": "2.416",
+              "entregable": "CONTABILIZACION DE PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "27/05/2021",
+              "meta_result": "25/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "2",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:23:29"
+            },
+            {
+              "id": "2.417",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "27/05/2021",
+              "meta_result": "25/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "2",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:23:29"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "258",
+      "cliente": "ERGICON",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:49:11",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:47",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.426",
+              "entregable": "QUINCENA 2",
+              "meta_number": "19",
+              "meta_date": "",
+              "meta_result": "19",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            },
+            {
+              "id": "2.425",
+              "entregable": "QUINCENA 1",
+              "meta_number": "17",
+              "meta_date": "",
+              "meta_result": "17",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN PRESTACIONES SOCIALES",
+          "filas": [
+            {
+              "id": "2.433",
+              "entregable": "MENSUAL",
+              "meta_number": "11",
+              "meta_date": "",
+              "meta_result": "11",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:48:14"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.424",
+              "entregable": "MENSUAL",
+              "meta_number": "22",
+              "meta_date": "",
+              "meta_result": "22",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.423",
+              "entregable": "INFORME PARA CONTABILIZACION",
+              "meta_number": "0",
+              "meta_date": "09/06/2021",
+              "meta_result": "09/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            },
+            {
+              "id": "2.431",
+              "entregable": "ARCHIVO DE PAGO SEGURIDAD SOCIAL Y FIC",
+              "meta_number": "0",
+              "meta_date": "09/06/2021",
+              "meta_result": "09/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            },
+            {
+              "id": "2.430",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "03/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            },
+            {
+              "id": "2.429",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            },
+            {
+              "id": "2.428",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "02/06/2021",
+              "meta_result": "02/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            },
+            {
+              "id": "2.427",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.422",
+              "entregable": "INFORME PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "03/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            },
+            {
+              "id": "2.421",
+              "entregable": "INFORME PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            },
+            {
+              "id": "2.420",
+              "entregable": "INFORME DE RETENCION EN LA FUENTE",
+              "meta_number": "0",
+              "meta_date": "09/06/2021",
+              "meta_result": "09/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "fmorales",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:42:13"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "259",
+      "cliente": "HELENA BRIGARD",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:49:21",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:47",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.445",
+              "entregable": "QUINCENA 2",
+              "meta_number": "4",
+              "meta_date": "",
+              "meta_result": "4",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:58"
+            },
+            {
+              "id": "2.444",
+              "entregable": "QUINCENA 1",
+              "meta_number": "3",
+              "meta_date": "",
+              "meta_result": "3",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:58"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.446",
+              "entregable": "MENSUAL",
+              "meta_number": "4",
+              "meta_date": "",
+              "meta_result": "4",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:58"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.443",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "27/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:49"
+            },
+            {
+              "id": "2.442",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "13/05/2021",
+              "meta_result": "12/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:49"
+            },
+            {
+              "id": "2.441",
+              "entregable": "CONTABILIZACION DE PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "02/06/2021",
+              "meta_result": "02/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:49"
+            },
+            {
+              "id": "2.440",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:49"
+            },
+            {
+              "id": "2.439",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:49"
+            },
+            {
+              "id": "2.438",
+              "entregable": "ARCHIVO PARA PAGO DE NOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:49"
+            },
+            {
+              "id": "2.437",
+              "entregable": "ARCHIVO PARA PAGO DE NOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:49"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.436",
+              "entregable": "ARCHIVO DE PAGO TERCEROS 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:49"
+            },
+            {
+              "id": "2.435",
+              "entregable": "ARCHIVO DE PAGO TERCEROS QUINCENA 1",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:49"
+            },
+            {
+              "id": "2.434",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCAIL Y PARAFISCALES",
+              "meta_number": "0",
+              "meta_date": "15/06/2021",
+              "meta_result": "02/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "13",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:24:49"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "260",
+      "cliente": "HERNANDO LONDOÑO",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:49:30",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:47",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.447",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL Y PARAFISCALES INDEPENDIENTE",
+              "meta_number": "0",
+              "meta_date": "02/06/2021",
+              "meta_result": "01/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:25:08"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "261",
+      "cliente": "MARIA DEL PILAR LONDOÑO",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:49:43",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:47",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.448",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL Y PARAFISCALES INDEPENDIENTE",
+              "meta_number": "0",
+              "meta_date": "17/06/2021",
+              "meta_result": "01/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "16",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:25:16"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "262",
+      "cliente": "PUNTO MEDICAL",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:49:55",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:47",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.458",
+              "entregable": "QUINCENA 2",
+              "meta_number": "12",
+              "meta_date": "",
+              "meta_result": "12",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:06"
+            },
+            {
+              "id": "2.457",
+              "entregable": "QUINCENA 1",
+              "meta_number": "12",
+              "meta_date": "",
+              "meta_result": "12",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:06"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.459",
+              "entregable": "MENSUAL",
+              "meta_number": "12",
+              "meta_date": "",
+              "meta_result": "11",
+              "meta_formula": "92",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:06"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.456",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "09/06/2021",
+              "meta_result": "08/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:06"
+            },
+            {
+              "id": "2.455",
+              "entregable": "CONTABILIZACION DE NOMINA",
+              "meta_number": "0",
+              "meta_date": "09/06/2021",
+              "meta_result": "08/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:06"
+            },
+            {
+              "id": "2.454",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "04/06/2021",
+              "meta_result": "04/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:06"
+            },
+            {
+              "id": "2.453",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:06"
+            },
+            {
+              "id": "2.452",
+              "entregable": "ARCHIVO DE PAGO DE NOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "04/06/2021",
+              "meta_result": "04/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:06"
+            },
+            {
+              "id": "2.451",
+              "entregable": "ARCHIVO DE PAGO DE NOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:06"
+            },
+            {
+              "id": "2.450",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "03/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:06"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.449",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:06"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "263",
+      "cliente": "REJIMETAL",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:50:05",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:47",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.465",
+              "entregable": "QUINCENA 1",
+              "meta_number": "9",
+              "meta_date": "",
+              "meta_result": "9",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:29"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.466",
+              "entregable": "MENSUAL",
+              "meta_number": "9",
+              "meta_date": "",
+              "meta_result": "9",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:29"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.460",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:29"
+            },
+            {
+              "id": "2.461",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "02/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:29"
+            },
+            {
+              "id": "2.462",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:29"
+            },
+            {
+              "id": "2.463",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "04/06/2021",
+              "meta_result": "02/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "2",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:29"
+            },
+            {
+              "id": "2.464",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "15/06/2021",
+              "meta_result": "08/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "7",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:29"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "264",
+      "cliente": "CLAUDIA LONDOÑO",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:50:14",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:47",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.467",
+              "entregable": "QUINCENA 1",
+              "meta_number": "1",
+              "meta_date": "",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:50"
+            },
+            {
+              "id": "2.470",
+              "entregable": "QUINCENA 2",
+              "meta_number": "1",
+              "meta_date": "",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:50"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.473",
+              "entregable": "MENSUAL",
+              "meta_number": "1",
+              "meta_date": "",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:50"
+            },
+            {
+              "id": "2.476",
+              "entregable": "MENSUAL",
+              "meta_number": "1",
+              "meta_date": "",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:50"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.471",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:50"
+            },
+            {
+              "id": "2.469",
+              "entregable": "ARCHIVO PARA PAGO DE NOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:50"
+            },
+            {
+              "id": "2.468",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "12/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "2",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:50"
+            },
+            {
+              "id": "2.474",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "17/06/2021",
+              "meta_result": "01/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "16",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:50"
+            },
+            {
+              "id": "2.475",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL Y PARAFISCALES INDEPENDIENTE",
+              "meta_number": "0",
+              "meta_date": "17/06/2021",
+              "meta_result": "01/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "16",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:50"
+            },
+            {
+              "id": "2.472",
+              "entregable": "ARCHIVO PARA PAGO DE NOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:26:50"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "265",
+      "cliente": "MONICA LONDOÑO",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "German Hincapie",
+      "entregables": "100,00",
+      "register_date": "13/05/2021 20:50:30",
+      "user_id": "acorredor",
+      "user_verified": "acorredor",
+      "date_verified": "24/06/2021 16:47:30",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.477",
+              "entregable": "QUINCENA 1",
+              "meta_number": "2",
+              "meta_date": "",
+              "meta_result": "2",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:28:44"
+            },
+            {
+              "id": "2.480",
+              "entregable": "QUINCENA 2",
+              "meta_number": "2",
+              "meta_date": "",
+              "meta_result": "2",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:28:44"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.485",
+              "entregable": "MENSUAL",
+              "meta_number": "1",
+              "meta_date": "",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:28:44"
+            },
+            {
+              "id": "2.483",
+              "entregable": "MENSUAL",
+              "meta_number": "2",
+              "meta_date": "",
+              "meta_result": "2",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:28:44"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.484",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "08/06/2021",
+              "meta_result": "01/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "7",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:28:44"
+            },
+            {
+              "id": "2.482",
+              "entregable": "ARCHIVO PARA PAGO DE NOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:28:44"
+            },
+            {
+              "id": "2.481",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:28:44"
+            },
+            {
+              "id": "2.479",
+              "entregable": "ARCHIVO PARA PAGO DE NOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:28:44"
+            },
+            {
+              "id": "2.478",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "12/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "2",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:28:44"
+            },
+            {
+              "id": "2.486",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL Y PARAFISCALES INDEPENDIENTE",
+              "meta_number": "0",
+              "meta_date": "08/06/2021",
+              "meta_result": "01/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "7",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "ghincapie-L",
+              "verified_date": "22/06/2021 14:28:44"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "266",
+      "cliente": "ROCKWELL COLOMBIA",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "William Romero",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:17:43",
+      "user_id": "acorredor",
+      "user_verified": "wromero-L",
+      "date_verified": "24/06/2021 17:28:12",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "INGRESO DE INFORMACIÓN",
+          "filas": [
+            {
+              "id": "2.498",
+              "entregable": "MENSUAL",
+              "meta_number": "280",
+              "meta_date": "",
+              "meta_result": "280",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:16"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.495",
+              "entregable": "MENSUAL",
+              "meta_number": "212",
+              "meta_date": "",
+              "meta_result": "212",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:16"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN PRESTACIONES SOCIALES",
+          "filas": [
+            {
+              "id": "2.496",
+              "entregable": "MENSUAL",
+              "meta_number": "3",
+              "meta_date": "",
+              "meta_result": "3",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:16"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.497",
+              "entregable": "MENSUAL",
+              "meta_number": "212",
+              "meta_date": "",
+              "meta_result": "212",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:16"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.499",
+              "entregable": "ENVIAR COMPROBANTES POR CORREO",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:23:49"
+            },
+            {
+              "id": "2.489",
+              "entregable": "PRENOMINA GTN",
+              "meta_number": "0",
+              "meta_date": "11/05/2021",
+              "meta_result": "11/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:16"
+            },
+            {
+              "id": "2.494",
+              "entregable": "INFORME DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:16"
+            },
+            {
+              "id": "2.493",
+              "entregable": "INFORME DE PROVISIONES MENSUAL",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:16"
+            },
+            {
+              "id": "2.492",
+              "entregable": "CONSOLIDADOS",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:16"
+            },
+            {
+              "id": "2.491",
+              "entregable": "INFORME DE RETENCION EN LA FUENTE",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:16"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.490",
+              "entregable": "COMPROBANTES  DE PAGO MENSUAL",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:16"
+            },
+            {
+              "id": "2.500",
+              "entregable": "APORTES VOLUNTARIOS",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:23:49"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "267",
+      "cliente": "CLARKE MODET & CO",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "Jeisson Cante",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:18:01",
+      "user_id": "acorredor",
+      "user_verified": "jcante-L",
+      "date_verified": "21/06/2021 14:42:21",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.507",
+              "entregable": "MENSUAL",
+              "meta_number": "27",
+              "meta_date": "21/05/2021",
+              "meta_result": "27",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:21"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.508",
+              "entregable": "MENSUAL",
+              "meta_number": "28",
+              "meta_date": "26/05/2021",
+              "meta_result": "28",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:21"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.501",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:21"
+            },
+            {
+              "id": "2.502",
+              "entregable": "ARCHIVO DE PAGO A TERCEROS (CLIENTE Y S&P)",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:21"
+            },
+            {
+              "id": "2.503",
+              "entregable": "GTN PARA CONTABILIZAR MENSUAL",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:21"
+            },
+            {
+              "id": "2.504",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:21"
+            },
+            {
+              "id": "2.505",
+              "entregable": "INFORME DE RETENCION EN LA FUENTE",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:21"
+            },
+            {
+              "id": "2.506",
+              "entregable": "INFORMES MENSUALES DE PERSONAL",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:21"
+            },
+            {
+              "id": "2.509",
+              "entregable": "PRENOMINA MENSUAL",
+              "meta_number": "27",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:21"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "268",
+      "cliente": "GPSC",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "Jeisson Cante",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:18:19",
+      "user_id": "acorredor",
+      "user_verified": "jcante-L",
+      "date_verified": "21/06/2021 14:42:21",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "INGRESO DE INFORMACIÓN",
+          "filas": [
+            {
+              "id": "2.516",
+              "entregable": "MENSUAL",
+              "meta_number": "2",
+              "meta_date": "12/05/2021",
+              "meta_result": "2",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:48"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.518",
+              "entregable": "MENSUAL",
+              "meta_number": "59",
+              "meta_date": "12/05/2021",
+              "meta_result": "59",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:48"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.519",
+              "entregable": "MENSUAL",
+              "meta_number": "59",
+              "meta_date": "21/05/2021",
+              "meta_result": "59",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:48"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.510",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "21/05/2021",
+              "meta_result": "21/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:48"
+            },
+            {
+              "id": "2.515",
+              "entregable": "INFORMES MENSUALES DE PERSONAL",
+              "meta_number": "0",
+              "meta_date": "21/05/2021",
+              "meta_result": "21/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:48"
+            },
+            {
+              "id": "2.514",
+              "entregable": "INFORME DE RETENCION EN LA FUENTE",
+              "meta_number": "0",
+              "meta_date": "21/05/2021",
+              "meta_result": "21/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:48"
+            },
+            {
+              "id": "2.513",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "21/05/2021",
+              "meta_result": "21/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:48"
+            },
+            {
+              "id": "2.512",
+              "entregable": "GTN PARA CONTABILIZAR MENSUAL",
+              "meta_number": "0",
+              "meta_date": "21/05/2021",
+              "meta_result": "21/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:48"
+            },
+            {
+              "id": "2.511",
+              "entregable": "COMPROBANTES  DE PAGO MENSUAL",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:48"
+            },
+            {
+              "id": "2.520",
+              "entregable": "PRE NOMINA MENSUAL",
+              "meta_number": "0",
+              "meta_date": "12/05/2021",
+              "meta_result": "12/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:01:48"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "269",
+      "cliente": "PUMA",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "Jeisson Cante",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:18:33",
+      "user_id": "acorredor",
+      "user_verified": "jcante-L",
+      "date_verified": "21/06/2021 14:42:21",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.521",
+              "entregable": "MENSUAL",
+              "meta_number": "37",
+              "meta_date": "13/05/2021",
+              "meta_result": "37",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:02:24"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.522",
+              "entregable": "MENSUAL",
+              "meta_number": "37",
+              "meta_date": "27/05/2021",
+              "meta_result": "37",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:02:24"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.530",
+              "entregable": "MONETIZACION PARA EL SENA",
+              "meta_number": "0",
+              "meta_date": "27/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:02:24"
+            },
+            {
+              "id": "2.529",
+              "entregable": "INFORMES MENSUALES DE PERSONAL",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:02:24"
+            },
+            {
+              "id": "2.528",
+              "entregable": "INFORME DE RETENCION EN LA FUENTE",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:02:24"
+            },
+            {
+              "id": "2.527",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:02:24"
+            },
+            {
+              "id": "2.526",
+              "entregable": "GTN PARA CONTABILIZAR MENSUAL",
+              "meta_number": "0",
+              "meta_date": "27/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:02:24"
+            },
+            {
+              "id": "2.525",
+              "entregable": "COMPROBANTES  DE PAGO MENSUAL",
+              "meta_number": "0",
+              "meta_date": "25/05/2021",
+              "meta_result": "25/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:02:24"
+            },
+            {
+              "id": "2.524",
+              "entregable": "ARCHIVO DE PAGO A TERCEROS (CLIENTE Y S&P)",
+              "meta_number": "0",
+              "meta_date": "24/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:02:24"
+            },
+            {
+              "id": "2.523",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "37",
+              "meta_date": "27/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:02:24"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.531",
+              "entregable": "PRENOMINA MENSUAL",
+              "meta_number": "37",
+              "meta_date": "13/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:02:34"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "270",
+      "cliente": "TC04",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "Jeisson Cante",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:18:43",
+      "user_id": "acorredor",
+      "user_verified": "jcante-L",
+      "date_verified": "21/06/2021 14:42:21",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.532",
+              "entregable": "QUINCENA 1",
+              "meta_number": "180",
+              "meta_date": "11/05/2021",
+              "meta_result": "175",
+              "meta_formula": "97",
+              "diference": "5",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:15"
+            },
+            {
+              "id": "2.533",
+              "entregable": "QUINCENA 2",
+              "meta_number": "178",
+              "meta_date": "27/05/2021",
+              "meta_result": "127",
+              "meta_formula": "71",
+              "diference": "51",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:15"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN PRESTACIONES SOCIALES",
+          "filas": [
+            {
+              "id": "2.534",
+              "entregable": "MENSUAL",
+              "meta_number": "6",
+              "meta_date": "25/05/2021",
+              "meta_result": "6",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:15"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.535",
+              "entregable": "MENSUAL",
+              "meta_number": "184",
+              "meta_date": "15/06/2021",
+              "meta_result": "184",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:15"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.543",
+              "entregable": "INFORME DE RETENCION EN LA FUENTE",
+              "meta_number": "0",
+              "meta_date": "31/05/2021",
+              "meta_result": "31/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:25"
+            },
+            {
+              "id": "2.542",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "31/05/2021",
+              "meta_result": "31/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:25"
+            },
+            {
+              "id": "2.541",
+              "entregable": "CONTABILIZACION LIQUIDACIONES 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:15"
+            },
+            {
+              "id": "2.540",
+              "entregable": "GTN PARA CONTABILIZAR 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "11/05/2021",
+              "meta_result": "11/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:15"
+            },
+            {
+              "id": "2.539",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:15"
+            },
+            {
+              "id": "2.538",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "13/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:15"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.537",
+              "entregable": "ARCHIVO DE PAGO A TERCEROS (CLIENTE Y S&P)",
+              "meta_number": "0",
+              "meta_date": "24/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:15"
+            },
+            {
+              "id": "2.536",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "184",
+              "meta_date": "15/06/2021",
+              "meta_result": "15/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:15"
+            },
+            {
+              "id": "2.547",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "27/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "mlombana",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:03:25"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "271",
+      "cliente": "TC05",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "Jeisson Cante",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:18:53",
+      "user_id": "acorredor",
+      "user_verified": "jcante-L",
+      "date_verified": "21/06/2021 14:46:07",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "INGRESO DE INFORMACIÓN",
+          "filas": [
+            {
+              "id": "2.548",
+              "entregable": "QUINCENA 1",
+              "meta_number": "1",
+              "meta_date": "",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:42"
+            },
+            {
+              "id": "2.549",
+              "entregable": "QUINCENA 2",
+              "meta_number": "0",
+              "meta_date": "",
+              "meta_result": "1",
+              "meta_formula": "0",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:42"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.550",
+              "entregable": "QUINCENA 1",
+              "meta_number": "331",
+              "meta_date": "",
+              "meta_result": "331",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:42"
+            },
+            {
+              "id": "2.551",
+              "entregable": "QUINCENA 2",
+              "meta_number": "330",
+              "meta_date": "",
+              "meta_result": "330",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:42"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN PRESTACIONES SOCIALES",
+          "filas": [
+            {
+              "id": "2.552",
+              "entregable": "MENSUAL",
+              "meta_number": "4",
+              "meta_date": "",
+              "meta_result": "4",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:42"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.553",
+              "entregable": "MENSUAL",
+              "meta_number": "335",
+              "meta_date": "",
+              "meta_result": "335",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:42"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.559",
+              "entregable": "GTN PARA CONTABILIZAR 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "07/05/2021",
+              "meta_result": "05/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "2",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:58"
+            },
+            {
+              "id": "2.558",
+              "entregable": "FORMULARIO DE PAGOS A TERCEROS",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "Lmartin",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:58"
+            },
+            {
+              "id": "2.557",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:42"
+            },
+            {
+              "id": "2.556",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "13/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:42"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.566",
+              "entregable": "SOPORTE DE PAGOS A TERCEROS PARA EL CLIENTE",
+              "meta_number": "0",
+              "meta_date": "27/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "Lmartin",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:58"
+            },
+            {
+              "id": "2.561",
+              "entregable": "INFORME DE RETENCION EN LA FUENTE",
+              "meta_number": "0",
+              "meta_date": "01/06/2021",
+              "meta_result": "31/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:58"
+            },
+            {
+              "id": "2.560",
+              "entregable": "GTN PARA CONTABILIZAR 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "07/05/2021",
+              "meta_result": "05/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "2",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:58"
+            },
+            {
+              "id": "2.555",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "7",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:42"
+            },
+            {
+              "id": "2.554",
+              "entregable": "ARCHIVO DE PAGO A TERCEROS (CLIENTE Y S&P)",
+              "meta_number": "0",
+              "meta_date": "25/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:42"
+            },
+            {
+              "id": "2.567",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "31/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "3",
+              "responsable": "mcastiblanco",
+              "user_id": "acorredor",
+              "verified_user": "jcante-L",
+              "verified_date": "21/06/2021 14:44:58"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "272",
+      "cliente": "INFRAESTRUCTURA",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "William Romero",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:19:04",
+      "user_id": "acorredor",
+      "user_verified": "wromero-L",
+      "date_verified": "24/06/2021 17:28:12",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "INGRESO DE INFORMACIÓN",
+          "filas": [
+            {
+              "id": "2.568",
+              "entregable": "QUINCENA 1",
+              "meta_number": "31",
+              "meta_date": "14/04/2021",
+              "meta_result": "31",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:52"
+            },
+            {
+              "id": "2.569",
+              "entregable": "QUINCENA 2",
+              "meta_number": "32",
+              "meta_date": "27/05/2021",
+              "meta_result": "32",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:52"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.570",
+              "entregable": "QUINCENA 1",
+              "meta_number": "258",
+              "meta_date": "14/05/2021",
+              "meta_result": "258",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:52"
+            },
+            {
+              "id": "2.571",
+              "entregable": "QUINCENA 2",
+              "meta_number": "273",
+              "meta_date": "28/05/2021",
+              "meta_result": "272",
+              "meta_formula": "100",
+              "diference": "1",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:52"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN PRESTACIONES SOCIALES",
+          "filas": [
+            {
+              "id": "2.572",
+              "entregable": "QUINCENA 1",
+              "meta_number": "19",
+              "meta_date": "25/05/2021",
+              "meta_result": "19",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:52"
+            },
+            {
+              "id": "2.573",
+              "entregable": "QUINCENA 2",
+              "meta_number": "22",
+              "meta_date": "04/06/2021",
+              "meta_result": "22",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:52"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.574",
+              "entregable": "MENSUAL",
+              "meta_number": "291",
+              "meta_date": "10/06/2021",
+              "meta_result": "291",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:52"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.590",
+              "entregable": "SOPORTE DE PAGO Y SEGURIDAD SOCIAL PARA PROYECTOS",
+              "meta_number": "0",
+              "meta_date": "16/06/2021",
+              "meta_result": "10/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "6",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:13"
+            },
+            {
+              "id": "2.576",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:52"
+            },
+            {
+              "id": "2.577",
+              "entregable": "ARCHIVO DE PAGO SEGURIDAD SOCIAL Y FIC",
+              "meta_number": "0",
+              "meta_date": "16/06/2021",
+              "meta_result": "10/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "6",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:52"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.586",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "14/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:05"
+            },
+            {
+              "id": "2.587",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/06/2021",
+              "meta_result": "28/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:05"
+            },
+            {
+              "id": "2.588",
+              "entregable": "TERCEROS AFC EMBARGOS - PENSIONES INSTITUCIONALES Y VOLUNTARIAS",
+              "meta_number": "0",
+              "meta_date": "03/05/2021",
+              "meta_result": "03/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "Lmartin",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:13"
+            },
+            {
+              "id": "2.582",
+              "entregable": "CONTABILIZACION 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "18/05/2021",
+              "meta_result": "18/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:05"
+            },
+            {
+              "id": "2.581",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "04/06/2021",
+              "meta_result": "04/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:05"
+            },
+            {
+              "id": "2.580",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:05"
+            },
+            {
+              "id": "2.579",
+              "entregable": "COMPROBANTE DE PAGO DE LIQUIDACIONES",
+              "meta_number": "0",
+              "meta_date": "04/06/2021",
+              "meta_result": "04/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:05"
+            },
+            {
+              "id": "2.578",
+              "entregable": "ARCHIVO DE PAGO DE BENEFICIOS - VISA VALE ALIMENTACION",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "03/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:05"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.575",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "14/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:52"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "273",
+      "cliente": "HL REP DOMINICANA",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "William Romero",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:19:17",
+      "user_id": "acorredor",
+      "user_verified": "wromero-L",
+      "date_verified": "24/06/2021 17:28:12",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.601",
+              "entregable": "QUINCENA 1",
+              "meta_number": "1",
+              "meta_date": "28/05/2021",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:36"
+            },
+            {
+              "id": "2.600",
+              "entregable": "QUINCENA 1",
+              "meta_number": "1",
+              "meta_date": "14/05/2021",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:30"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.599",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:30"
+            },
+            {
+              "id": "2.598",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "12/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "2",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:30"
+            },
+            {
+              "id": "2.597",
+              "entregable": "INFORME DE DEVENGADOS",
+              "meta_number": "0",
+              "meta_date": "31/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "3",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:30"
+            },
+            {
+              "id": "2.596",
+              "entregable": "CONTABILIZACION 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "31/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "3",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:30"
+            },
+            {
+              "id": "2.595",
+              "entregable": "CONTABILIZACION DE NOMINA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "14/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:30"
+            },
+            {
+              "id": "2.594",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "31/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "3",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:30"
+            },
+            {
+              "id": "2.593",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "14/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:30"
+            },
+            {
+              "id": "2.592",
+              "entregable": "ARCHIVO PARA PAGO DE NOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "31/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "3",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:30"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.591",
+              "entregable": "ARCHIVO PARA PAGO DE NOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "14/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:30"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "274",
+      "cliente": "CONTINENTAL",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "William Romero",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:19:53",
+      "user_id": "acorredor",
+      "user_verified": "wromero-L",
+      "date_verified": "24/06/2021 17:28:12",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "INGRESO DE INFORMACIÓN",
+          "filas": [
+            {
+              "id": "2.609",
+              "entregable": "MENSUAL",
+              "meta_number": "4",
+              "meta_date": "",
+              "meta_result": "4",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:30"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.610",
+              "entregable": "MENSUAL",
+              "meta_number": "2",
+              "meta_date": "",
+              "meta_result": "2",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:30"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN PRESTACIONES SOCIALES",
+          "filas": [
+            {
+              "id": "2.611",
+              "entregable": "MENSUAL",
+              "meta_number": "1",
+              "meta_date": "",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:30"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.612",
+              "entregable": "MENSUAL",
+              "meta_number": "2",
+              "meta_date": "",
+              "meta_result": "2",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:36"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.602",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "27/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:30"
+            },
+            {
+              "id": "2.613",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "14/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:36"
+            },
+            {
+              "id": "2.608",
+              "entregable": "CONTABILIZACION DE NOMINA",
+              "meta_number": "0",
+              "meta_date": "27/05/2021",
+              "meta_result": "27/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:30"
+            },
+            {
+              "id": "2.607",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "04/06/2021",
+              "meta_result": "04/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:30"
+            },
+            {
+              "id": "2.606",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:30"
+            },
+            {
+              "id": "2.605",
+              "entregable": "COMPROBANTE DE PAGO DE LIQUIDACIONES",
+              "meta_number": "0",
+              "meta_date": "31/05/2021",
+              "meta_result": "31/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:30"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.604",
+              "entregable": "ARCHIVO DE PAGO DE NOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "04/06/2021",
+              "meta_result": "04/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:30"
+            },
+            {
+              "id": "2.603",
+              "entregable": "ARCHIVO DE PAGO DE NOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:30"
+            },
+            {
+              "id": "2.614",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "24/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:36"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "275",
+      "cliente": "SONY",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "William Romero",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:20:03",
+      "user_id": "acorredor",
+      "user_verified": "wromero-L",
+      "date_verified": "24/06/2021 17:28:12",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.615",
+              "entregable": "MENSUAL",
+              "meta_number": "30",
+              "meta_date": "",
+              "meta_result": "30",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:34"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.616",
+              "entregable": "MENSUAL",
+              "meta_number": "30",
+              "meta_date": "",
+              "meta_result": "30",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:34"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.617",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:34"
+            },
+            {
+              "id": "2.618",
+              "entregable": "INFORME DE NOMINA",
+              "meta_number": "0",
+              "meta_date": "12/05/2021",
+              "meta_result": "12/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:34"
+            },
+            {
+              "id": "2.619",
+              "entregable": "INFORME DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:34"
+            },
+            {
+              "id": "2.620",
+              "entregable": "INFORMES MENSUALES",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:34"
+            },
+            {
+              "id": "2.621",
+              "entregable": "SOLICITUD PAGO A TERCEROS",
+              "meta_number": "0",
+              "meta_date": "19/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:34"
+            },
+            {
+              "id": "2.622",
+              "entregable": "ENVIO DE PLANILLAS AFC Y VOLUNTARIOS",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "Lmartin",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:34"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "276",
+      "cliente": "TOSHIBA",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "William Romero",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:20:28",
+      "user_id": "acorredor",
+      "user_verified": "wromero-L",
+      "date_verified": "24/06/2021 17:28:12",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.627",
+              "entregable": "MENSUAL",
+              "meta_number": "38",
+              "meta_date": "14/05/2021",
+              "meta_result": "38",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "acorredor",
+              "verified_date": "28/05/2021 20:34:40"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN PRESTACIONES SOCIALES",
+          "filas": [
+            {
+              "id": "2.696",
+              "entregable": "MENSUAL",
+              "meta_number": "1",
+              "meta_date": "14/05/2021",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:14"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.628",
+              "entregable": "MENSUAL",
+              "meta_number": "39",
+              "meta_date": "20/05/2021",
+              "meta_result": "39",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "acorredor",
+              "verified_date": "28/05/2021 20:34:40"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.623",
+              "entregable": "COMPROBANTES  DE PAGO MENSUAL",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:14"
+            },
+            {
+              "id": "2.624",
+              "entregable": "ARCHIVO DE PAGO DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "acorredor",
+              "verified_date": "28/05/2021 20:34:40"
+            },
+            {
+              "id": "2.625",
+              "entregable": "INFORME COSTOS Y PROVISIONES",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "acorredor",
+              "verified_date": "28/05/2021 20:34:40"
+            },
+            {
+              "id": "2.626",
+              "entregable": "INFORMES MENSUALES",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "19/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "acorredor",
+              "verified_date": "28/05/2021 20:34:40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "277",
+      "cliente": "HL COLOMBIA",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "Diana Casas",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:20:41",
+      "user_id": "acorredor",
+      "user_verified": "dcasas-L",
+      "date_verified": "09/06/2021 13:46:54",
+      "comments": "36",
+      "sub_entregables": [
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.629",
+              "entregable": "REPORTE NOVEDADES DE CONTRATACION 1 QUINCENA ROSAL",
+              "meta_number": "0",
+              "meta_date": "12/05/2021",
+              "meta_result": "12/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dcasas",
+              "user_id": "acorredor",
+              "verified_user": "dcasas-L",
+              "verified_date": "09/06/2021 13:20:52"
+            },
+            {
+              "id": "2.630",
+              "entregable": "REPORTE NOVEDADES DE CONTRATACION 2 QUINCENA EL ROSAL",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dcasas",
+              "user_id": "acorredor",
+              "verified_user": "dcasas-L",
+              "verified_date": "09/06/2021 13:20:52"
+            },
+            {
+              "id": "2.631",
+              "entregable": "INFORME DE DESCUENTO DE LIBRANZAS",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "03/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dcasas",
+              "user_id": "acorredor",
+              "verified_user": "dcasas-L",
+              "verified_date": "09/06/2021 13:20:52"
+            },
+            {
+              "id": "2.632",
+              "entregable": "REPORTE NOVEDADES DE CONTRATACION 1QUINCENA",
+              "meta_number": "0",
+              "meta_date": "12/05/2021",
+              "meta_result": "12/05/21",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "asuarez",
+              "user_id": "acorredor",
+              "verified_user": "dcasas-L",
+              "verified_date": "09/06/2021 13:12:47"
+            },
+            {
+              "id": "2.633",
+              "entregable": "REPORTE NOVEDADES DE CONTRTACION 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "26/05/2021",
+              "meta_result": "26/05/21",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "asuarez",
+              "user_id": "acorredor",
+              "verified_user": "dcasas-L",
+              "verified_date": "09/06/2021 13:12:47"
+            }
+          ]
+        },
+        {
+          "indicador": "PROCESOS DE CONTRATACIÓN  SIN REVISION",
+          "filas": [
+            {
+              "id": "2.634",
+              "entregable": "MENSUAL",
+              "meta_number": "15",
+              "meta_date": "01/06/2021",
+              "meta_result": "15",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "asuarez",
+              "user_id": "acorredor",
+              "verified_user": "dcasas-L",
+              "verified_date": "09/06/2021 13:39:46"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "278",
+      "cliente": "EVERY DAY",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "William Romero",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:20:53",
+      "user_id": "acorredor",
+      "user_verified": "wromero-L",
+      "date_verified": "24/06/2021 17:28:12",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "INGRESO DE INFORMACIÓN",
+          "filas": [
+            {
+              "id": "2.640",
+              "entregable": "MENSUAL",
+              "meta_number": "1",
+              "meta_date": "",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:58"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.637",
+              "entregable": "MENSUAL",
+              "meta_number": "2",
+              "meta_date": "",
+              "meta_result": "2",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:58"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN PRESTACIONES SOCIALES",
+          "filas": [
+            {
+              "id": "2.638",
+              "entregable": "MENSUAL",
+              "meta_number": "1",
+              "meta_date": "",
+              "meta_result": "1",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:58"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.639",
+              "entregable": "MENSUAL",
+              "meta_number": "2",
+              "meta_date": "",
+              "meta_result": "2",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:58"
+            },
+            {
+              "id": "2.641",
+              "entregable": "MENSUAL",
+              "meta_number": "2",
+              "meta_date": "05/06/2021",
+              "meta_result": "2",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:58"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.635",
+              "entregable": "PRE NOMINA MENSUAL",
+              "meta_number": "2",
+              "meta_date": "30/05/2021",
+              "meta_result": "24/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "6",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:58"
+            },
+            {
+              "id": "2.636",
+              "entregable": "CONTABILIDAD",
+              "meta_number": "0",
+              "meta_date": "05/06/2021",
+              "meta_result": "26/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "10",
+              "responsable": "posorio",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:24:58"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "279",
+      "cliente": "ECO HL",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "William Romero",
+      "entregables": "100,00",
+      "register_date": "21/05/2021 19:21:06",
+      "user_id": "acorredor",
+      "user_verified": "wromero-L",
+      "date_verified": "24/06/2021 17:28:12",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "INGRESO DE INFORMACIÓN",
+          "filas": [
+            {
+              "id": "2.650",
+              "entregable": "QUINCENA 1",
+              "meta_number": "19",
+              "meta_date": "",
+              "meta_result": "19",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:53"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.652",
+              "entregable": "QUINCENA 1",
+              "meta_number": "8",
+              "meta_date": "",
+              "meta_result": "8",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:59"
+            },
+            {
+              "id": "2.651",
+              "entregable": "QUINCENA 1",
+              "meta_number": "8",
+              "meta_date": "",
+              "meta_result": "8",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:53"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.647",
+              "entregable": "MENSUAL",
+              "meta_number": "8",
+              "meta_date": "",
+              "meta_result": "8",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:53"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.642",
+              "entregable": "ARCHIVO DE PAGO SEGURIDAD SOCIAL Y FIC",
+              "meta_number": "0",
+              "meta_date": "18/06/2021",
+              "meta_result": "09/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "9",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:53"
+            },
+            {
+              "id": "2.653",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "04/06/2021",
+              "meta_result": "04/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:59"
+            },
+            {
+              "id": "2.649",
+              "entregable": "PRENOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "28/05/2021",
+              "meta_result": "28/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:53"
+            },
+            {
+              "id": "2.648",
+              "entregable": "PRENOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "14/05/2021",
+              "meta_result": "14/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:53"
+            },
+            {
+              "id": "2.646",
+              "entregable": "CONTABILIZACION 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "03/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:53"
+            },
+            {
+              "id": "2.645",
+              "entregable": "CONTABILIZACION 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "18/05/2021",
+              "meta_result": "18/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:53"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.644",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:53"
+            },
+            {
+              "id": "2.643",
+              "entregable": "ARCHIVO DE PAGO DE NOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:53"
+            },
+            {
+              "id": "2.654",
+              "entregable": "ARCHIVO DE PAGO DE NOMINA 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "04/06/2021",
+              "meta_result": "04/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:27:59"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "280",
+      "cliente": "HL COLOMBIA",
+      "mes": "Mayo",
+      "anio": "2021",
+      "lider": "William Romero",
+      "entregables": "100,00",
+      "register_date": "28/05/2021 20:27:26",
+      "user_id": "acorredor",
+      "user_verified": "wromero-L",
+      "date_verified": "24/06/2021 17:28:12",
+      "comments": "",
+      "sub_entregables": [
+        {
+          "indicador": "INGRESO DE INFORMACIÓN",
+          "filas": [
+            {
+              "id": "2.681",
+              "entregable": "QUINCENA 1",
+              "meta_number": "78",
+              "meta_date": "",
+              "meta_result": "78",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:28"
+            },
+            {
+              "id": "2.682",
+              "entregable": "QUINCENA 2",
+              "meta_number": "75",
+              "meta_date": "",
+              "meta_result": "75",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:28"
+            },
+            {
+              "id": "2.683",
+              "entregable": "MENSUAL",
+              "meta_number": "50",
+              "meta_date": "",
+              "meta_result": "50",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:28"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN NÓMINA",
+          "filas": [
+            {
+              "id": "2.685",
+              "entregable": "QUINCENA 1",
+              "meta_number": "48",
+              "meta_date": "",
+              "meta_result": "48",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:38"
+            },
+            {
+              "id": "2.684",
+              "entregable": "MENSUAL",
+              "meta_number": "50",
+              "meta_date": "",
+              "meta_result": "50",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:28"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACIÓN PRESTACIONES SOCIALES",
+          "filas": [
+            {
+              "id": "2.686",
+              "entregable": "QUINCENA 2",
+              "meta_number": "4",
+              "meta_date": "",
+              "meta_result": "4",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:38"
+            }
+          ]
+        },
+        {
+          "indicador": "LIQUIDACION SEGURIDAD SOCIAL",
+          "filas": [
+            {
+              "id": "2.687",
+              "entregable": "MENSUAL",
+              "meta_number": "50",
+              "meta_date": "",
+              "meta_result": "50",
+              "meta_formula": "100",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:38"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.666",
+              "entregable": "CONTABILIZACION 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "03/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:12"
+            },
+            {
+              "id": "2.661",
+              "entregable": "ARCHIVO DE PAGO SEGURIDAD SOCIAL Y FIC",
+              "meta_number": "0",
+              "meta_date": "11/06/2021",
+              "meta_result": "10/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "1",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:57"
+            },
+            {
+              "id": "2.660",
+              "entregable": "COMPROBANTES DE PAGO 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "04/06/2021",
+              "meta_result": "04/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:57"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.669",
+              "entregable": "INFORME CRUCE DE INCAPACIDADES",
+              "meta_number": "0",
+              "meta_date": "06/05/2021",
+              "meta_result": "06/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "Lmartin",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:12"
+            },
+            {
+              "id": "2.668",
+              "entregable": "CRUCE CONTABLE DE SEGURIDAD SOCIAL",
+              "meta_number": "0",
+              "meta_date": "16/06/2021",
+              "meta_result": "11/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "wromero",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:12"
+            },
+            {
+              "id": "2.667",
+              "entregable": "CONTABILIZACION LIQUIDACIONES 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "25/05/2021",
+              "meta_result": "25/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:12"
+            },
+            {
+              "id": "2.665",
+              "entregable": "CONTABILIZACION 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "18/05/2021",
+              "meta_result": "18/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:12"
+            },
+            {
+              "id": "2.664",
+              "entregable": "ARCHIVO PAGO A TERCEROS PARA ENTIDADES 2 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "03/06/2021",
+              "meta_result": "03/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:57"
+            },
+            {
+              "id": "2.659",
+              "entregable": "COMPROBANTES DE PAGO 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:57"
+            },
+            {
+              "id": "2.657",
+              "entregable": "ARCHIVO DE PAGO DE NOMINA 1 QUINCENA",
+              "meta_number": "0",
+              "meta_date": "20/05/2021",
+              "meta_result": "20/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:57"
+            }
+          ]
+        },
+        {
+          "indicador": "PLAN DE ENTREGABLES",
+          "filas": [
+            {
+              "id": "2.663",
+              "entregable": "ARCHIVO DE PAGO TERCEROS QUINCENA 1",
+              "meta_number": "0",
+              "meta_date": "21/05/2021",
+              "meta_result": "21/05/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:25:57"
+            },
+            {
+              "id": "2.670",
+              "entregable": "INFORME DANE",
+              "meta_number": "0",
+              "meta_date": "15/06/2021",
+              "meta_result": "11/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "4",
+              "responsable": "dpreciado",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:12"
+            },
+            {
+              "id": "2.672",
+              "entregable": "INFORMES DE HORAS HOMBRE TRABAJADAS",
+              "meta_number": "0",
+              "meta_date": "04/06/2021",
+              "meta_result": "04/06/2021",
+              "meta_formula": "CUMPLE",
+              "diference": "0",
+              "responsable": "kgonzalez",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:12"
+            }
+          ]
+        },
+        {
+          "indicador": "EFECTIVIDAD EN REPORTE DE NOVEDADES",
+          "filas": [
+            {
+              "id": "2.688",
+              "entregable": "EFECTIVIDAD NOVEDADES ROSAL",
+              "meta_number": "59",
+              "meta_date": "01/03/2021",
+              "meta_result": "056",
+              "meta_formula": "95",
+              "diference": "3",
+              "responsable": "dcasas",
+              "user_id": "acorredor",
+              "verified_user": "wromero-L",
+              "verified_date": "24/06/2021 17:26:38"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
