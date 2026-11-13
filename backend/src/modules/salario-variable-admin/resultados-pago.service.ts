@@ -115,6 +115,32 @@ export class ResultadosPagoService {
       usuario,
     );
 
+    // ── 1.5 Cards de líderes para el Admin: cada líder con su consolidado propio (lidera ∪ ejecuta) ──
+    const rolPermiteLideres = !f.rol || f.rol === 'Lider';
+    let liderIds: number[] = [];
+    if (usuario?.rol === 'Admin' && !f.usuarioId && rolPermiteLideres) {
+      const { data: lds } = await this.supabase.db
+        .from('usuarios').select('id').eq('rol', 'Lider').eq('activo', true);
+      liderIds = (lds ?? []).map((l) => l.id);
+    } else if (f.usuarioId && rolPermiteLideres) {
+      const { data: lu } = await this.supabase.db
+        .from('usuarios').select('id, rol').eq('id', f.usuarioId).maybeSingle();
+      if (lu?.rol === 'Lider') liderIds = [lu.id];
+    }
+    for (const lid of liderIds) {
+      const filasL = await this.cumplimiento.getResumen(
+        { anio: f.anio, mes: f.mes, clienteId: f.clienteId },
+        { sub: lid, rol: 'Lider' },
+      );
+      const sint = filasL.find((x) => x.cliente.id === 0);
+      if (!sint) continue;
+      // Reemplaza sus filas estándar (lo ejecutado ya está incluido en el consolidado propio).
+      for (let i = filas.length - 1; i >= 0; i--) {
+        if (filas[i].usuario.id === lid && filas[i].cliente.id !== 0) filas.splice(i, 1);
+      }
+      filas.push(sint);
+    }
+
     // ── 1. Consolidar por usuario ──
     type Acc = {
       usuario: FilaResultado['usuario'];
@@ -198,6 +224,8 @@ export class ResultadosPagoService {
 
     // ── 3. Casos especiales: consolidación ponderada ──
     for (const [uidCaso, cfgCaso] of mapaCasos.entries()) {
+      // Si se filtró por usuario, solo mostrar el caso de ese usuario.
+      if (f.usuarioId && uidCaso !== f.usuarioId) continue;
       const { data: usuarioCaso } = await this.supabase.db
         .from('usuarios')
         .select('id, nombre, usuario, rol')

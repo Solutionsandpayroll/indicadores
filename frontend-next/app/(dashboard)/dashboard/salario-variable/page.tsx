@@ -1086,14 +1086,14 @@ function ResultadosTab() {
                 <div className="rounded-xl p-4 space-y-2.5" style={{ backgroundColor: 'oklch(100% 0 0 / 3%)' }}>
                   <p className="text-[10px] uppercase font-semibold tracking-wider" style={{ color: 'var(--color-ink-muted)' }}>Consolidado global</p>
                   <div className="flex items-center justify-between text-[11px]">
-                    <span style={{ color: 'var(--color-ink-muted)' }}>Plan ({r.consolidado.plan.cumplidos}/{r.consolidado.plan.evaluados})</span>
+                    <span style={{ color: 'var(--color-ink-muted)' }}>Plan ({r.consolidado.plan.cumplidos}/{r.consolidado.plan.evaluados} entregables)</span>
                     <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>
                       {r.consolidado.plan.pct != null ? `${r.consolidado.plan.pct}%` : '—'}
                       <span className="font-normal" style={{ color: 'var(--color-ink-muted)' }}> / {r.consolidado.plan.meta ?? '—'}%</span>
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-[11px]">
-                    <span style={{ color: 'var(--color-ink-muted)' }}>Exactitud ({r.consolidado.exactitud.correctos_total}/{r.consolidado.exactitud.compromiso_total})</span>
+                    <span style={{ color: 'var(--color-ink-muted)' }}>Exactitud ({r.consolidado.exactitud.correctos_total}/{r.consolidado.exactitud.compromiso_total} procesos)</span>
                     <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>
                       {r.consolidado.exactitud.pct != null ? `${r.consolidado.exactitud.pct}%` : '—'}
                       <span className="font-normal" style={{ color: 'var(--color-ink-muted)' }}> / {r.consolidado.exactitud.meta ?? '—'}%</span>
